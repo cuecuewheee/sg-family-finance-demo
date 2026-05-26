@@ -914,12 +914,6 @@ body{
 
 </div><!-- /outer -->
 
-<div class="footer-note">
-  <strong>v2 Configurability Demo</strong> — Same engine, different lenses. Context Hub → Onboarding flow → Personalised dashboard per context.<br>
-  Cross-context planning notes (Family ↔ Child Raising, Caregiver ↔ Child Raising) show the downstream modelling vision.<br>
-  Built from PRD v2.0 · Config A (Child Raising) · Config B (Family Planning) · Config C (Caregiver Planning)
-</div>
-
 <script>
 const allScreens = ['s1','s2','s2b','s3','s4','s5'];
 const allNavBtns = ['nb-s1','nb-s2','nb-s2b','nb-s3','nb-s4','nb-s5'];
@@ -994,96 +988,5 @@ function cgDone(el) {
 </script>
 
 </div><!-- /app-root -->
-</body>
-</html>
-
-  <div class="snav-section">Config B · Family Planning</div>
-  <div class="snav-btn teal-btn" id="nb-s4" onclick="goTo('s4')">📊 Dashboard · HDB window</div>
-
-  <div class="snav-section">Config C · Caregiver</div>
-  <div class="snav-btn purple-btn" id="nb-s5" onclick="goTo('s5')">🧓 Dashboard · Care Readiness</div>
-</div>
-
-</div><!-- /outer -->
-
-<div class="footer-note">
-  <strong>v2 Configurability Demo</strong> — Same engine, different lenses. Context Hub → Onboarding flow → Personalised dashboard per context.<br>
-  Cross-context planning notes (Family ↔ Child Raising, Caregiver ↔ Child Raising) show the downstream modelling vision.<br>
-  Built from PRD v2.0 · Config A (Child Raising) · Config B (Family Planning) · Config C (Caregiver Planning)
-</div>
-
-</div><!-- /app-root -->
-
-<script>
-const allScreens = ['s1','s2','s2b','s3','s4','s5'];
-const allNavBtns = ['nb-s1','nb-s2','nb-s2b','nb-s3','nb-s4','nb-s5'];
-
-function goTo(id) {
-  allScreens.forEach(s => {
-    const el = document.getElementById(s);
-    if (el) el.classList.remove('active');
-  });
-  const target = document.getElementById(id);
-  if (target) { target.classList.add('active'); target.scrollTop = 0; }
-  allNavBtns.forEach(nb => {
-    const el = document.getElementById(nb);
-    if (el) el.classList.remove('active');
-  });
-  const nbTarget = document.getElementById('nb-' + id);
-  if (nbTarget) nbTarget.classList.add('active');
-}
-
-/* ── Family Planning onboarding ── */
-let fpStep = 1;
-function fpNext(n, el) {
-  document.querySelectorAll('#fp-q' + fpStep + ' .onb-opt').forEach(o => o.classList.remove('sel'));
-  el.classList.add('sel');
-  setTimeout(() => {
-    document.getElementById('fp-q' + fpStep).style.display = 'none';
-    document.getElementById('fp-step-' + fpStep).style.background = 'var(--teal)';
-    fpStep = n;
-    const next = document.getElementById('fp-q' + n);
-    if (next) {
-      next.style.display = 'block';
-      const stepEl = document.getElementById('fp-step-' + n);
-      if (stepEl) stepEl.style.background = 'rgba(26,138,138,.35)';
-    }
-  }, 200);
-}
-function fpDone(el) {
-  el.classList.add('sel');
-  setTimeout(() => {
-    document.getElementById('fp-q3').style.display = 'none';
-    document.getElementById('fp-step-3').style.background = 'var(--teal)';
-    document.getElementById('fp-result').style.display = 'block';
-  }, 200);
-}
-
-/* ── Caregiver onboarding ── */
-let cgStep = 1;
-function cgNext(n, el) {
-  document.querySelectorAll('#cg-q' + cgStep + ' .onb-opt').forEach(o => o.classList.remove('sel'));
-  el.classList.add('sel');
-  setTimeout(() => {
-    document.getElementById('cg-q' + cgStep).style.display = 'none';
-    document.getElementById('cg-step-' + cgStep).style.background = 'var(--purple)';
-    cgStep = n;
-    const next = document.getElementById('cg-q' + n);
-    if (next) {
-      next.style.display = 'block';
-      const stepEl = document.getElementById('cg-step-' + n);
-      if (stepEl) stepEl.style.background = 'rgba(123,94,167,.35)';
-    }
-  }, 200);
-}
-function cgDone(el) {
-  el.classList.add('sel');
-  setTimeout(() => {
-    document.getElementById('cg-q3').style.display = 'none';
-    document.getElementById('cg-step-3').style.background = 'var(--purple)';
-    document.getElementById('cg-result').style.display = 'block';
-  }, 200);
-}
-</script>
 </body>
 </html>
