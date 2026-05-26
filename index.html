@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Children Finance Planner — Demo v2 · Configurable Engine</title>
+<script>
+(function(){
+  const PASS = btoa('Fw9#mK2x');
+  const KEY  = 'cfp_demo_auth';
+  if (sessionStorage.getItem(KEY) !== PASS) {
+    document.addEventListener('DOMContentLoaded', function () {
+      var gate = document.getElementById('auth-gate');
+      var app  = document.getElementById('app-root');
+      if (gate) gate.style.display = 'flex';
+      if (app)  app.style.display  = 'none';
+    });
+  }
+  window._checkPass = function() {
+    var input = document.getElementById('gate-input').value;
+    if (btoa(input) === PASS) {
+      sessionStorage.setItem(KEY, PASS);
+      document.getElementById('auth-gate').style.display = 'none';
+      document.getElementById('app-root').style.display  = 'block';
+    } else {
+      var err = document.getElementById('gate-error');
+      err.style.display = 'block';
+      document.getElementById('gate-input').value = '';
+      document.getElementById('gate-input').focus();
+    }
+  };
+  window._gateKeydown = function(e) {
+    if (e.key === 'Enter') window._checkPass();
+    document.getElementById('gate-error').style.display = 'none';
+  };
+})();
+</script>
+<style>
+/* ── Reset & base ──────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  /* Brand */
+  --blue:#2E75B6;--blue-mid:#4A90D9;--blue-light:#EBF3FA;--blue-dark:#1a4f8c;
+  --green:#3A9E6F;--green-light:#E8F6EF;
+  --amber:#ED7D31;--amber-light:#FEF3EA;
+  --purple:#7B5EA7;--purple-light:#F0EAF8;
+  --teal:#1A8A8A;--teal-light:#E5F5F5;
+  --red:#D94F4F;--red-light:#FDEAEA;
+  /* Neutrals */
+  --white:#FFFFFF;--grey-bg:#F5F6FA;--border:#E8EAF0;
+  --dark:#1A1D2E;--mid:#6B7280;--light:#9CA3AF;
+  /* Shadows */
+  --sh-card:0 2px 8px rgba(0,0,0,.07);
+  --sh-raised:0 4px 18px rgba(0,0,0,.12);
+  /* Type */
+  --font:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  /* Phone */
+  --pw:393px;--ph:852px;
+  --safe-top:59px;--safe-bottom:34px;
+  --di-w:126px;--di-h:37px;
+}
+body{
+  background:#0f1117;
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100vh;padding:24px 16px 40px;
+  font-family:var(--font);
+}
+.demo-label{color:rgba(255,255,255,.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;font-weight:500;}
+
+/* ── Outer layout ──────────────────────────────────────── */
+.outer{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+
+/* ── Phone shell ───────────────────────────────────────── */
+.phone{
+  width:var(--pw);height:var(--ph);
+  background:var(--white);border-radius:52px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 36px 100px rgba(0,0,0,.7);
+  overflow:hidden;position:relative;display:flex;flex-direction:column;flex-shrink:0;
+}
+.di{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:var(--di-w);height:var(--di-h);background:#000;border-radius:20px;z-index:100;}
+.home-ind{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;background:#000;border-radius:3px;opacity:.18;z-index:100;}
+.status-bar{height:var(--safe-top);background:var(--white);display:flex;align-items:flex-end;padding:0 28px 12px;flex-shrink:0;position:relative;z-index:50;}
+.sb-time{font-size:15px;font-weight:700;color:var(--dark);}
+.sb-right{margin-left:auto;font-size:12px;color:var(--mid);font-weight:600;}
+
+/* ── Screens ───────────────────────────────────────────── */
+.screen-wrap{flex:1;overflow:hidden;position:relative;}
+.screen{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  background:var(--grey-bg);opacity:0;pointer-events:none;
+  transition:opacity .2s ease;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding-bottom:var(--safe-bottom);
+}
+.screen.active{opacity:1;pointer-events:all;}
+
+/* ── App header ────────────────────────────────────────── */
+.app-hdr{
+  background:var(--white);padding:14px 20px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.back{display:flex;align-items:center;gap:4px;color:var(--blue);font-size:14px;font-weight:600;cursor:pointer;}
+.back::before{content:"‹";font-size:20px;line-height:1;}
+.screen-tag{font-size:10px;color:var(--blue);font-weight:700;background:var(--blue-light);padding:3px 9px;border-radius:20px;letter-spacing:.7px;text-transform:uppercase;}
+
+/* ── Shared components ─────────────────────────────────── */
+.card{background:var(--white);border-radius:16px;padding:16px;margin:8px 16px;box-shadow:var(--sh-card);}
+.section-head{padding:16px 20px 4px;font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.9px;}
+.btn-primary{flex:1;background:var(--blue);color:var(--white);border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-secondary{flex:1;background:var(--grey-bg);color:var(--dark);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;}
+.action-row{display:flex;gap:10px;padding:0 16px;margin-top:8px;}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.chip-blue{background:var(--blue-light);color:var(--blue);}
+.chip-green{background:var(--green-light);color:var(--green);}
+.chip-amber{background:var(--amber-light);color:var(--amber);}
+.chip-purple{background:var(--purple-light);color:var(--purple);}
+.chip-teal{background:var(--teal-light);color:var(--teal);}
+
+/* ── Nav bar ───────────────────────────────────────────── */
+.nav-bar{background:var(--white);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 20px;flex-shrink:0;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--light);cursor:pointer;padding:4px 12px;border-radius:8px;}
+.nav-item.active{color:var(--blue);}
+.nav-icon{font-size:22px;line-height:1;}
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 1 — Context Hub
+══════════════════════════════════════════════════════════ */
+.hub-header{
+  background:linear-gradient(150deg,#0f1117 0%,#1a2340 100%);
+  padding:20px 20px 24px;color:var(--white);
+}
+.hub-wordmark{font-size:13px;font-weight:800;letter-spacing:.5px;opacity:.6;margin-bottom:12px;}
+.hub-title{font-size:26px;font-weight:900;line-height:1.2;margin-bottom:6px;}
+.hub-sub{font-size:13px;opacity:.6;line-height:1.5;}
+.hub-tabs{display:flex;gap:0;margin:16px 16px 0;background:rgba(255,255,255,.06);border-radius:12px;padding:4px;}
+.hub-tab{flex:1;text-align:center;padding:9px;border-radius:9px;font-size:12px;font-weight:600;color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s;}
+.hub-tab.active{background:var(--blue);color:var(--white);}
+
+/* Context cards */
+.ctx-card{
+  margin:10px 16px;border-radius:18px;padding:18px;cursor:pointer;
+  box-shadow:var(--sh-raised);position:relative;overflow:hidden;
+  transition:transform .15s;
+}
+.ctx-card:active{transform:scale(.98);}
+.ctx-card.active-ctx{border:2.5px solid transparent;}
+.ctx-card.child{background:linear-gradient(135deg,#2E75B6,#1a4f8c);}
+.ctx-card.family{background:var(--white);border:1.5px solid var(--border);}
+.ctx-card.caregiver{background:var(--white);border:1.5px solid var(--border);}
+.ctx-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;padding:4px 10px;border-radius:20px;margin-bottom:10px;}
+.ctx-badge.active-b{background:rgba(255,255,255,.2);color:rgba(255,255,255,.9);}
+.ctx-badge.add-b{background:var(--grey-bg);color:var(--mid);}
+.ctx-icon{font-size:32px;margin-bottom:8px;display:block;}
+.ctx-title{font-size:18px;font-weight:800;margin-bottom:4px;}
+.ctx-title.white{color:var(--white);}
+.ctx-title.dark{color:var(--dark);}
+.ctx-desc{font-size:12px;line-height:1.5;margin-bottom:12px;}
+.ctx-desc.white{color:rgba(255,255,255,.7);}
+.ctx-desc.dark{color:var(--mid);}
+.ctx-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.ctx-stat{font-size:12px;font-weight:700;}
+.ctx-stat.white{color:rgba(255,255,255,.9);}
+.ctx-stat.dark{color:var(--dark);}
+.ctx-stat-label{font-size:10px;opacity:.6;}
+.ctx-cta{
+  width:100%;border:none;border-radius:11px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;
+}
+.ctx-cta.open{background:rgba(255,255,255,.15);color:var(--white);}
+.ctx-cta.open:hover{background:rgba(255,255,255,.25);}
+.ctx-cta.add{background:var(--blue);color:var(--white);}
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 2 — Onboarding: Add Context
+══════════════════════════════════════════════════════════ */
+.onb-hero{padding:28px 24px 20px;background:var(--white);}
+.onb-icon{font-size:44px;margin-bottom:12px;}
+.onb-title{font-size:22px;font-weight:900;color:var(--dark);line-height:1.2;margin-bottom:6px;}
+.onb-sub{font-size:13px;color:var(--mid);line-height:1.6;}
+.onb-step-row{display:flex;gap:6px;padding:0 24px;margin:16px 0 8px;}
+.onb-step{flex:1;height:4px;border-radius:2px;background:var(--border);}
+.onb-step.done{background:var(--purple);}
+.onb-step.active{background:rgba(123,94,167,.4);}
+
+.onb-card{background:var(--white);border-radius:18px;padding:20px;margin:8px 16px;box-shadow:var(--sh-card);}
+.onb-q{font-size:16px;font-weight:700;color:var(--dark);margin-bottom:14px;line-height:1.4;}
+.onb-opt{
+  border:1.5px solid var(--border);border-radius:12px;padding:13px 16px;
+  font-size:13px;color:var(--dark);cursor:pointer;margin-bottom:9px;
+  display:flex;align-items:center;gap:10px;transition:all .15s;
+}
+.onb-opt:hover,.onb-opt.sel{border-color:var(--purple);background:var(--purple-light);color:var(--purple);font-weight:600;}
+.onb-opt-em{font-size:20px;}
+.onb-label{font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.7px;margin:0 0 10px;}
+.onb-result{text-align:center;padding:8px 0;}
+.onb-result-icon{font-size:48px;margin-bottom:12px;}
+.onb-result-title{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:8px;}
+.onb-result-sub{font-size:13px;color:var(--mid);line-height:1.6;margin-bottom:20px;}
+.config-pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px;}
+.config-pill{background:var(--purple-light);color:var(--purple);font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;}
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 3 — Child Raising Dashboard
+══════════════════════════════════════════════════════════ */
+.hero-cr{background:linear-gradient(135deg,#2E75B6,#1a4f8c);padding:20px 20px 18px;color:var(--white);}
+.hero-ctx-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px;}
+.hero-greeting{font-size:13px;opacity:.75;margin-bottom:2px;}
+.hero-name{font-size:22px;font-weight:900;margin-bottom:8px;}
+.hero-stage{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 13px;font-size:12px;font-weight:600;}
+.fin-bar-labels,.fin-bar-amounts{display:flex;justify-content:space-between;}
+.fin-bar-label{font-size:11px;font-weight:700;}
+.fin-bar{height:22px;border-radius:11px;overflow:hidden;display:flex;margin:6px 0;box-shadow:inset 0 1px 3px rgba(0,0,0,.1);}
+.fin-bar-seg{height:100%;}
+.fin-bar-amount{font-size:12px;font-weight:700;}
+.drill-link{text-align:right;margin-top:8px;font-size:12px;color:var(--blue);font-weight:700;cursor:pointer;}
+.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-top:4px;}
+.status-pill{background:var(--white);border-radius:12px;padding:12px 14px;box-shadow:var(--sh-card);}
+.pill-label{font-size:10px;color:var(--light);font-weight:700;text-transform:uppercase;letter-spacing:.6px;}
+.pill-value{font-size:16px;font-weight:900;color:var(--dark);margin:3px 0;}
+.pill-value.green{color:var(--green);}
+.pill-value.amber{color:var(--amber);}
+.pill-sub{font-size:10px;color:var(--mid);}
+.alert-banner{background:var(--amber-light);border-radius:14px;padding:12px 14px;margin:4px 16px;display:flex;align-items:center;gap:10px;border:1px solid rgba(237,125,49,.3);cursor:pointer;}
+.alert-text{font-size:12px;color:var(--dark);flex:1;line-height:1.5;}
+.alert-text strong{display:block;font-size:13px;margin-bottom:1px;}
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 4 — Family Planning Dashboard
+══════════════════════════════════════════════════════════ */
+.hero-fp{background:linear-gradient(135deg,var(--teal),#0d5c5c);padding:20px 20px 18px;color:var(--white);}
+.timeline-row{display:flex;align-items:center;gap:0;margin:12px 0 4px;overflow-x:hidden;}
+.tl-node{display:flex;flex-direction:column;align-items:center;flex:1;}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.3);}
+.tl-dot.done{background:var(--white);}
+.tl-dot.now{background:var(--amber);box-shadow:0 0 0 3px rgba(237,125,49,.3);}
+.tl-line{flex:1;height:2px;background:rgba(255,255,255,.2);}
+.tl-line.done{background:rgba(255,255,255,.6);}
+.tl-label{font-size:9px;opacity:.6;margin-top:3px;text-align:center;}
+.tl-label.now-l{color:var(--amber);opacity:1;font-weight:700;}
+.decision-card{background:var(--white);border-radius:16px;margin:8px 16px;box-shadow:var(--sh-card);overflow:hidden;}
+.dc-header{padding:14px 16px 10px;border-bottom:1px solid var(--border);}
+.dc-title{font-size:15px;font-weight:800;color:var(--dark);margin-bottom:4px;}
+.dc-sub{font-size:12px;color:var(--mid);}
+.dc-body{padding:12px 16px;}
+.dc-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border);}
+.dc-row:last-child{border-bottom:none;}
+.dc-item{font-size:13px;color:var(--dark);}
+.dc-val{font-size:13px;font-weight:700;color:var(--dark);}
+.dc-val.green{color:var(--green);}
+.dc-val.amber{color:var(--amber);}
+.impact-row{display:flex;gap:8px;padding:0 16px;margin-top:4px;}
+.impact-box{flex:1;border-radius:14px;padding:14px;}
+.impact-box.pos{background:var(--green-light);}
+.impact-box.neg{background:var(--amber-light);}
+.impact-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+.impact-box.pos .impact-label{color:var(--green);}
+.impact-box.neg .impact-label{color:var(--amber);}
+.impact-val{font-size:22px;font-weight:900;margin-bottom:4px;}
+.impact-box.pos .impact-val{color:var(--green);}
+.impact-box.neg .impact-val{color:var(--amber);}
+.impact-desc{font-size:11px;color:var(--mid);line-height:1.4;}
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN 5 — Caregiver Planning Dashboard
+══════════════════════════════════════════════════════════ */
+.hero-cg{background:linear-gradient(135deg,var(--purple),#5a3d8a);padding:20px 20px 18px;color:var(--white);}
+.care-score-ring{
+  width:86px;height:86px;border-radius:50%;
+  background:conic-gradient(rgba(255,255,255,.9) 0% 68%,rgba(255,255,255,.12) 68% 100%);
+  display:flex;align-items:center;justify-content:center;margin:10px auto 4px;
+  position:relative;
+}
+.care-score-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--purple);}
+.care-score-val{font-size:22px;font-weight:900;color:var(--white);position:relative;z-index:1;}
+.care-score-label{font-size:11px;color:rgba(255,255,255,.6);text-align:center;margin-bottom:12px;}
+.cg-scheme-row{display:flex;flex-direction:column;gap:8px;padding:0 16px;margin-top:4px;}
+.cg-scheme{background:var(--white);border-radius:14px;padding:14px;box-shadow:var(--sh-card);display:flex;align-items:center;gap:12px;}
+.cg-scheme-icon{font-size:24px;flex-shrink:0;}
+.cg-scheme-body{flex:1;}
+.cg-scheme-title{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:2px;}
+.cg-scheme-desc{font-size:11px;color:var(--mid);line-height:1.4;}
+.cg-scheme-val{font-size:13px;font-weight:700;flex-shrink:0;}
+.cg-scheme-val.green{color:var(--green);}
+.cg-scheme-val.amber{color:var(--amber);}
+.cg-scheme-val.blue{color:var(--blue);}
+.cost-compare{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 16px;margin-top:4px;}
+.cc-cell{background:var(--white);border-radius:12px;padding:12px;box-shadow:var(--sh-card);text-align:center;}
+.cc-icon{font-size:22px;margin-bottom:6px;}
+.cc-title{font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.cc-val{font-size:15px;font-weight:900;color:var(--dark);}
+.cc-sub{font-size:10px;color:var(--light);margin-top:2px;}
+
+/* ── Sidebar nav ───────────────────────────────────────── */
+.sidebar{display:flex;flex-direction:column;gap:6px;align-self:flex-start;padding-top:8px;}
+.snav-section{font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin:10px 0 4px;padding-left:4px;}
+.snav-section:first-child{margin-top:0;}
+.snav-btn{
+  font-size:12px;padding:9px 15px;border-radius:10px;cursor:pointer;white-space:nowrap;
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);
+  border:1px solid rgba(255,255,255,.08);transition:all .15s;
+}
+.snav-btn:hover,.snav-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:600;}
+.snav-btn.purple-btn:hover,.snav-btn.purple-btn.active{background:var(--purple);border-color:var(--purple);}
+.snav-btn.teal-btn:hover,.snav-btn.teal-btn.active{background:var(--teal);border-color:var(--teal);}
+
+/* ── Footer ────────────────────────────────────────────── */
+.footer-note{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:12px 18px;margin-top:20px;max-width:640px;
+  color:rgba(255,255,255,.4);font-size:11px;line-height:1.7;text-align:center;
+}
+.footer-note strong{color:rgba(255,255,255,.7);}
+</style>
+</head>
+<style>
+#auth-gate{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:#0f1117;
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:32px;
+}
+.gate-box{
+  background:#1a1d2e;border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:32px 28px;width:100%;max-width:340px;
+  text-align:center;
+}
+.gate-logo{font-size:36px;margin-bottom:12px;}
+.gate-title{font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;}
+.gate-sub{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:24px;line-height:1.5;}
+.gate-input{
+  width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);
+  border-radius:12px;padding:14px 16px;font-size:16px;color:#fff;
+  text-align:center;letter-spacing:2px;outline:none;margin-bottom:12px;
+  font-family:monospace;
+}
+.gate-input:focus{border-color:var(--blue);}
+.gate-btn{
+  width:100%;background:#2E75B6;color:#fff;border:none;
+  border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;
+}
+.gate-btn:hover{background:#1a4f8c;}
+.gate-error{
+  display:none;margin-top:12px;font-size:13px;
+  color:#ED7D31;font-weight:600;
+}
+.gate-footer{margin-top:20px;font-size:11px;color:rgba(255,255,255,.2);}
+</style>
+
+<body>
+
+<!-- ── Auth gate ─────────────────────────────────────────── -->
+<div id="auth-gate">
+  <div class="gate-box">
+    <div class="gate-logo">🔒</div>
+    <div class="gate-title">Private Demo</div>
+    <div class="gate-sub">SG Family Finance · v2<br>Enter the access code to continue.</div>
+    <input id="gate-input" class="gate-input" type="password"
+           placeholder="Access code" autocomplete="off"
+           onkeydown="window._gateKeydown(event)">
+    <button class="gate-btn" onclick="window._checkPass()">Unlock Demo</button>
+    <div id="gate-error" class="gate-error">Incorrect code — try again</div>
+    <div class="gate-footer">Shared privately by Qiquan</div>
+  </div>
+</div>
+
+<!-- ── App root ──────────────────────────────────────────── -->
+<div id="app-root">
+
+<div class="demo-label">SG Family Finance · Demo v2 · Configurable Engine · iPhone 17 (393 × 852)</div>
+
+<div class="outer">
+
+<!-- ══ Phone shell ══════════════════════════════════════════ -->
+<div class="phone">
+  <div class="di"></div>
+  <div class="home-ind"></div>
+  <div class="status-bar">
+    <span class="sb-time">9:41</span>
+    <span class="sb-right">●●●●  WiFi  100%</span>
+  </div>
+
+  <div class="screen-wrap">
+
+    <!-- ════════════════════════════════════════════════════
+         S1 · Context Hub
+    ════════════════════════════════════════════════════ -->
+    <div class="screen active" id="s1">
+
+      <div class="hub-header">
+        <div class="hub-wordmark">SG FAMILY FINANCE</div>
+        <div class="hub-title">Your Planning<br>Contexts</div>
+        <div class="hub-sub">One engine. Multiple life chapters.<br>Switch between plans as your life evolves.</div>
+      </div>
+
+      <!-- Active -->
+      <div class="section-head" style="color:rgba(255,255,255,.35);padding-top:12px;background:#0f1117;margin:0;padding-bottom:8px;">Active context</div>
+      <div style="background:#0f1117;padding:0 0 4px;">
+        <div class="ctx-card child" onclick="goTo('s3')">
+          <div class="ctx-badge active-b">● Active</div>
+          <span class="ctx-icon">👶</span>
+          <div class="ctx-title white">Child Raising Planning</div>
+          <div class="ctx-desc white">Pregnancy through early adulthood. Singapore grants, CPF mechanisms, education pathways.</div>
+          <div class="ctx-meta">
+            <div><div class="ctx-stat white">Week 6</div><div class="ctx-stat-label" style="color:rgba(255,255,255,.5);">Current stage</div></div>
+            <div><div class="ctx-stat white">$8,420</div><div class="ctx-stat-label" style="color:rgba(255,255,255,.5);">Spent to date</div></div>
+            <div><div class="ctx-stat white">$13,500</div><div class="ctx-stat-label" style="color:rgba(255,255,255,.5);">Future est.</div></div>
+          </div>
+          <button class="ctx-cta open" onclick="event.stopPropagation();goTo('s3')">Open Dashboard →</button>
+        </div>
+      </div>
+
+      <!-- Add more -->
+      <div class="section-head">Add a planning context</div>
+
+      <div class="ctx-card family" onclick="goTo('s2')">
+        <div class="ctx-badge add-b">+ Add</div>
+        <span class="ctx-icon">🏠</span>
+        <div class="ctx-title dark">Family Planning</div>
+        <div class="ctx-desc dark">HDB purchase timing, CPF housing, household income planning, and decisions around growing your family.</div>
+        <div class="ctx-meta">
+          <span class="chip chip-teal">HDB grants</span>
+          <span class="chip chip-blue">CPF housing</span>
+          <span class="chip chip-green">Income model</span>
+        </div>
+        <button class="ctx-cta add" onclick="event.stopPropagation();goTo('s2')">Set up Family Planning</button>
+      </div>
+
+      <div class="ctx-card caregiver" onclick="goTo('s2b')">
+        <div class="ctx-badge add-b">+ Add</div>
+        <span class="ctx-icon">🧓</span>
+        <div class="ctx-title dark">Caregiver Planning</div>
+        <div class="ctx-desc dark">Eldercare costs, caregiver CPF leave, MSF support schemes, and long-term care insurance for ageing parents.</div>
+        <div class="ctx-meta">
+          <span class="chip chip-purple">MSF schemes</span>
+          <span class="chip chip-blue">Caregiver CPF</span>
+          <span class="chip chip-amber">LTCI</span>
+        </div>
+        <button class="ctx-cta add" style="background:var(--purple);" onclick="event.stopPropagation();goTo('s2b')">Set up Caregiver Planning</button>
+      </div>
+
+      <div style="height:16px;"></div>
+    </div><!-- /s1 -->
+
+
+    <!-- ════════════════════════════════════════════════════
+         S2 · Onboarding — Family Planning
+    ════════════════════════════════════════════════════ -->
+    <div class="screen" id="s2">
+      <div class="app-hdr">
+        <div class="back" onclick="goTo('s1')">Back</div>
+        <span class="screen-tag">Onboarding</span>
+      </div>
+
+      <div class="onb-hero">
+        <div class="onb-icon">🏠</div>
+        <div class="onb-title">Set up Family Planning</div>
+        <div class="onb-sub">3 quick questions — the engine personalises schemes, projections, and decision prompts to your situation.</div>
+      </div>
+
+      <div class="onb-step-row">
+        <div class="onb-step done" id="fp-step-1"></div>
+        <div class="onb-step active" id="fp-step-2"></div>
+        <div class="onb-step" id="fp-step-3"></div>
+      </div>
+
+      <!-- Q1 -->
+      <div class="onb-card" id="fp-q1">
+        <div class="onb-label">Step 1 of 3</div>
+        <div class="onb-q">What's your household's current monthly income?</div>
+        <div class="onb-opt" onclick="fpNext(2,this)"><span class="onb-opt-em">💼</span>Under $3,000</div>
+        <div class="onb-opt" onclick="fpNext(2,this)"><span class="onb-opt-em">💼</span>$3,000 – $6,000</div>
+        <div class="onb-opt" onclick="fpNext(2,this)"><span class="onb-opt-em">💼</span>$6,000 – $10,000</div>
+        <div class="onb-opt" onclick="fpNext(2,this)"><span class="onb-opt-em">💼</span>Above $10,000</div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="onb-card" id="fp-q2" style="display:none;">
+        <div class="onb-label">Step 2 of 3</div>
+        <div class="onb-q">Do you currently own an HDB flat or are you planning to buy?</div>
+        <div class="onb-opt" onclick="fpNext(3,this)"><span class="onb-opt-em">🏠</span>Own an HDB flat</div>
+        <div class="onb-opt" onclick="fpNext(3,this)"><span class="onb-opt-em">🔍</span>Planning to buy — within 2 years</div>
+        <div class="onb-opt" onclick="fpNext(3,this)"><span class="onb-opt-em">🕐</span>Planning to buy — 2–5 years</div>
+        <div class="onb-opt" onclick="fpNext(3,this)"><span class="onb-opt-em">🤷</span>Not sure yet</div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="onb-card" id="fp-q3" style="display:none;">
+        <div class="onb-label">Step 3 of 3</div>
+        <div class="onb-q">Are you planning to have (more) children?</div>
+        <div class="onb-opt" onclick="fpDone(this)"><span class="onb-opt-em">👶</span>Yes — planning first child</div>
+        <div class="onb-opt" onclick="fpDone(this)"><span class="onb-opt-em">👨‍👩‍👧</span>Yes — planning a second or more</div>
+        <div class="onb-opt" onclick="fpDone(this)"><span class="onb-opt-em">✅</span>Family is complete</div>
+        <div class="onb-opt" onclick="fpDone(this)"><span class="onb-opt-em">🤔</span>Undecided</div>
+      </div>
+
+      <!-- Result -->
+      <div class="onb-card" id="fp-result" style="display:none;">
+        <div class="onb-result">
+          <div class="onb-result-icon">✅</div>
+          <div class="onb-result-title">Family Planning Ready</div>
+          <div class="onb-result-sub">Engine configured for your household. Schemes, projections and decision prompts are now personalised.</div>
+          <div class="config-pills">
+            <span class="config-pill" style="background:var(--teal-light);color:var(--teal);">EHG Grant loaded</span>
+            <span class="config-pill" style="background:var(--teal-light);color:var(--teal);">CPF OA housing model</span>
+            <span class="config-pill" style="background:var(--teal-light);color:var(--teal);">Income projection</span>
+            <span class="config-pill">Child cost overlap</span>
+          </div>
+        </div>
+        <div class="action-row" style="padding:0;margin-top:4px;">
+          <button class="btn-secondary" onclick="goTo('s1')">Back to Hub</button>
+          <button class="btn-primary" style="background:var(--teal);" onclick="goTo('s4')">Open Dashboard →</button>
+        </div>
+      </div>
+
+      <div style="height:20px;"></div>
+    </div><!-- /s2 -->
+
+
+    <!-- ════════════════════════════════════════════════════
+         S2b · Onboarding — Caregiver Planning
+    ════════════════════════════════════════════════════ -->
+    <div class="screen" id="s2b">
+      <div class="app-hdr">
+        <div class="back" onclick="goTo('s1')">Back</div>
+        <span class="screen-tag" style="background:var(--purple-light);color:var(--purple);">Onboarding</span>
+      </div>
+
+      <div class="onb-hero">
+        <div class="onb-icon">🧓</div>
+        <div class="onb-title">Set up Caregiver Planning</div>
+        <div class="onb-sub">3 quick questions — the engine loads the right MSF schemes, CPF rules, and eldercare cost benchmarks for you.</div>
+      </div>
+
+      <div class="onb-step-row">
+        <div class="onb-step done" style="background:var(--purple);" id="cg-step-1"></div>
+        <div class="onb-step active" style="background:rgba(123,94,167,.35);" id="cg-step-2"></div>
+        <div class="onb-step" id="cg-step-3"></div>
+      </div>
+
+      <!-- Q1 -->
+      <div class="onb-card" id="cg-q1">
+        <div class="onb-label">Step 1 of 3</div>
+        <div class="onb-q">Who are you planning for?</div>
+        <div class="onb-opt" onclick="cgNext(2,this)"><span class="onb-opt-em">👨</span>One parent</div>
+        <div class="onb-opt" onclick="cgNext(2,this)"><span class="onb-opt-em">👨‍👩</span>Both parents</div>
+        <div class="onb-opt" onclick="cgNext(2,this)"><span class="onb-opt-em">👴👵</span>In-laws (or partner's parents)</div>
+        <div class="onb-opt" onclick="cgNext(2,this)"><span class="onb-opt-em">🏠</span>Multiple — mixed household</div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="onb-card" id="cg-q2" style="display:none;">
+        <div class="onb-label">Step 2 of 3</div>
+        <div class="onb-q">What's the current care situation?</div>
+        <div class="onb-opt" onclick="cgNext(3,this)"><span class="onb-opt-em">🏠</span>Living with us — informal care</div>
+        <div class="onb-opt" onclick="cgNext(3,this)"><span class="onb-opt-em">🏥</span>Exploring care facility options</div>
+        <div class="onb-opt" onclick="cgNext(3,this)"><span class="onb-opt-em">📋</span>Already in a care programme</div>
+        <div class="onb-opt" onclick="cgNext(3,this)"><span class="onb-opt-em">🔮</span>Planning ahead — not yet needed</div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="onb-card" id="cg-q3" style="display:none;">
+        <div class="onb-label">Step 3 of 3</div>
+        <div class="onb-q">Are you currently employed full-time?</div>
+        <div class="onb-sub" style="font-size:12px;color:var(--mid);margin-bottom:14px;line-height:1.5;">Affects caregiver leave eligibility and CPF contribution models.</div>
+        <div class="onb-opt" onclick="cgDone(this)"><span class="onb-opt-em">✅</span>Yes — full-time employed</div>
+        <div class="onb-opt" onclick="cgDone(this)"><span class="onb-opt-em">🕐</span>Part-time or freelance</div>
+        <div class="onb-opt" onclick="cgDone(this)"><span class="onb-opt-em">🏠</span>Full-time caregiver (not employed)</div>
+      </div>
+
+      <!-- Result -->
+      <div class="onb-card" id="cg-result" style="display:none;">
+        <div class="onb-result">
+          <div class="onb-result-icon">✅</div>
+          <div class="onb-result-title">Caregiver Planning Ready</div>
+          <div class="onb-result-sub">Engine configured. MSF schemes, caregiver leave rules, and eldercare benchmarks are now loaded for your situation.</div>
+          <div class="config-pills">
+            <span class="config-pill">MSF CHAS Blue loaded</span>
+            <span class="config-pill">Caregiver Training Grant</span>
+            <span class="config-pill">IDAPE eligibility</span>
+            <span class="config-pill">LTCI model</span>
+          </div>
+        </div>
+        <div class="action-row" style="padding:0;margin-top:4px;">
+          <button class="btn-secondary" onclick="goTo('s1')">Back to Hub</button>
+          <button class="btn-primary" style="background:var(--purple);" onclick="goTo('s5')">Open Dashboard →</button>
+        </div>
+      </div>
+
+      <div style="height:20px;"></div>
+    </div><!-- /s2b -->
+
+
+    <!-- ════════════════════════════════════════════════════
+         S3 · Child Raising Dashboard
+    ════════════════════════════════════════════════════ -->
+    <div class="screen" id="s3">
+
+      <div class="hero-cr">
+        <div class="hero-ctx-pill">👶 Child Raising Planning</div>
+        <div class="hero-greeting">Good morning, Qiquan 👋</div>
+        <div class="hero-name">Week 6 · Newborn Stage</div>
+        <div class="hero-stage">🟠 Financial Check-In Due</div>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <div class="pill-label" style="margin-bottom:10px;">Financial Overview — Newborn Stage</div>
+        <div class="fin-bar-labels">
+          <span class="fin-bar-label" style="color:#1a4f8c;">Spent</span>
+          <span class="fin-bar-label" style="color:var(--amber);">Upcoming</span>
+          <span class="fin-bar-label" style="color:var(--mid);">Future Est.</span>
+        </div>
+        <div class="fin-bar">
+          <div class="fin-bar-seg" style="width:30%;background:#2E75B6;"></div>
+          <div class="fin-bar-seg" style="width:22%;background:var(--amber);"></div>
+          <div class="fin-bar-seg" style="width:48%;background:#D0DCE8;"></div>
+        </div>
+        <div class="fin-bar-amounts">
+          <span class="fin-bar-amount" style="color:#2E75B6;">$8,420</span>
+          <span class="fin-bar-amount" style="color:var(--amber);">$6,200</span>
+          <span class="fin-bar-amount" style="color:var(--mid);">~$13,500</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);">
+          <span style="font-size:10px;color:var(--light);">│ Birth</span>
+          <span style="font-size:10px;color:var(--blue);font-weight:700;">│ Wk 6 ●</span>
+          <span style="font-size:10px;color:var(--light);">│ Mth 3</span>
+          <span style="font-size:10px;color:var(--light);">│ Stage 3</span>
+        </div>
+        <div class="drill-link">View breakdown →</div>
+      </div>
+
+      <div class="alert-banner">
+        <div style="font-size:20px;">🟠</div>
+        <div class="alert-text">
+          <strong>Week 6 Financial Check-In</strong>
+          3-card review — cash flow, food costs, grants status
+        </div>
+        <div style="color:var(--amber);font-size:18px;">›</div>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-pill">
+          <div class="pill-label">CDA Balance</div>
+          <div class="pill-value green">$3,000</div>
+          <div class="pill-sub">Co-match: $500 used</div>
+        </div>
+        <div class="status-pill">
+          <div class="pill-label">Hospital Bill</div>
+          <div class="pill-value amber">$720</div>
+          <div class="pill-sub">Medisave saved $1,500</div>
+        </div>
+        <div class="status-pill">
+          <div class="pill-label">Baby Bonus</div>
+          <div class="pill-value green">$3,000</div>
+          <div class="pill-sub">1st instalment ✓</div>
+        </div>
+        <div class="status-pill">
+          <div class="pill-label">Confinement</div>
+          <div class="pill-value">Centre</div>
+          <div class="pill-sub">28 days · $3,800</div>
+        </div>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <div class="nav-bar">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item"><div class="nav-icon">💰</div>Costs</div>
+        <div class="nav-item"><div class="nav-icon">🗺</div>Journey</div>
+        <div class="nav-item"><div class="nav-icon">🎁</div>Grants</div>
+        <div class="nav-item" onclick="goTo('s1')"><div class="nav-icon">⊞</div>Contexts</div>
+      </div>
+    </div><!-- /s3 -->
+
+
+    <!-- ════════════════════════════════════════════════════
+         S4 · Family Planning Dashboard
+    ════════════════════════════════════════════════════ -->
+    <div class="screen" id="s4">
+
+      <div class="hero-fp">
+        <div class="hero-ctx-pill" style="background:rgba(255,255,255,.15);">🏠 Family Planning</div>
+        <div class="hero-greeting" style="font-size:13px;opacity:.75;margin-bottom:2px;">Good morning, Qiquan 👋</div>
+        <div class="hero-name" style="font-size:22px;font-weight:900;color:var(--white);margin-bottom:10px;">HDB Purchase Window</div>
+
+        <!-- Timeline -->
+        <div style="margin-top:4px;">
+          <div style="font-size:11px;opacity:.6;margin-bottom:8px;">Planning timeline</div>
+          <div style="display:flex;align-items:center;">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:10px;height:10px;border-radius:50%;background:var(--white);opacity:.9;"></div>
+              <div style="font-size:9px;opacity:.55;margin-top:3px;">2024</div>
+            </div>
+            <div style="flex:1;height:2px;background:rgba(255,255,255,.5);"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:12px;height:12px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px rgba(237,125,49,.35);"></div>
+              <div style="font-size:9px;color:var(--amber);font-weight:700;margin-top:3px;">Now</div>
+            </div>
+            <div style="flex:1;height:2px;background:rgba(255,255,255,.2);"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);"></div>
+              <div style="font-size:9px;opacity:.4;margin-top:3px;">BTO</div>
+            </div>
+            <div style="flex:1;height:2px;background:rgba(255,255,255,.2);"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);"></div>
+              <div style="font-size:9px;opacity:.4;margin-top:3px;">Keys</div>
+            </div>
+            <div style="flex:1;height:2px;background:rgba(255,255,255,.2);"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);"></div>
+              <div style="font-size:9px;opacity:.4;margin-top:3px;">2030</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decision alert -->
+      <div class="alert-banner" style="background:#E5F5F5;border-color:rgba(26,138,138,.3);">
+        <div style="font-size:20px;">⏰</div>
+        <div class="alert-text">
+          <strong style="color:var(--teal);">BTO Application Window Open</strong>
+          Tengah BTO — closes in 18 days. Check your eligibility.
+        </div>
+        <div style="color:var(--teal);font-size:18px;">›</div>
+      </div>
+
+      <!-- Grant eligibility -->
+      <div class="section-head">Grant Eligibility</div>
+      <div class="decision-card">
+        <div class="dc-header">
+          <div class="dc-title">Enhanced CPF Housing Grant (EHG)</div>
+          <div class="dc-sub">Based on: $6,500/mth household · First-time buyers</div>
+        </div>
+        <div class="dc-body">
+          <div class="dc-row"><span class="dc-item">EHG (couples)</span><span class="dc-val green">$40,000 ✓</span></div>
+          <div class="dc-row"><span class="dc-item">Family Grant</span><span class="dc-val green">$50,000 ✓</span></div>
+          <div class="dc-row"><span class="dc-item">Proximity Housing Grant</span><span class="dc-val amber">Check eligibility</span></div>
+          <div class="dc-row"><span class="dc-item">Total eligible grants</span><span class="dc-val" style="font-size:15px;">~$90,000</span></div>
+        </div>
+      </div>
+
+      <!-- Financial impact -->
+      <div class="section-head">Financial Impact Model</div>
+      <div class="impact-row">
+        <div class="impact-box pos">
+          <div class="impact-label">CPF OA Available</div>
+          <div class="impact-val">$87K</div>
+          <div class="impact-desc">Combined CPF OA for downpayment + monthly servicing</div>
+        </div>
+        <div class="impact-box neg">
+          <div class="impact-label">Monthly Impact</div>
+          <div class="impact-val">$1,340</div>
+          <div class="impact-desc">Est. mortgage after CPF, net of child cost overlap</div>
+        </div>
+      </div>
+
+      <!-- Downstream note -->
+      <div class="card" style="margin-top:8px;">
+        <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:8px;">⚡ Downstream planning alert</div>
+        <div style="font-size:12px;color:var(--mid);line-height:1.6;">A BTO purchase now overlaps with <strong>Infant Care Stage</strong> in your Child Raising plan. Combined monthly outflow: <strong>~$3,200</strong>. Recommend reviewing Child Raising cash buffer before committing.</div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <span class="chip chip-blue">Switch to Child Raising →</span>
+          <span class="chip chip-teal">View combined model</span>
+        </div>
+      </div>
+
+      <div style="flex:1;"></div>
+      <div class="nav-bar">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item"><div class="nav-icon">📊</div>Model</div>
+        <div class="nav-item"><div class="nav-icon">🎁</div>Grants</div>
+        <div class="nav-item"><div class="nav-icon">📅</div>Timeline</div>
+        <div class="nav-item" onclick="goTo('s1')"><div class="nav-icon">⊞</div>Contexts</div>
+      </div>
+    </div><!-- /s4 -->
+
+
+    <!-- ════════════════════════════════════════════════════
+         S5 · Caregiver Planning Dashboard
+    ════════════════════════════════════════════════════ -->
+    <div class="screen" id="s5">
+
+      <div class="hero-cg">
+        <div class="hero-ctx-pill" style="background:rgba(255,255,255,.15);">🧓 Caregiver Planning</div>
+        <div class="hero-greeting" style="font-size:13px;opacity:.75;margin-bottom:2px;">Planning for Mum, Dad</div>
+        <div class="hero-name" style="font-size:22px;font-weight:900;color:var(--white);margin-bottom:8px;">Care Readiness</div>
+
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div>
+            <div class="care-score-ring"><span class="care-score-val">68</span></div>
+            <div class="care-score-label">Readiness score</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.6;">
+              <div style="margin-bottom:4px;">✅ CHAS Blue enrolled</div>
+              <div style="margin-bottom:4px;">✅ Caregiver Training Grant applied</div>
+              <div style="margin-bottom:4px;color:var(--amber);">⚠ LTCI not yet reviewed</div>
+              <div style="color:var(--amber);">⚠ Lasting Power of Attorney pending</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert -->
+      <div class="alert-banner" style="background:var(--purple-light);border-color:rgba(123,94,167,.3);">
+        <div style="font-size:20px;">📋</div>
+        <div class="alert-text">
+          <strong style="color:var(--purple);">Action required: LPA application</strong>
+          Lasting Power of Attorney protects your parent's financial decisions. Free with $75 cert fee.
+        </div>
+        <div style="color:var(--purple);font-size:18px;">›</div>
+      </div>
+
+      <!-- Schemes -->
+      <div class="section-head">Active Schemes</div>
+      <div class="cg-scheme-row">
+        <div class="cg-scheme">
+          <div class="cg-scheme-icon">🏥</div>
+          <div class="cg-scheme-body">
+            <div class="cg-scheme-title">CHAS Blue (Chronic disease)</div>
+            <div class="cg-scheme-desc">GP and specialist subsidies for chronic conditions</div>
+          </div>
+          <div class="cg-scheme-val green">Active</div>
+        </div>
+        <div class="cg-scheme">
+          <div class="cg-scheme-icon">🎓</div>
+          <div class="cg-scheme-body">
+            <div class="cg-scheme-title">Caregiver Training Grant</div>
+            <div class="cg-scheme-desc">Up to $200/yr per care recipient for training courses</div>
+          </div>
+          <div class="cg-scheme-val blue">$400 left</div>
+        </div>
+        <div class="cg-scheme">
+          <div class="cg-scheme-icon">💊</div>
+          <div class="cg-scheme-body">
+            <div class="cg-scheme-title">IDAPE (Disability Allowance)</div>
+            <div class="cg-scheme-desc">Monthly allowance if parent meets disability criteria</div>
+          </div>
+          <div class="cg-scheme-val amber">Check</div>
+        </div>
+        <div class="cg-scheme">
+          <div class="cg-scheme-icon">🛡</div>
+          <div class="cg-scheme-body">
+            <div class="cg-scheme-title">CareShield Life</div>
+            <div class="cg-scheme-desc">Long-term disability insurance — auto-enrolled (born 1980+)</div>
+          </div>
+          <div class="cg-scheme-val green">Enrolled</div>
+        </div>
+      </div>
+
+      <!-- Care cost comparison -->
+      <div class="section-head">Monthly Care Cost Benchmarks</div>
+      <div class="cost-compare">
+        <div class="cc-cell">
+          <div class="cc-icon">🏠</div>
+          <div class="cc-title">Home Care</div>
+          <div class="cc-val">$800</div>
+          <div class="cc-sub">After subsidies</div>
+        </div>
+        <div class="cc-cell">
+          <div class="cc-icon">🌅</div>
+          <div class="cc-title">Day Care</div>
+          <div class="cc-val">$1,400</div>
+          <div class="cc-sub">After subsidies</div>
+        </div>
+        <div class="cc-cell">
+          <div class="cc-icon">🏥</div>
+          <div class="cc-title">Nursing Home</div>
+          <div class="cc-val">$2,200</div>
+          <div class="cc-sub">B2 ward est.</div>
+        </div>
+      </div>
+
+      <!-- Cross-context -->
+      <div class="card" style="margin-top:8px;">
+        <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:8px;">⚡ Cross-context planning note</div>
+        <div style="font-size:12px;color:var(--mid);line-height:1.6;">Nursing home costs in 2–3 years may overlap with your <strong>Primary School stage</strong> in Child Raising. Recommend reviewing long-term savings buffer across both contexts.</div>
+        <div style="margin-top:10px;">
+          <span class="chip chip-purple">View combined cashflow</span>
+        </div>
+      </div>
+
+      <div style="flex:1;"></div>
+      <div class="nav-bar">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item"><div class="nav-icon">📋</div>Schemes</div>
+        <div class="nav-item"><div class="nav-icon">💰</div>Costs</div>
+        <div class="nav-item"><div class="nav-icon">📅</div>Timeline</div>
+        <div class="nav-item" onclick="goTo('s1')"><div class="nav-icon">⊞</div>Contexts</div>
+      </div>
+    </div><!-- /s5 -->
+
+  </div><!-- /screen-wrap -->
+</div><!-- /phone -->
+
+
+<!-- ══ Sidebar ═════════════════════════════════════════════ -->
+<div class="sidebar">
+  <div class="snav-section">Engine Hub</div>
+  <div class="snav-btn active" id="nb-s1" onclick="goTo('s1')">⊞ Context Hub</div>
+
+  <div class="snav-section">Onboarding Flows</div>
+  <div class="snav-btn teal-btn" id="nb-s2" onclick="goTo('s2')">🏠 Family Planning setup</div>
+  <div class="snav-btn purple-btn" id="nb-s2b" onclick="goTo('s2b')">🧓 Caregiver setup</div>
+
+  <div class="snav-section">Config A · Child Raising</div>
+  <div class="snav-btn" id="nb-s3" onclick="goTo('s3')">👶 Dashboard · Newborn</div>
+
+  <div class="snav-section">Config B · Family Planning</div>
+  <div class="snav-btn teal-btn" id="nb-s4" onclick="goTo('s4')">📊 Dashboard · HDB window</div>
+
+  <div class="snav-section">Config C · Caregiver</div>
+  <div class="snav-btn purple-btn" id="nb-s5" onclick="goTo('s5')">🧓 Dashboard · Care Readiness</div>
+</div>
+
+</div><!-- /outer -->
+
+<div class="footer-note">
+  <strong>v2 Configurability Demo</strong> — Same engine, different lenses. Context Hub → Onboarding flow → Personalised dashboard per context.<br>
+  Cross-context planning notes (Family ↔ Child Raising, Caregiver ↔ Child Raising) show the downstream modelling vision.<br>
+  Built from PRD v2.0 · Config A (Child Raising) · Config B (Family Planning) · Config C (Caregiver Planning)
+</div>
+
+<script>
+const allScreens = ['s1','s2','s2b','s3','s4','s5'];
+const allNavBtns = ['nb-s1','nb-s2','nb-s2b','nb-s3','nb-s4','nb-s5'];
+
+function goTo(id) {
+  allScreens.forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.classList.remove('active');
+  });
+  const target = document.getElementById(id);
+  if (target) { target.classList.add('active'); target.scrollTop = 0; }
+
+  allNavBtns.forEach(nb => {
+    const el = document.getElementById(nb);
+    if (el) el.classList.remove('active');
+  });
+  const nbTarget = document.getElementById('nb-' + id);
+  if (nbTarget) nbTarget.classList.add('active');
+}
+
+/* ── Family Planning onboarding ── */
+let fpStep = 1;
+function fpNext(n, el) {
+  document.querySelectorAll('#fp-q' + fpStep + ' .onb-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('fp-q' + fpStep).style.display = 'none';
+    document.getElementById('fp-step-' + fpStep).style.background = 'var(--teal)';
+    fpStep = n;
+    const next = document.getElementById('fp-q' + n);
+    if (next) {
+      next.style.display = 'block';
+      const stepEl = document.getElementById('fp-step-' + n);
+      if (stepEl) stepEl.style.background = 'rgba(26,138,138,.35)';
+    }
+  }, 200);
+}
+function fpDone(el) {
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('fp-q3').style.display = 'none';
+    document.getElementById('fp-step-3').style.background = 'var(--teal)';
+    document.getElementById('fp-result').style.display = 'block';
+  }, 200);
+}
+
+/* ── Caregiver onboarding ── */
+let cgStep = 1;
+function cgNext(n, el) {
+  document.querySelectorAll('#cg-q' + cgStep + ' .onb-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('cg-q' + cgStep).style.display = 'none';
+    document.getElementById('cg-step-' + cgStep).style.background = 'var(--purple)';
+    cgStep = n;
+    const next = document.getElementById('cg-q' + n);
+    if (next) {
+      next.style.display = 'block';
+      const stepEl = document.getElementById('cg-step-' + n);
+      if (stepEl) stepEl.style.background = 'rgba(123,94,167,.35)';
+    }
+  }, 200);
+}
+function cgDone(el) {
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('cg-q3').style.display = 'none';
+    document.getElementById('cg-step-3').style.background = 'var(--purple)';
+    document.getElementById('cg-result').style.display = 'block';
+  }, 200);
+}
+</script>
+
+</div><!-- /app-root -->
+</body>
+</html>
+
+  <div class="snav-section">Config B · Family Planning</div>
+  <div class="snav-btn teal-btn" id="nb-s4" onclick="goTo('s4')">📊 Dashboard · HDB window</div>
+
+  <div class="snav-section">Config C · Caregiver</div>
+  <div class="snav-btn purple-btn" id="nb-s5" onclick="goTo('s5')">🧓 Dashboard · Care Readiness</div>
+</div>
+
+</div><!-- /outer -->
+
+<div class="footer-note">
+  <strong>v2 Configurability Demo</strong> — Same engine, different lenses. Context Hub → Onboarding flow → Personalised dashboard per context.<br>
+  Cross-context planning notes (Family ↔ Child Raising, Caregiver ↔ Child Raising) show the downstream modelling vision.<br>
+  Built from PRD v2.0 · Config A (Child Raising) · Config B (Family Planning) · Config C (Caregiver Planning)
+</div>
+
+</div><!-- /app-root -->
+
+<script>
+const allScreens = ['s1','s2','s2b','s3','s4','s5'];
+const allNavBtns = ['nb-s1','nb-s2','nb-s2b','nb-s3','nb-s4','nb-s5'];
+
+function goTo(id) {
+  allScreens.forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.classList.remove('active');
+  });
+  const target = document.getElementById(id);
+  if (target) { target.classList.add('active'); target.scrollTop = 0; }
+  allNavBtns.forEach(nb => {
+    const el = document.getElementById(nb);
+    if (el) el.classList.remove('active');
+  });
+  const nbTarget = document.getElementById('nb-' + id);
+  if (nbTarget) nbTarget.classList.add('active');
+}
+
+/* ── Family Planning onboarding ── */
+let fpStep = 1;
+function fpNext(n, el) {
+  document.querySelectorAll('#fp-q' + fpStep + ' .onb-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('fp-q' + fpStep).style.display = 'none';
+    document.getElementById('fp-step-' + fpStep).style.background = 'var(--teal)';
+    fpStep = n;
+    const next = document.getElementById('fp-q' + n);
+    if (next) {
+      next.style.display = 'block';
+      const stepEl = document.getElementById('fp-step-' + n);
+      if (stepEl) stepEl.style.background = 'rgba(26,138,138,.35)';
+    }
+  }, 200);
+}
+function fpDone(el) {
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('fp-q3').style.display = 'none';
+    document.getElementById('fp-step-3').style.background = 'var(--teal)';
+    document.getElementById('fp-result').style.display = 'block';
+  }, 200);
+}
+
+/* ── Caregiver onboarding ── */
+let cgStep = 1;
+function cgNext(n, el) {
+  document.querySelectorAll('#cg-q' + cgStep + ' .onb-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('cg-q' + cgStep).style.display = 'none';
+    document.getElementById('cg-step-' + cgStep).style.background = 'var(--purple)';
+    cgStep = n;
+    const next = document.getElementById('cg-q' + n);
+    if (next) {
+      next.style.display = 'block';
+      const stepEl = document.getElementById('cg-step-' + n);
+      if (stepEl) stepEl.style.background = 'rgba(123,94,167,.35)';
+    }
+  }, 200);
+}
+function cgDone(el) {
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('cg-q3').style.display = 'none';
+    document.getElementById('cg-step-3').style.background = 'var(--purple)';
+    document.getElementById('cg-result').style.display = 'block';
+  }, 200);
+}
+</script>
+</body>
+</html>
