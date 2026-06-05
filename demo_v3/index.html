@@ -505,10 +505,9 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
         </div>
         <div class="drill-link">View breakdown →</div>
       </div>
-      <div class="alert-banner">
+      <div class="alert-banner" style="cursor:default;">
         <div style="font-size:20px;">🟠</div>
         <div class="alert-text"><strong>Week 6 Financial Check-In</strong>3-card review — cash flow, food costs, grants status</div>
-        <div style="color:var(--amber);font-size:18px;">›</div>
       </div>
       <div class="status-grid">
         <div class="status-pill"><div class="pill-label">CDA Balance</div><div class="pill-value green">$3,000</div><div class="pill-sub">Co-match: $500 used</div></div>
@@ -647,18 +646,17 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
         <div class="drill-link">View breakdown →</div>
       </div>
       <!-- 18-month subsidy step-down warning -->
-      <div class="alert-banner" style="background:#FFF3CD;border-color:rgba(184,134,11,.35);" onclick="goTo('s3c')">
+      <div class="alert-banner" onclick="goTo('s3c')">
         <div style="font-size:20px;">⚠️</div>
         <div class="alert-text">
-          <strong style="color:#B8860B;">Planning ahead: Month 18 subsidy step-down</strong>
+          <strong style="color:var(--amber);">Planning ahead: Month 18 subsidy step-down</strong>
           Basic Subsidy drops S$600→S$300 when moving to childcare. Net cost rises ~S$260/month.
         </div>
-        <div style="color:#B8860B;font-size:18px;">›</div>
+        <div style="color:var(--amber);font-size:18px;">›</div>
       </div>
-      <div class="alert-banner" style="background:var(--green-light);border-color:rgba(58,158,111,.3);">
-        <div style="font-size:20px;">💳</div>
+      <div class="alert-banner" style="background:var(--green-light);border-color:rgba(58,158,111,.3);cursor:default;">
+        <div style="font-size:20px;">💰</div>
         <div class="alert-text"><strong style="color:var(--green);">CDA top-up opportunity</strong>$2,500 co-matching headroom remaining. Top up now to get $1 government match per $1.</div>
-        <div style="color:var(--green);font-size:18px;">›</div>
       </div>
       <div class="status-grid">
         <div class="status-pill"><div class="pill-label">ECDA Subsidy</div><div class="pill-value green">$960/mth</div><div class="pill-sub">Basic $600 + ACS $360</div></div>
@@ -679,7 +677,7 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
           <div class="cg-scheme-val green">$360/mth</div>
         </div>
         <div class="cg-scheme">
-          <div class="cg-scheme-icon">💳</div>
+          <div class="cg-scheme-icon">💰</div>
           <div class="cg-scheme-body"><div class="cg-scheme-title">CDA Co-Matching (1st child)</div><div class="cg-scheme-desc">Dollar-for-dollar up to $3,000 cap</div></div>
           <div class="cg-scheme-val amber">$2,500 left</div>
         </div>
@@ -730,7 +728,7 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
         <div>
           <div style="font-size:13px;font-weight:800;color:var(--red);margin-bottom:4px;">Subsidy Step-Down · Action Required</div>
           <div style="font-size:12px;color:var(--dark);line-height:1.6;">Basic Subsidy drops from <strong>S$600 → S$300/month</strong> as your child moves from infant care to childcare at 18 months. Net out-of-pocket rises by ~<strong>S$260/month</strong>. Confirm your new centre arrangement to update your projections.</div>
-          <div style="margin-top:8px;"><span class="chip" style="background:var(--red-light);color:var(--red);cursor:pointer;">Start 18-month review →</span></div>
+          <div style="margin-top:10px;"><button onclick="goTo('s-premium')" style="background:var(--red);color:var(--white);border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;min-height:44px;width:100%;">Start 18-month review →</button></div>
         </div>
       </div>
       <div class="card" style="margin-top:8px;">
@@ -785,7 +783,7 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
           <div class="cg-scheme-val amber">$1,800 left</div>
         </div>
         <div class="cg-scheme">
-          <div class="cg-scheme-icon">🏖️</div>
+          <div class="cg-scheme-icon">📋</div>
           <div class="cg-scheme-body"><div class="cg-scheme-title">Govt-Paid Childcare Leave (GPCL)</div><div class="cg-scheme-desc">6 days/year per working parent — independent</div></div>
           <div class="cg-scheme-val green">Active</div>
         </div>
@@ -887,8 +885,8 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
         <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:8px;">⚡ Downstream planning alert</div>
         <div style="font-size:12px;color:var(--mid);line-height:1.6;">A BTO purchase now overlaps with <strong>Infant Care Stage</strong> in your Child Raising plan. Combined monthly outflow: <strong>~$3,200</strong>. Recommend reviewing Child Raising cash buffer before committing.</div>
         <div style="margin-top:10px;display:flex;gap:8px;">
-          <span class="chip chip-blue" onclick="goTo('s3b')">Switch to Child Raising →</span>
-          <span class="chip chip-teal">View combined model</span>
+          <span class="chip chip-blue" onclick="goTo('s3b')" style="cursor:pointer;">Switch to Child Raising →</span>
+          <span class="chip chip-teal" style="cursor:default;">View combined model</span>
         </div>
       </div>
       <div style="flex:1;"></div>
@@ -944,7 +942,7 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
       <div class="card" style="margin-top:8px;">
         <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:8px;">⚡ Cross-context planning note</div>
         <div style="font-size:12px;color:var(--mid);line-height:1.6;">Nursing home costs in 2–3 years may overlap with your <strong>Primary School stage</strong> in Child Raising. Recommend reviewing long-term savings buffer across both contexts.</div>
-        <div style="margin-top:10px;"><span class="chip chip-purple">View combined cashflow</span></div>
+        <div style="margin-top:10px;"><span class="chip chip-purple" style="cursor:default;">View combined cashflow</span></div>
       </div>
       <div style="flex:1;"></div>
       <div class="nav-bar">
@@ -1005,7 +1003,7 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
         <div style="display:flex;flex-direction:column;gap:10px;">
           <div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:18px;flex-shrink:0;">📊</div><div style="font-size:12px;color:var(--mid);line-height:1.5;"><strong style="color:var(--dark);">Submit one month of spending data</strong> — childcare costs, medical, one-off purchases. Takes 3–5 minutes.</div></div>
           <div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:18px;flex-shrink:0;">🔓</div><div style="font-size:12px;color:var(--mid);line-height:1.5;"><strong style="color:var(--dark);">Get 90-day access</strong> to all p25/p75 benchmarks across every stage in the engine.</div></div>
-          <div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:18px;flex-shrink:0;">🔒</div><div style="font-size:12px;color:var(--mid);line-height:1.5;"><strong style="color:var(--dark);">Data is anonymised</strong> — no personally identifiable information is ever stored. Cohort minimum: 60 contributors before any distribution is shown.</div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:18px;flex-shrink:0;">🛡️</div><div style="font-size:12px;color:var(--mid);line-height:1.5;"><strong style="color:var(--dark);">Data is anonymised</strong> — no personally identifiable information is ever stored. Cohort minimum: 60 contributors before any distribution is shown.</div></div>
         </div>
       </div>
       <!-- Founding Member banner -->
