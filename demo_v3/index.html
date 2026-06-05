@@ -204,6 +204,10 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
 .cc-title{font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
 .cc-val{font-size:15px;font-weight:900;color:var(--dark);}
 .cc-sub{font-size:10px;color:var(--light);margin-top:2px;}
+/* ── Financial Bar token fix (Spent=green, Upcoming=blue, Future=amber) ── */
+.fin-bar-spent{background:var(--green) !important;}
+.fin-bar-upcoming{background:var(--blue) !important;}
+.fin-bar-future{background:var(--amber) !important;}
 /* ── Premium / paywall ── */
 .premium-card{position:relative;overflow:hidden;}
 .premium-blur{filter:blur(5px);pointer-events:none;user-select:none;}
@@ -216,11 +220,11 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
 .cohort-chip{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:10px;}
 .p75-bar{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--blue));margin:4px 0;}
 /* ── Founding Member ── */
-.fm-badge{background:linear-gradient(135deg,#B8860B 0%,#FFD700 50%,#B8860B 100%);color:#2a1a00;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:.5px;display:inline-block;}
-.fm-hero{background:linear-gradient(150deg,#1a1205,#2d2007);padding:24px 20px 20px;color:var(--white);}
-.fm-card{background:linear-gradient(135deg,#1a1205,#2d2007);border:1px solid #B8860B;border-radius:18px;padding:18px;color:var(--white);margin:8px 16px;}
+.fm-badge{background:linear-gradient(135deg,var(--purple),var(--blue-dark));color:var(--white);font-size:11px;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:.7px;text-transform:uppercase;box-shadow:0 0 8px rgba(123,94,167,.4);display:inline-block;}
+.fm-hero{background:linear-gradient(150deg,#0d0d1a,#1a1233);padding:24px 20px 20px;color:var(--white);}
+.fm-card{background:linear-gradient(135deg,#0d0d1a,#1a1233);border:1px solid var(--purple);border-radius:18px;padding:18px;color:var(--white);margin:8px 16px;}
 .spots-bar-wrap{background:rgba(255,255,255,.1);border-radius:6px;height:8px;margin:10px 0;}
-.spots-bar-fill{height:100%;background:linear-gradient(90deg,#FFD700,#B8860B);border-radius:6px;}
+.spots-bar-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:6px;}
 .fm-benefit-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08);}
 .fm-benefit-row:last-child{border-bottom:none;}
 .fm-benefit-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
@@ -230,14 +234,14 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
 .pricing-row{display:flex;gap:8px;padding:0 16px;margin-top:4px;}
 .price-cell{flex:1;border-radius:14px;padding:14px;text-align:center;}
 .price-cell.beta{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);}
-.price-cell.fm{background:linear-gradient(135deg,rgba(184,134,11,.25),rgba(255,215,0,.15));border:1px solid #B8860B;}
+.price-cell.fm{background:linear-gradient(135deg,rgba(123,94,167,.25),rgba(26,79,140,.15));border:1px solid var(--purple);}
 .price-cell.full{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);}
 .price-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.45);margin-bottom:6px;}
 .price-val{font-size:20px;font-weight:900;color:var(--white);line-height:1;}
 .price-sub{font-size:9px;color:rgba(255,255,255,.4);margin-top:3px;}
-.price-cell.fm .price-label{color:#FFD700;}
-.price-cell.fm .price-val{color:#FFD700;}
-.fm-cta{width:calc(100% - 32px);margin:12px 16px 4px;background:linear-gradient(135deg,#B8860B,#FFD700);color:#2a1a00;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;display:block;}
+.price-cell.fm .price-label{color:rgba(193,168,227,.9);}
+.price-cell.fm .price-val{color:var(--white);}
+.fm-cta{width:calc(100% - 32px);margin:12px 16px 4px;background:linear-gradient(135deg,var(--purple),var(--blue));color:var(--white);border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;display:block;}
 .fm-tc{font-size:10px;color:rgba(255,255,255,.3);text-align:center;padding:0 20px;line-height:1.6;}
 /* ── Sidebar ── */
 .sidebar{display:flex;flex-direction:column;gap:6px;align-self:flex-start;padding-top:8px;}
@@ -248,7 +252,7 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
 .snav-btn.purple-btn:hover,.snav-btn.purple-btn.active{background:var(--purple);border-color:var(--purple);}
 .snav-btn.teal-btn:hover,.snav-btn.teal-btn.active{background:var(--teal);border-color:var(--teal);}
 .snav-btn.amber-btn:hover,.snav-btn.amber-btn.active{background:var(--amber);border-color:var(--amber);}
-.snav-btn.gold-btn:hover,.snav-btn.gold-btn.active{background:#B8860B;border-color:#B8860B;color:#fff;}
+.snav-btn.gold-btn:hover,.snav-btn.gold-btn.active{background:var(--purple);border-color:var(--purple);color:#fff;}
 .footer-note{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 18px;margin-top:20px;max-width:700px;color:rgba(255,255,255,.4);font-size:11px;line-height:1.7;text-align:center;}
 .footer-note strong{color:rgba(255,255,255,.7);}
 </style>
@@ -479,19 +483,19 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
       <div class="card" style="margin-top:12px;">
         <div class="pill-label" style="margin-bottom:10px;">Financial Overview — Newborn Stage</div>
         <div class="fin-bar-labels">
-          <span class="fin-bar-label" style="color:#1a4f8c;">Spent</span>
-          <span class="fin-bar-label" style="color:var(--amber);">Upcoming</span>
-          <span class="fin-bar-label" style="color:var(--mid);">Future Est.</span>
+          <span class="fin-bar-label" style="color:var(--green);">Spent</span>
+          <span class="fin-bar-label" style="color:var(--blue);">Upcoming</span>
+          <span class="fin-bar-label" style="color:var(--amber);">Future Est.</span>
         </div>
         <div class="fin-bar">
-          <div class="fin-bar-seg" style="width:30%;background:#2E75B6;"></div>
-          <div class="fin-bar-seg" style="width:22%;background:var(--amber);"></div>
-          <div class="fin-bar-seg" style="width:48%;background:#D0DCE8;"></div>
+          <div class="fin-bar-seg fin-bar-spent" style="width:30%;"></div>
+          <div class="fin-bar-seg fin-bar-upcoming" style="width:22%;"></div>
+          <div class="fin-bar-seg fin-bar-future" style="width:48%;"></div>
         </div>
         <div class="fin-bar-amounts">
-          <span class="fin-bar-amount" style="color:#2E75B6;">$8,420</span>
-          <span class="fin-bar-amount" style="color:var(--amber);">$6,200</span>
-          <span class="fin-bar-amount" style="color:var(--mid);">~$13,500</span>
+          <span class="fin-bar-amount" style="color:var(--green);">$8,420</span>
+          <span class="fin-bar-amount" style="color:var(--blue);">$6,200</span>
+          <span class="fin-bar-amount" style="color:var(--amber);">~$13,500</span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);">
           <span style="font-size:10px;color:var(--light);">│ Birth</span>
@@ -617,19 +621,19 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
       <div class="card" style="margin-top:12px;">
         <div class="pill-label" style="margin-bottom:10px;">Financial Overview — Infant Care Stage</div>
         <div class="fin-bar-labels">
-          <span class="fin-bar-label" style="color:#1a4f8c;">Spent</span>
-          <span class="fin-bar-label" style="color:var(--amber);">Upcoming · 3 mths</span>
-          <span class="fin-bar-label" style="color:var(--mid);">To Stage 4</span>
+          <span class="fin-bar-label" style="color:var(--green);">Spent</span>
+          <span class="fin-bar-label" style="color:var(--blue);">Upcoming · 3 mths</span>
+          <span class="fin-bar-label" style="color:var(--amber);">To Stage 4</span>
         </div>
         <div class="fin-bar">
-          <div class="fin-bar-seg" style="width:18%;background:#2E75B6;"></div>
-          <div class="fin-bar-seg" style="width:20%;background:var(--amber);"></div>
-          <div class="fin-bar-seg" style="width:62%;background:#D0DCE8;"></div>
+          <div class="fin-bar-seg fin-bar-spent" style="width:18%;"></div>
+          <div class="fin-bar-seg fin-bar-upcoming" style="width:20%;"></div>
+          <div class="fin-bar-seg fin-bar-future" style="width:62%;"></div>
         </div>
         <div class="fin-bar-amounts">
-          <span class="fin-bar-amount" style="color:#2E75B6;">$1,840</span>
-          <span class="fin-bar-amount" style="color:var(--amber);">$2,040</span>
-          <span class="fin-bar-amount" style="color:var(--mid);">~$7,200</span>
+          <span class="fin-bar-amount" style="color:var(--green);">$1,840</span>
+          <span class="fin-bar-amount" style="color:var(--blue);">$2,040</span>
+          <span class="fin-bar-amount" style="color:var(--amber);">~$7,200</span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);">
           <span style="font-size:10px;color:var(--light);">│ Mth 3</span>
@@ -714,11 +718,11 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
 
     <!-- ════ S3C · Stage 4 Toddler Dashboard (NEW) ════ -->
     <div class="screen" id="s3c">
-      <div class="hero-cr" style="background:linear-gradient(135deg,#c45a00,#8b3a00);">
+      <div class="hero-cr">
         <div class="hero-ctx-pill">👶 Child Raising Planning</div>
         <div class="hero-greeting">Good morning, Qiquan 👋</div>
         <div class="hero-name">Month 18 · Toddler Stage</div>
-        <div class="hero-stage" style="background:rgba(255,255,255,.2);">🟠 18-Month Status Review Due</div>
+        <div class="hero-stage" style="background:rgba(237,125,49,.3);border:1px solid rgba(237,125,49,.5);">🟠 18-Month Status Review Due</div>
       </div>
       <!-- Subsidy step-down CRITICAL alert -->
       <div style="background:var(--red-light);border:1.5px solid rgba(217,79,79,.4);border-radius:14px;padding:14px 16px;margin:10px 16px 4px;display:flex;align-items:flex-start;gap:10px;">
@@ -732,19 +736,19 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
       <div class="card" style="margin-top:8px;">
         <div class="pill-label" style="margin-bottom:10px;">Financial Overview — Toddler Stage</div>
         <div class="fin-bar-labels">
-          <span class="fin-bar-label" style="color:#1a4f8c;">Spent</span>
-          <span class="fin-bar-label" style="color:var(--amber);">Upcoming · 3 mths</span>
-          <span class="fin-bar-label" style="color:var(--mid);">To Stage 5</span>
+          <span class="fin-bar-label" style="color:var(--green);">Spent</span>
+          <span class="fin-bar-label" style="color:var(--blue);">Upcoming · 3 mths</span>
+          <span class="fin-bar-label" style="color:var(--amber);">To Stage 5</span>
         </div>
         <div class="fin-bar">
-          <div class="fin-bar-seg" style="width:38%;background:#2E75B6;"></div>
-          <div class="fin-bar-seg" style="width:22%;background:var(--amber);"></div>
-          <div class="fin-bar-seg" style="width:40%;background:#D0DCE8;"></div>
+          <div class="fin-bar-seg fin-bar-spent" style="width:38%;"></div>
+          <div class="fin-bar-seg fin-bar-upcoming" style="width:22%;"></div>
+          <div class="fin-bar-seg fin-bar-future" style="width:40%;"></div>
         </div>
         <div class="fin-bar-amounts">
-          <span class="fin-bar-amount" style="color:#2E75B6;">$14,600</span>
-          <span class="fin-bar-amount" style="color:var(--amber);">$2,820</span>
-          <span class="fin-bar-amount" style="color:var(--mid);">~$8,400</span>
+          <span class="fin-bar-amount" style="color:var(--green);">$14,600</span>
+          <span class="fin-bar-amount" style="color:var(--blue);">$2,820</span>
+          <span class="fin-bar-amount" style="color:var(--amber);">~$8,400</span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);">
           <span style="font-size:10px;color:var(--light);">│ Mth 3</span>
@@ -1005,14 +1009,14 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
         </div>
       </div>
       <!-- Founding Member banner -->
-      <div style="background:linear-gradient(135deg,#1a1205,#2d2007);border:1px solid #B8860B;border-radius:16px;padding:16px;margin:8px 16px;cursor:pointer;" onclick="goTo('s-founding')">
+      <div style="background:linear-gradient(135deg,#0d0d1a,#1a1233);border:1px solid var(--purple);border-radius:16px;padding:16px;margin:8px 16px;cursor:pointer;" onclick="goTo('s-founding')">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
           <span class="fm-badge">✦ FOUNDING MEMBER</span>
-          <span style="font-size:11px;color:rgba(255,215,0,.7);font-weight:700;">27 spots left</span>
+          <span style="font-size:11px;color:rgba(255,255,255,.55);font-weight:700;">27 spots left</span>
         </div>
-        <div style="font-size:14px;font-weight:700;color:#FFD700;margin-bottom:4px;">Lock S$2.99/month for life</div>
+        <div style="font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px;">Lock S$2.99/month for life</div>
         <div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:10px;">Phase 2 Closed Beta · 50% off the S$5.99 full price. Rate locked while subscribed continuously.</div>
-        <div style="font-size:12px;color:#FFD700;font-weight:700;">See Founding Member benefits →</div>
+        <div style="font-size:12px;color:rgba(193,168,227,.9);font-weight:700;">See Founding Member benefits →</div>
       </div>
       <div style="height:16px;"></div>
     </div><!-- /s-premium -->
@@ -1022,15 +1026,15 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
     <div class="screen" id="s-founding">
       <div class="fm-hero">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-          <div class="back" style="color:rgba(255,215,0,.7);" onclick="goTo('s-premium')">Back</div>
+          <div class="back" style="color:rgba(255,255,255,.55);" onclick="goTo('s-premium')">Back</div>
           <span class="fm-badge">✦ FOUNDING MEMBER</span>
         </div>
-        <div style="font-size:11px;font-weight:700;color:rgba(255,215,0,.6);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">Phase 2 Closed Beta · 50 spots total</div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">Phase 2 Closed Beta · 50 spots total</div>
         <div style="font-size:26px;font-weight:900;color:var(--white);line-height:1.2;margin-bottom:8px;">Founding Member<br>Early Access</div>
         <div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:16px;">Be among the first 50 families to access SG Family Finance. Lock in S$2.99/month — that's 50% off the full price — for as long as you stay subscribed.</div>
         <!-- Spots claimed bar -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-          <span style="font-size:12px;font-weight:700;color:rgba(255,215,0,.8);">23 of 50 spots claimed</span>
+          <span style="font-size:12px;font-weight:700;color:var(--white);">23 of 50 spots claimed</span>
           <span style="font-size:11px;color:rgba(255,255,255,.35);">27 remaining</span>
         </div>
         <div class="spots-bar-wrap"><div class="spots-bar-fill" style="width:46%;"></div></div>
@@ -1046,7 +1050,7 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
 
       <!-- Benefits -->
       <div class="fm-card">
-        <div style="font-size:12px;font-weight:700;color:rgba(255,215,0,.7);letter-spacing:.6px;text-transform:uppercase;margin-bottom:12px;">Founding Member Benefits</div>
+        <div style="font-size:12px;font-weight:700;color:rgba(193,168,227,.9);letter-spacing:.6px;text-transform:uppercase;margin-bottom:12px;">Founding Member Benefits</div>
         <div class="fm-benefit-row">
           <div class="fm-benefit-icon">✦</div>
           <div class="fm-benefit-body"><div class="fm-benefit-title">Permanent Founding Member badge</div><div class="fm-benefit-desc">Visible in-app recognition as an early supporter — yours permanently once earned.</div></div>
@@ -1101,7 +1105,7 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
 
   <div class="snav-section">Premium Features · NEW</div>
   <div class="snav-btn" id="nb-s-premium" onclick="goTo('s-premium')" style="background:var(--blue-light);color:var(--blue);border-left:3px solid var(--blue);">📊 Risk Reference Engine · paywall</div>
-  <div class="snav-btn gold-btn" id="nb-s-founding" onclick="goTo('s-founding')" style="background:var(--gold-light);color:var(--gold);border-left:3px solid var(--gold);">✦ Founding Member Offer · NEW</div>
+  <div class="snav-btn gold-btn" id="nb-s-founding" onclick="goTo('s-founding')" style="background:var(--purple-light);color:var(--purple);border-left:3px solid var(--purple);">✦ Founding Member Offer · NEW</div>
 </div>
 
 </div><!-- /outer -->
