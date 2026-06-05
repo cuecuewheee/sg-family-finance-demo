@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 320" width="560" height="320" font-family="-apple-system, Helvetica Neue, Arial, sans-serif">
+  <rect width="560" height="320" fill="#F5F6F8"/>
+  <text x="20" y="28" font-size="14" font-weight="700" fill="#1F2D3D">Children Finance Planner — Colour Palette v1.1</text>
+
+  <!-- Row 1: Brand blues -->
+  <rect x="20"  y="44" width="70" height="50" rx="8" fill="#2E75B6"/>
+  <rect x="100" y="44" width="70" height="50" rx="8" fill="#D5E8F0"/>
+  <rect x="180" y="44" width="70" height="50" rx="8" fill="#BDD7EE"/>
+  <text x="20"  y="108" font-size="9" fill="#4A5568">--brand-blue</text>
+  <text x="100" y="108" font-size="9" fill="#4A5568">--light-blue</text>
+  <text x="180" y="108" font-size="9" fill="#4A5568">--mid-blue</text>
+  <text x="20"  y="119" font-size="9" fill="#718096">#2E75B6</text>
+  <text x="100" y="119" font-size="9" fill="#718096">#D5E8F0</text>
+  <text x="180" y="119" font-size="9" fill="#718096">#BDD7EE</text>
+
+  <!-- Row 1: Greens -->
+  <rect x="270" y="44" width="70" height="50" rx="8" fill="#70AD47"/>
+  <rect x="350" y="44" width="70" height="50" rx="8" fill="#E2EFDA"/>
+  <text x="270" y="108" font-size="9" fill="#4A5568">--accent-green</text>
+  <text x="350" y="108" font-size="9" fill="#4A5568">--light-green</text>
+  <text x="270" y="119" font-size="9" fill="#718096">#70AD47</text>
+  <text x="350" y="119" font-size="9" fill="#718096">#E2EFDA</text>
+
+  <!-- Row 2: Ambers -->
+  <rect x="20"  y="140" width="70" height="50" rx="8" fill="#ED7D31"/>
+  <rect x="100" y="140" width="70" height="50" rx="8" fill="#FCE4D6"/>
+  <text x="20"  y="204" font-size="9" fill="#4A5568">--accent-amber</text>
+  <text x="100" y="204" font-size="9" fill="#4A5568">--light-amber</text>
+  <text x="20"  y="215" font-size="9" fill="#718096">#ED7D31</text>
+  <text x="100" y="215" font-size="9" fill="#718096">#FCE4D6</text>
+
+  <!-- Row 2: Neutrals -->
+  <rect x="190" y="140" width="70" height="50" rx="8" fill="#1F2D3D"/>
+  <rect x="270" y="140" width="70" height="50" rx="8" fill="#4A5568"/>
+  <rect x="350" y="140" width="70" height="50" rx="8" fill="#718096"/>
+  <rect x="430" y="140" width="70" height="50" rx="8" fill="#E2E8F0"/>
+  <text x="190" y="204" font-size="9" fill="#4A5568">--dark-text</text>
+  <text x="270" y="204" font-size="9" fill="#4A5568">--mid-text</text>
+  <text x="350" y="204" font-size="9" fill="#4A5568">--light-text</text>
+  <text x="430" y="204" font-size="9" fill="#4A5568">--border</text>
+  <text x="190" y="215" font-size="9" fill="#718096">#1F2D3D</text>
+  <text x="270" y="215" font-size="9" fill="#718096">#4A5568</text>
+  <text x="350" y="215" font-size="9" fill="#718096">#718096</text>
+  <text x="430" y="215" font-size="9" fill="#718096">#E2E8F0</text>
+
+  <!-- Financial bar strip -->
+  <text x="20" y="248" font-size="11" font-weight="700" fill="#1F2D3D">Financial bar</text>
+  <rect x="20"  y="256" width="140" height="24" rx="4" fill="#2E75B6"/>
+  <rect x="160" y="256" width="100" height="24" rx="0" fill="#ED7D31"/>
+  <rect x="260" y="256" width="200" height="24" rx="4" fill="#70AD47" style="border-radius: 0 4px 4px 0"/>
+  <text x="30"  y="272" font-size="9" font-weight="700" fill="#ffffff">Spent · --bar-spent</text>
+  <text x="168" y="272" font-size="9" font-weight="700" fill="#ffffff">Upcoming</text>
+  <text x="268" y="272" font-size="9" font-weight="700" fill="#ffffff">Future est. · --bar-future</text>
+
+  <!-- Footer -->
+  <text x="20" y="308" font-size="9" fill="#718096">Children Finance Planner — Demo v1.1 · PRD_ChildrenFinanceApp_v1.1 · iPhone 17 (393×852)</text>
+</svg>

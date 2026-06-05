@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Children Finance Planner — Demo v3 · June 2026</title>
+<script>
+(function(){
+  const PASS = btoa('Fw9#mK2x');
+  const KEY  = 'cfp_demo_auth';
+  if (sessionStorage.getItem(KEY) !== PASS) {
+    document.addEventListener('DOMContentLoaded', function () {
+      var gate = document.getElementById('auth-gate');
+      var app  = document.getElementById('app-root');
+      if (gate) gate.style.display = 'flex';
+      if (app)  app.style.display  = 'none';
+    });
+  }
+  window._checkPass = function() {
+    var input = document.getElementById('gate-input').value;
+    if (btoa(input) === PASS) {
+      sessionStorage.setItem(KEY, PASS);
+      document.getElementById('auth-gate').style.display = 'none';
+      document.getElementById('app-root').style.display  = 'block';
+    } else {
+      var err = document.getElementById('gate-error');
+      err.style.display = 'block';
+      document.getElementById('gate-input').value = '';
+      document.getElementById('gate-input').focus();
+    }
+  };
+  window._gateKeydown = function(e) {
+    if (e.key === 'Enter') window._checkPass();
+    document.getElementById('gate-error').style.display = 'none';
+  };
+})();
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#2E75B6;--blue-mid:#4A90D9;--blue-light:#EBF3FA;--blue-dark:#1a4f8c;
+  --green:#3A9E6F;--green-light:#E8F6EF;
+  --amber:#ED7D31;--amber-light:#FEF3EA;
+  --purple:#7B5EA7;--purple-light:#F0EAF8;
+  --teal:#1A8A8A;--teal-light:#E5F5F5;
+  --red:#D94F4F;--red-light:#FDEAEA;
+  --gold:#B8860B;--gold-light:#FFF8E1;
+  --white:#FFFFFF;--grey-bg:#F5F6FA;--border:#E8EAF0;
+  --dark:#1A1D2E;--mid:#6B7280;--light:#9CA3AF;
+  --sh-card:0 2px 8px rgba(0,0,0,.07);
+  --sh-raised:0 4px 18px rgba(0,0,0,.12);
+  --font:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --pw:393px;--ph:852px;
+  --safe-top:59px;--safe-bottom:34px;
+  --di-w:126px;--di-h:37px;
+}
+body{background:#0f1117;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:24px 16px 40px;font-family:var(--font);}
+.demo-label{color:rgba(255,255,255,.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;font-weight:500;}
+.outer{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+.phone{width:var(--pw);height:var(--ph);background:var(--white);border-radius:52px;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 36px 100px rgba(0,0,0,.7);overflow:hidden;position:relative;display:flex;flex-direction:column;flex-shrink:0;}
+.di{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:var(--di-w);height:var(--di-h);background:#000;border-radius:20px;z-index:100;}
+.home-ind{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;background:#000;border-radius:3px;opacity:.18;z-index:100;}
+.status-bar{height:var(--safe-top);background:var(--white);display:flex;align-items:flex-end;padding:0 28px 12px;flex-shrink:0;position:relative;z-index:50;}
+.sb-time{font-size:15px;font-weight:700;color:var(--dark);}
+.sb-right{margin-left:auto;font-size:12px;color:var(--mid);font-weight:600;}
+.screen-wrap{flex:1;overflow:hidden;position:relative;}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--grey-bg);opacity:0;pointer-events:none;transition:opacity .2s ease;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:var(--safe-bottom);}
+.screen.active{opacity:1;pointer-events:all;}
+.app-hdr{background:var(--white);padding:14px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;}
+.back{display:flex;align-items:center;gap:4px;color:var(--blue);font-size:14px;font-weight:600;cursor:pointer;}
+.back::before{content:"‹";font-size:20px;line-height:1;}
+.screen-tag{font-size:10px;color:var(--blue);font-weight:700;background:var(--blue-light);padding:3px 9px;border-radius:20px;letter-spacing:.7px;text-transform:uppercase;}
+.card{background:var(--white);border-radius:16px;padding:16px;margin:8px 16px;box-shadow:var(--sh-card);}
+.section-head{padding:16px 20px 4px;font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.9px;}
+.btn-primary{flex:1;background:var(--blue);color:var(--white);border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-secondary{flex:1;background:var(--grey-bg);color:var(--dark);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;}
+.action-row{display:flex;gap:10px;padding:0 16px;margin-top:8px;}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.chip-blue{background:var(--blue-light);color:var(--blue);}
+.chip-green{background:var(--green-light);color:var(--green);}
+.chip-amber{background:var(--amber-light);color:var(--amber);}
+.chip-purple{background:var(--purple-light);color:var(--purple);}
+.chip-teal{background:var(--teal-light);color:var(--teal);}
+.nav-bar{background:var(--white);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 20px;flex-shrink:0;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--light);cursor:pointer;padding:4px 12px;border-radius:8px;}
+.nav-item.active{color:var(--blue);}
+.nav-icon{font-size:22px;line-height:1;}
+/* Context Hub */
+.hub-header{background:linear-gradient(150deg,#0f1117 0%,#1a2340 100%);padding:20px 20px 24px;color:var(--white);}
+.hub-wordmark{font-size:13px;font-weight:800;letter-spacing:.5px;opacity:.6;margin-bottom:12px;}
+.hub-title{font-size:26px;font-weight:900;line-height:1.2;margin-bottom:6px;}
+.hub-sub{font-size:13px;opacity:.6;line-height:1.5;}
+.ctx-card{margin:10px 16px;border-radius:18px;padding:18px;cursor:pointer;box-shadow:var(--sh-raised);position:relative;overflow:hidden;transition:transform .15s;}
+.ctx-card:active{transform:scale(.98);}
+.ctx-card.child{background:linear-gradient(135deg,#2E75B6,#1a4f8c);}
+.ctx-card.family{background:var(--white);border:1.5px solid var(--border);}
+.ctx-card.caregiver{background:var(--white);border:1.5px solid var(--border);}
+.ctx-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;padding:4px 10px;border-radius:20px;margin-bottom:10px;}
+.ctx-badge.active-b{background:rgba(255,255,255,.2);color:rgba(255,255,255,.9);}
+.ctx-badge.add-b{background:var(--grey-bg);color:var(--mid);}
+.ctx-icon{font-size:32px;margin-bottom:8px;display:block;}
+.ctx-title{font-size:18px;font-weight:800;margin-bottom:4px;}
+.ctx-title.white{color:var(--white);}
+.ctx-title.dark{color:var(--dark);}
+.ctx-desc{font-size:12px;line-height:1.5;margin-bottom:12px;}
+.ctx-desc.white{color:rgba(255,255,255,.7);}
+.ctx-desc.dark{color:var(--mid);}
+.ctx-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.ctx-stat{font-size:12px;font-weight:700;}
+.ctx-stat.white{color:rgba(255,255,255,.9);}
+.ctx-stat.dark{color:var(--dark);}
+.ctx-stat-label{font-size:10px;opacity:.6;}
+.ctx-cta{width:100%;border:none;border-radius:11px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;}
+.ctx-cta.open{background:rgba(255,255,255,.15);color:var(--white);}
+.ctx-cta.add{background:var(--blue);color:var(--white);}
+/* Onboarding */
+.onb-hero{padding:28px 24px 20px;background:var(--white);}
+.onb-icon{font-size:44px;margin-bottom:12px;}
+.onb-title{font-size:22px;font-weight:900;color:var(--dark);line-height:1.2;margin-bottom:6px;}
+.onb-sub{font-size:13px;color:var(--mid);line-height:1.6;}
+.onb-step-row{display:flex;gap:6px;padding:0 24px;margin:16px 0 8px;}
+.onb-step{flex:1;height:4px;border-radius:2px;background:var(--border);}
+.onb-step.done{background:var(--purple);}
+.onb-step.active{background:rgba(123,94,167,.4);}
+.onb-card{background:var(--white);border-radius:18px;padding:20px;margin:8px 16px;box-shadow:var(--sh-card);}
+.onb-q{font-size:16px;font-weight:700;color:var(--dark);margin-bottom:14px;line-height:1.4;}
+.onb-opt{border:1.5px solid var(--border);border-radius:12px;padding:13px 16px;font-size:13px;color:var(--dark);cursor:pointer;margin-bottom:9px;display:flex;align-items:center;gap:10px;transition:all .15s;}
+.onb-opt:hover,.onb-opt.sel{border-color:var(--purple);background:var(--purple-light);color:var(--purple);font-weight:600;}
+.onb-opt-em{font-size:20px;}
+.onb-label{font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.7px;margin:0 0 10px;}
+.onb-result{text-align:center;padding:8px 0;}
+.onb-result-icon{font-size:48px;margin-bottom:12px;}
+.onb-result-title{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:8px;}
+.onb-result-sub{font-size:13px;color:var(--mid);line-height:1.6;margin-bottom:20px;}
+.config-pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px;}
+.config-pill{background:var(--purple-light);color:var(--purple);font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;}
+/* Dashboard shared */
+.hero-cr{background:linear-gradient(135deg,#2E75B6,#1a4f8c);padding:20px 20px 18px;color:var(--white);}
+.hero-ctx-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px;}
+.hero-greeting{font-size:13px;opacity:.75;margin-bottom:2px;}
+.hero-name{font-size:22px;font-weight:900;margin-bottom:8px;}
+.hero-stage{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 13px;font-size:12px;font-weight:600;}
+.fin-bar-labels,.fin-bar-amounts{display:flex;justify-content:space-between;}
+.fin-bar-label{font-size:11px;font-weight:700;}
+.fin-bar{height:22px;border-radius:11px;overflow:hidden;display:flex;margin:6px 0;box-shadow:inset 0 1px 3px rgba(0,0,0,.1);}
+.fin-bar-seg{height:100%;}
+.fin-bar-amount{font-size:12px;font-weight:700;}
+.drill-link{text-align:right;margin-top:8px;font-size:12px;color:var(--blue);font-weight:700;cursor:pointer;}
+.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-top:4px;}
+.status-pill{background:var(--white);border-radius:12px;padding:12px 14px;box-shadow:var(--sh-card);}
+.pill-label{font-size:10px;color:var(--light);font-weight:700;text-transform:uppercase;letter-spacing:.6px;}
+.pill-value{font-size:16px;font-weight:900;color:var(--dark);margin:3px 0;}
+.pill-value.green{color:var(--green);}
+.pill-value.amber{color:var(--amber);}
+.pill-value.red{color:var(--red);}
+.pill-sub{font-size:10px;color:var(--mid);}
+.alert-banner{background:var(--amber-light);border-radius:14px;padding:12px 14px;margin:4px 16px;display:flex;align-items:center;gap:10px;border:1px solid rgba(237,125,49,.3);cursor:pointer;}
+.alert-text{font-size:12px;color:var(--dark);flex:1;line-height:1.5;}
+.alert-text strong{display:block;font-size:13px;margin-bottom:1px;}
+.cg-scheme-row{display:flex;flex-direction:column;gap:8px;padding:0 16px;margin-top:4px;}
+.cg-scheme{background:var(--white);border-radius:14px;padding:14px;box-shadow:var(--sh-card);display:flex;align-items:center;gap:12px;}
+.cg-scheme-icon{font-size:24px;flex-shrink:0;}
+.cg-scheme-body{flex:1;}
+.cg-scheme-title{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:2px;}
+.cg-scheme-desc{font-size:11px;color:var(--mid);line-height:1.4;}
+.cg-scheme-val{font-size:13px;font-weight:700;flex-shrink:0;}
+.cg-scheme-val.green{color:var(--green);}
+.cg-scheme-val.amber{color:var(--amber);}
+.cg-scheme-val.blue{color:var(--blue);}
+.cg-scheme-val.red{color:var(--red);}
+/* Family Planning */
+.hero-fp{background:linear-gradient(135deg,var(--teal),#0d5c5c);padding:20px 20px 18px;color:var(--white);}
+.decision-card{background:var(--white);border-radius:16px;margin:8px 16px;box-shadow:var(--sh-card);overflow:hidden;}
+.dc-header{padding:14px 16px 10px;border-bottom:1px solid var(--border);}
+.dc-title{font-size:15px;font-weight:800;color:var(--dark);margin-bottom:4px;}
+.dc-sub{font-size:12px;color:var(--mid);}
+.dc-body{padding:12px 16px;}
+.dc-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--border);}
+.dc-row:last-child{border-bottom:none;}
+.dc-item{font-size:13px;color:var(--dark);}
+.dc-val{font-size:13px;font-weight:700;color:var(--dark);}
+.dc-val.green{color:var(--green);}
+.dc-val.amber{color:var(--amber);}
+.impact-row{display:flex;gap:8px;padding:0 16px;margin-top:4px;}
+.impact-box{flex:1;border-radius:14px;padding:14px;}
+.impact-box.pos{background:var(--green-light);}
+.impact-box.neg{background:var(--amber-light);}
+.impact-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+.impact-box.pos .impact-label{color:var(--green);}
+.impact-box.neg .impact-label{color:var(--amber);}
+.impact-val{font-size:22px;font-weight:900;margin-bottom:4px;}
+.impact-box.pos .impact-val{color:var(--green);}
+.impact-box.neg .impact-val{color:var(--amber);}
+.impact-desc{font-size:11px;color:var(--mid);line-height:1.4;}
+/* Caregiver */
+.hero-cg{background:linear-gradient(135deg,var(--purple),#5a3d8a);padding:20px 20px 18px;color:var(--white);}
+.care-score-ring{width:86px;height:86px;border-radius:50%;background:conic-gradient(rgba(255,255,255,.9) 0% 68%,rgba(255,255,255,.12) 68% 100%);display:flex;align-items:center;justify-content:center;margin:10px auto 4px;position:relative;}
+.care-score-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--purple);}
+.care-score-val{font-size:22px;font-weight:900;color:var(--white);position:relative;z-index:1;}
+.care-score-label{font-size:11px;color:rgba(255,255,255,.6);text-align:center;margin-bottom:12px;}
+.cost-compare{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 16px;margin-top:4px;}
+.cc-cell{background:var(--white);border-radius:12px;padding:12px;box-shadow:var(--sh-card);text-align:center;}
+.cc-icon{font-size:22px;margin-bottom:6px;}
+.cc-title{font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.cc-val{font-size:15px;font-weight:900;color:var(--dark);}
+.cc-sub{font-size:10px;color:var(--light);margin-top:2px;}
+/* ── Premium / paywall ── */
+.premium-card{position:relative;overflow:hidden;}
+.premium-blur{filter:blur(5px);pointer-events:none;user-select:none;}
+.paywall-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,.97) 38%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:20px 16px 20px;}
+.pw-title{font-size:16px;font-weight:900;color:var(--dark);margin-bottom:6px;text-align:center;}
+.pw-sub{font-size:12px;color:var(--mid);line-height:1.5;text-align:center;margin-bottom:14px;}
+.pw-cta-row{display:flex;flex-direction:column;gap:8px;width:100%;}
+.pw-cta-contribute{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;width:100%;}
+.pw-cta-subscribe{background:var(--grey-bg);color:var(--dark);border:1px solid var(--border);border-radius:12px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;width:100%;}
+.cohort-chip{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:10px;}
+.p75-bar{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--blue));margin:4px 0;}
+/* ── Founding Member ── */
+.fm-badge{background:linear-gradient(135deg,#B8860B 0%,#FFD700 50%,#B8860B 100%);color:#2a1a00;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:.5px;display:inline-block;}
+.fm-hero{background:linear-gradient(150deg,#1a1205,#2d2007);padding:24px 20px 20px;color:var(--white);}
+.fm-card{background:linear-gradient(135deg,#1a1205,#2d2007);border:1px solid #B8860B;border-radius:18px;padding:18px;color:var(--white);margin:8px 16px;}
+.spots-bar-wrap{background:rgba(255,255,255,.1);border-radius:6px;height:8px;margin:10px 0;}
+.spots-bar-fill{height:100%;background:linear-gradient(90deg,#FFD700,#B8860B);border-radius:6px;}
+.fm-benefit-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08);}
+.fm-benefit-row:last-child{border-bottom:none;}
+.fm-benefit-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.fm-benefit-body{flex:1;}
+.fm-benefit-title{font-size:13px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.fm-benefit-desc{font-size:11px;color:rgba(255,255,255,.55);line-height:1.4;}
+.pricing-row{display:flex;gap:8px;padding:0 16px;margin-top:4px;}
+.price-cell{flex:1;border-radius:14px;padding:14px;text-align:center;}
+.price-cell.beta{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);}
+.price-cell.fm{background:linear-gradient(135deg,rgba(184,134,11,.25),rgba(255,215,0,.15));border:1px solid #B8860B;}
+.price-cell.full{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);}
+.price-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.45);margin-bottom:6px;}
+.price-val{font-size:20px;font-weight:900;color:var(--white);line-height:1;}
+.price-sub{font-size:9px;color:rgba(255,255,255,.4);margin-top:3px;}
+.price-cell.fm .price-label{color:#FFD700;}
+.price-cell.fm .price-val{color:#FFD700;}
+.fm-cta{width:calc(100% - 32px);margin:12px 16px 4px;background:linear-gradient(135deg,#B8860B,#FFD700);color:#2a1a00;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;display:block;}
+.fm-tc{font-size:10px;color:rgba(255,255,255,.3);text-align:center;padding:0 20px;line-height:1.6;}
+/* ── Sidebar ── */
+.sidebar{display:flex;flex-direction:column;gap:6px;align-self:flex-start;padding-top:8px;}
+.snav-section{font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin:10px 0 4px;padding-left:4px;}
+.snav-section:first-child{margin-top:0;}
+.snav-btn{font-size:12px;padding:9px 15px;border-radius:10px;cursor:pointer;white-space:nowrap;background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.08);transition:all .15s;}
+.snav-btn:hover,.snav-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:600;}
+.snav-btn.purple-btn:hover,.snav-btn.purple-btn.active{background:var(--purple);border-color:var(--purple);}
+.snav-btn.teal-btn:hover,.snav-btn.teal-btn.active{background:var(--teal);border-color:var(--teal);}
+.snav-btn.amber-btn:hover,.snav-btn.amber-btn.active{background:var(--amber);border-color:var(--amber);}
+.snav-btn.gold-btn:hover,.snav-btn.gold-btn.active{background:#B8860B;border-color:#B8860B;color:#fff;}
+.footer-note{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 18px;margin-top:20px;max-width:700px;color:rgba(255,255,255,.4);font-size:11px;line-height:1.7;text-align:center;}
+.footer-note strong{color:rgba(255,255,255,.7);}
+</style>
+</head>
+<style>
+#auth-gate{display:none;position:fixed;inset:0;z-index:9999;background:#0f1117;flex-direction:column;align-items:center;justify-content:center;padding:32px;}
+.gate-box{background:#1a1d2e;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px 28px;width:100%;max-width:340px;text-align:center;}
+.gate-logo{font-size:36px;margin-bottom:12px;}
+.gate-title{font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;}
+.gate-sub{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:24px;line-height:1.5;}
+.gate-input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:14px 16px;font-size:16px;color:#fff;text-align:center;letter-spacing:2px;outline:none;margin-bottom:12px;font-family:monospace;}
+.gate-input:focus{border-color:var(--blue);}
+.gate-btn{width:100%;background:#2E75B6;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
+.gate-btn:hover{background:#1a4f8c;}
+.gate-error{display:none;margin-top:12px;font-size:13px;color:#ED7D31;font-weight:600;}
+.gate-footer{margin-top:20px;font-size:11px;color:rgba(255,255,255,.2);}
+</style>
+<body>
+
+<div id="auth-gate">
+  <div class="gate-box">
+    <div class="gate-logo">🔒</div>
+    <div class="gate-title">Private Demo</div>
+    <div class="gate-sub">SG Family Finance · v3<br>Enter the access code to continue.</div>
+    <input id="gate-input" class="gate-input" type="password" placeholder="Access code" autocomplete="off" onkeydown="window._gateKeydown(event)">
+    <button class="gate-btn" onclick="window._checkPass()">Unlock Demo</button>
+    <div id="gate-error" class="gate-error">Incorrect code — try again</div>
+    <div class="gate-footer">Shared privately by Qiquan</div>
+  </div>
+</div>
+
+<div id="app-root">
+<div class="demo-label">SG Family Finance · Demo v3 · Updated June 2026 · iPhone 17 (393 × 852)</div>
+<div class="outer">
+
+<!-- ══ Phone shell ══ -->
+<div class="phone">
+  <div class="di"></div>
+  <div class="home-ind"></div>
+  <div class="status-bar">
+    <span class="sb-time">9:41</span>
+    <span class="sb-right">●●●●  WiFi  100%</span>
+  </div>
+
+  <div class="screen-wrap">
+
+    <!-- ════ S1 · Context Hub ════ -->
+    <div class="screen active" id="s1">
+      <div class="hub-header">
+        <div class="hub-wordmark">SG FAMILY FINANCE</div>
+        <div class="hub-title">Your Planning<br>Contexts</div>
+        <div class="hub-sub">One engine. Multiple life chapters.<br>Switch between plans as your life evolves.</div>
+      </div>
+      <div class="section-head" style="color:rgba(255,255,255,.35);padding-top:12px;background:#0f1117;margin:0;padding-bottom:8px;">Active context</div>
+      <div style="background:#0f1117;padding:0 0 4px;">
+        <div class="ctx-card child" onclick="goTo('s3b')">
+          <div class="ctx-badge active-b">● Active</div>
+          <span class="ctx-icon">🍼</span>
+          <div class="ctx-title white">Child Raising Planning</div>
+          <div class="ctx-desc white">Pregnancy through early adulthood. Singapore grants, CPF mechanisms, education pathways.</div>
+          <div class="ctx-meta">
+            <div><div class="ctx-stat white">Month 4</div><div class="ctx-stat-label" style="color:rgba(255,255,255,.5);">Infant Care</div></div>
+            <div><div class="ctx-stat white">$11,840</div><div class="ctx-stat-label" style="color:rgba(255,255,255,.5);">Spent to date</div></div>
+            <div><div class="ctx-stat white">$94,000</div><div class="ctx-stat-label" style="color:rgba(255,255,255,.5);">Est. to age 18</div></div>
+          </div>
+          <button class="ctx-cta open" onclick="event.stopPropagation();goTo('s3b')">Open Dashboard →</button>
+        </div>
+      </div>
+      <div class="section-head">Add a planning context</div>
+      <div class="ctx-card family" onclick="goTo('s2')">
+        <div class="ctx-badge add-b">+ Add</div>
+        <span class="ctx-icon">🏠</span>
+        <div class="ctx-title dark">Family Planning</div>
+        <div class="ctx-desc dark">HDB purchase timing, CPF housing, household income planning, and decisions around growing your family.</div>
+        <div class="ctx-meta">
+          <span class="chip chip-teal">HDB grants</span>
+          <span class="chip chip-blue">CPF housing</span>
+          <span class="chip chip-green">Income model</span>
+        </div>
+        <button class="ctx-cta add" onclick="event.stopPropagation();goTo('s2')">Set up Family Planning</button>
+      </div>
+      <div class="ctx-card caregiver" onclick="goTo('s2b')">
+        <div class="ctx-badge add-b">+ Add</div>
+        <span class="ctx-icon">🧓</span>
+        <div class="ctx-title dark">Caregiver Planning</div>
+        <div class="ctx-desc dark">Eldercare costs, caregiver CPF leave, MSF support schemes, and long-term care insurance for ageing parents.</div>
+        <div class="ctx-meta">
+          <span class="chip chip-purple">MSF schemes</span>
+          <span class="chip chip-blue">Caregiver CPF</span>
+          <span class="chip chip-amber">LTCI</span>
+        </div>
+        <button class="ctx-cta add" style="background:var(--purple);" onclick="event.stopPropagation();goTo('s2b')">Set up Caregiver Planning</button>
+      </div>
+      <div style="height:16px;"></div>
+    </div><!-- /s1 -->
+
+
+    <!-- ════ S2 · Onboarding — Family Planning ════ -->
+    <div class="screen" id="s2">
+      <div class="app-hdr">
+        <div class="back" onclick="goTo('s1')">Back</div>
+        <span class="screen-tag">Onboarding</span>
+      </div>
+      <div class="onb-hero">
+        <div class="onb-icon">🏠</div>
+        <div class="onb-title">Set up Family Planning</div>
+        <div class="onb-sub">3 quick questions — the engine personalises schemes, projections, and decision prompts to your situation.</div>
+      </div>
+      <div class="onb-step-row">
+        <div class="onb-step done" id="fp-step-1"></div>
+        <div class="onb-step active" id="fp-step-2"></div>
+        <div class="onb-step" id="fp-step-3"></div>
+      </div>
+      <div class="onb-card" id="fp-q1">
+        <div class="onb-label">Step 1 of 3</div>
+        <div class="onb-q">What's your household's current monthly income?</div>
+        <div class="onb-opt" onclick="fpNext(2,this)"><span class="onb-opt-em">💼</span>Under $3,000</div>
+        <div class="onb-opt" onclick="fpNext(2,this)"><span class="onb-opt-em">💼</span>$3,000 – $6,000</div>
+        <div class="onb-opt" onclick="fpNext(2,this)"><span class="onb-opt-em">💼</span>$6,000 – $10,000</div>
+        <div class="onb-opt" onclick="fpNext(2,this)"><span class="onb-opt-em">💼</span>Above $10,000</div>
+      </div>
+      <div class="onb-card" id="fp-q2" style="display:none;">
+        <div class="onb-label">Step 2 of 3</div>
+        <div class="onb-q">Do you currently own an HDB flat or are you planning to buy?</div>
+        <div class="onb-opt" onclick="fpNext(3,this)"><span class="onb-opt-em">🏠</span>Own an HDB flat</div>
+        <div class="onb-opt" onclick="fpNext(3,this)"><span class="onb-opt-em">🔍</span>Planning to buy — within 2 years</div>
+        <div class="onb-opt" onclick="fpNext(3,this)"><span class="onb-opt-em">🕐</span>Planning to buy — 2–5 years</div>
+        <div class="onb-opt" onclick="fpNext(3,this)"><span class="onb-opt-em">🤷</span>Not sure yet</div>
+      </div>
+      <div class="onb-card" id="fp-q3" style="display:none;">
+        <div class="onb-label">Step 3 of 3</div>
+        <div class="onb-q">Are you planning to have (more) children?</div>
+        <div class="onb-opt" onclick="fpDone(this)"><span class="onb-opt-em">👶</span>Yes — planning first child</div>
+        <div class="onb-opt" onclick="fpDone(this)"><span class="onb-opt-em">👨‍👩‍👧</span>Yes — planning a second or more</div>
+        <div class="onb-opt" onclick="fpDone(this)"><span class="onb-opt-em">✅</span>Family is complete</div>
+        <div class="onb-opt" onclick="fpDone(this)"><span class="onb-opt-em">🤔</span>Undecided</div>
+      </div>
+      <div class="onb-card" id="fp-result" style="display:none;">
+        <div class="onb-result">
+          <div class="onb-result-icon">✅</div>
+          <div class="onb-result-title">Family Planning Ready</div>
+          <div class="onb-result-sub">Engine configured for your household. Schemes, projections and decision prompts are now personalised.</div>
+          <div class="config-pills">
+            <span class="config-pill" style="background:var(--teal-light);color:var(--teal);">EHG Grant loaded</span>
+            <span class="config-pill" style="background:var(--teal-light);color:var(--teal);">CPF OA housing model</span>
+            <span class="config-pill" style="background:var(--teal-light);color:var(--teal);">Income projection</span>
+            <span class="config-pill">Child cost overlap</span>
+          </div>
+        </div>
+        <div class="action-row" style="padding:0;margin-top:4px;">
+          <button class="btn-secondary" onclick="goTo('s1')">Back to Hub</button>
+          <button class="btn-primary" style="background:var(--teal);" onclick="goTo('s4')">Open Dashboard →</button>
+        </div>
+      </div>
+      <div style="height:20px;"></div>
+    </div><!-- /s2 -->
+
+
+    <!-- ════ S2b · Onboarding — Caregiver Planning ════ -->
+    <div class="screen" id="s2b">
+      <div class="app-hdr">
+        <div class="back" onclick="goTo('s1')">Back</div>
+        <span class="screen-tag" style="background:var(--purple-light);color:var(--purple);">Onboarding</span>
+      </div>
+      <div class="onb-hero">
+        <div class="onb-icon">🧓</div>
+        <div class="onb-title">Set up Caregiver Planning</div>
+        <div class="onb-sub">3 quick questions — the engine loads the right MSF schemes, CPF rules, and eldercare cost benchmarks for you.</div>
+      </div>
+      <div class="onb-step-row">
+        <div class="onb-step done" style="background:var(--purple);" id="cg-step-1"></div>
+        <div class="onb-step active" style="background:rgba(123,94,167,.35);" id="cg-step-2"></div>
+        <div class="onb-step" id="cg-step-3"></div>
+      </div>
+      <div class="onb-card" id="cg-q1">
+        <div class="onb-label">Step 1 of 3</div>
+        <div class="onb-q">Who are you planning for?</div>
+        <div class="onb-opt" onclick="cgNext(2,this)"><span class="onb-opt-em">👨</span>One parent</div>
+        <div class="onb-opt" onclick="cgNext(2,this)"><span class="onb-opt-em">👨‍👩</span>Both parents</div>
+        <div class="onb-opt" onclick="cgNext(2,this)"><span class="onb-opt-em">👴👵</span>In-laws (or partner's parents)</div>
+        <div class="onb-opt" onclick="cgNext(2,this)"><span class="onb-opt-em">🏠</span>Multiple — mixed household</div>
+      </div>
+      <div class="onb-card" id="cg-q2" style="display:none;">
+        <div class="onb-label">Step 2 of 3</div>
+        <div class="onb-q">What's the current care situation?</div>
+        <div class="onb-opt" onclick="cgNext(3,this)"><span class="onb-opt-em">🏠</span>Living with us — informal care</div>
+        <div class="onb-opt" onclick="cgNext(3,this)"><span class="onb-opt-em">🏥</span>Exploring care facility options</div>
+        <div class="onb-opt" onclick="cgNext(3,this)"><span class="onb-opt-em">📋</span>Already in a care programme</div>
+        <div class="onb-opt" onclick="cgNext(3,this)"><span class="onb-opt-em">🔮</span>Planning ahead — not yet needed</div>
+      </div>
+      <div class="onb-card" id="cg-q3" style="display:none;">
+        <div class="onb-label">Step 3 of 3</div>
+        <div class="onb-q">Are you currently employed full-time?</div>
+        <div class="onb-sub" style="font-size:12px;color:var(--mid);margin-bottom:14px;line-height:1.5;">Affects caregiver leave eligibility and CPF contribution models.</div>
+        <div class="onb-opt" onclick="cgDone(this)"><span class="onb-opt-em">✅</span>Yes — full-time employed</div>
+        <div class="onb-opt" onclick="cgDone(this)"><span class="onb-opt-em">🕐</span>Part-time or freelance</div>
+        <div class="onb-opt" onclick="cgDone(this)"><span class="onb-opt-em">🏠</span>Full-time caregiver (not employed)</div>
+      </div>
+      <div class="onb-card" id="cg-result" style="display:none;">
+        <div class="onb-result">
+          <div class="onb-result-icon">✅</div>
+          <div class="onb-result-title">Caregiver Planning Ready</div>
+          <div class="onb-result-sub">Engine configured. MSF schemes, caregiver leave rules, and eldercare benchmarks are now loaded for your situation.</div>
+          <div class="config-pills">
+            <span class="config-pill">MSF CHAS Blue loaded</span>
+            <span class="config-pill">Caregiver Training Grant</span>
+            <span class="config-pill">IDAPE eligibility</span>
+            <span class="config-pill">LTCI model</span>
+          </div>
+        </div>
+        <div class="action-row" style="padding:0;margin-top:4px;">
+          <button class="btn-secondary" onclick="goTo('s1')">Back to Hub</button>
+          <button class="btn-primary" style="background:var(--purple);" onclick="goTo('s5')">Open Dashboard →</button>
+        </div>
+      </div>
+      <div style="height:20px;"></div>
+    </div><!-- /s2b -->
+
+
+    <!-- ════ S3 · Newborn Dashboard ════ -->
+    <div class="screen" id="s3">
+      <div class="hero-cr">
+        <div class="hero-ctx-pill">👶 Child Raising Planning</div>
+        <div class="hero-greeting">Good morning, Qiquan 👋</div>
+        <div class="hero-name">Week 6 · Newborn Stage</div>
+        <div class="hero-stage">🟠 Financial Check-In Due</div>
+      </div>
+      <div class="card" style="margin-top:12px;">
+        <div class="pill-label" style="margin-bottom:10px;">Financial Overview — Newborn Stage</div>
+        <div class="fin-bar-labels">
+          <span class="fin-bar-label" style="color:#1a4f8c;">Spent</span>
+          <span class="fin-bar-label" style="color:var(--amber);">Upcoming</span>
+          <span class="fin-bar-label" style="color:var(--mid);">Future Est.</span>
+        </div>
+        <div class="fin-bar">
+          <div class="fin-bar-seg" style="width:30%;background:#2E75B6;"></div>
+          <div class="fin-bar-seg" style="width:22%;background:var(--amber);"></div>
+          <div class="fin-bar-seg" style="width:48%;background:#D0DCE8;"></div>
+        </div>
+        <div class="fin-bar-amounts">
+          <span class="fin-bar-amount" style="color:#2E75B6;">$8,420</span>
+          <span class="fin-bar-amount" style="color:var(--amber);">$6,200</span>
+          <span class="fin-bar-amount" style="color:var(--mid);">~$13,500</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);">
+          <span style="font-size:10px;color:var(--light);">│ Birth</span>
+          <span style="font-size:10px;color:var(--blue);font-weight:700;">│ Wk 6 ●</span>
+          <span style="font-size:10px;color:var(--light);">│ Mth 3</span>
+          <span style="font-size:10px;color:var(--light);">│ Stage 3</span>
+        </div>
+        <div class="drill-link">View breakdown →</div>
+      </div>
+      <div class="alert-banner">
+        <div style="font-size:20px;">🟠</div>
+        <div class="alert-text"><strong>Week 6 Financial Check-In</strong>3-card review — cash flow, food costs, grants status</div>
+        <div style="color:var(--amber);font-size:18px;">›</div>
+      </div>
+      <div class="status-grid">
+        <div class="status-pill"><div class="pill-label">CDA Balance</div><div class="pill-value green">$3,000</div><div class="pill-sub">Co-match: $500 used</div></div>
+        <div class="status-pill"><div class="pill-label">Hospital Bill</div><div class="pill-value amber">$720</div><div class="pill-sub">Medisave saved $1,500</div></div>
+        <div class="status-pill"><div class="pill-label">Baby Bonus</div><div class="pill-value green">$3,000</div><div class="pill-sub">1st instalment ✓</div></div>
+        <div class="status-pill"><div class="pill-label">Confinement</div><div class="pill-value">Centre</div><div class="pill-sub">28 days · $3,800</div></div>
+      </div>
+      <div class="alert-banner" style="background:var(--green-light);border-color:rgba(58,158,111,.3);" onclick="goTo('s3-onb')">
+        <div style="font-size:20px;">🍼</div>
+        <div class="alert-text"><strong style="color:var(--green);">Infant Care stage starts in ~6 weeks</strong>Set up Stage 3 — get your subsidy estimate and CDA plan ready</div>
+        <div style="color:var(--green);font-size:18px;">›</div>
+      </div>
+      <div style="flex:1;"></div>
+      <div class="nav-bar">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item"><div class="nav-icon">💰</div>Costs</div>
+        <div class="nav-item"><div class="nav-icon">🗺</div>Journey</div>
+        <div class="nav-item"><div class="nav-icon">🎁</div>Grants</div>
+        <div class="nav-item" onclick="goTo('s1')"><div class="nav-icon">⊞</div>Contexts</div>
+      </div>
+    </div><!-- /s3 -->
+
+
+    <!-- ════ S3-ONB · Stage 3 Setup ════ -->
+    <div class="screen" id="s3-onb">
+      <div class="app-hdr">
+        <div class="back" onclick="goTo('s3')">Back</div>
+        <span class="screen-tag" style="background:var(--green-light);color:var(--green);">Stage 3 Setup</span>
+      </div>
+      <div class="onb-hero" style="background:linear-gradient(135deg,var(--green) 0%,#2a7a55 100%);">
+        <div class="onb-icon">🍼</div>
+        <div class="onb-title" style="color:var(--white);">Infant Care Setup</div>
+        <div class="onb-sub" style="color:rgba(255,255,255,.75);">5 quick questions — the engine calculates your ECDA subsidy, CDA headroom, and monthly out-of-pocket cost.</div>
+      </div>
+      <div class="onb-step-row">
+        <div class="onb-step done" style="background:var(--green);" id="ic-step-1"></div>
+        <div class="onb-step active" style="background:rgba(58,158,111,.35);" id="ic-step-2"></div>
+        <div class="onb-step" id="ic-step-3"></div>
+        <div class="onb-step" id="ic-step-4"></div>
+        <div class="onb-step" id="ic-step-5"></div>
+      </div>
+      <div class="onb-card" id="ic-q1">
+        <div class="onb-label">Step 1 of 5</div>
+        <div class="onb-q">What's your infant care arrangement?</div>
+        <div class="onb-opt" onclick="icNext(2,this)"><span class="onb-opt-em">🏫</span>Anchor/Partner operator centre</div>
+        <div class="onb-opt" onclick="icNext(2,this)"><span class="onb-opt-em">🏢</span>Private centre</div>
+        <div class="onb-opt" onclick="icNext(2,this)"><span class="onb-opt-em">👪</span>Family member (grandparent/helper)</div>
+        <div class="onb-opt" onclick="icNext(2,this)"><span class="onb-opt-em">🔍</span>Not enrolled yet — planning ahead</div>
+      </div>
+      <div class="onb-card" id="ic-q2" style="display:none;">
+        <div class="onb-label">Step 2 of 5</div>
+        <div class="onb-q">What is the monthly fee at your infant care centre?</div>
+        <div class="onb-opt" onclick="icNext(3,this)"><span class="onb-opt-em">💰</span>Under $1,000/month</div>
+        <div class="onb-opt" onclick="icNext(3,this)"><span class="onb-opt-em">💰</span>$1,000 – $1,200/month (at or near fee cap)</div>
+        <div class="onb-opt" onclick="icNext(3,this)"><span class="onb-opt-em">💰</span>$1,200 – $1,800/month</div>
+        <div class="onb-opt" onclick="icNext(3,this)"><span class="onb-opt-em">💰</span>Above $1,800/month</div>
+      </div>
+      <div class="onb-card" id="ic-q3" style="display:none;">
+        <div class="onb-label">Step 3 of 5</div>
+        <div class="onb-q">Are you currently working, and what's your household income?</div>
+        <div class="onb-sub" style="font-size:12px;color:var(--mid);margin-bottom:14px;line-height:1.5;">This determines your ECDA Additional Childcare Subsidy tier.</div>
+        <div class="onb-opt" onclick="icNext(4,this)"><span class="onb-opt-em">💼</span>Working · Household income ≤ $3,000/mth</div>
+        <div class="onb-opt" onclick="icNext(4,this)"><span class="onb-opt-em">💼</span>Working · $3,000 – $9,000/mth</div>
+        <div class="onb-opt" onclick="icNext(4,this)"><span class="onb-opt-em">💼</span>Working · Above $9,000/mth</div>
+        <div class="onb-opt" onclick="icNext(4,this)"><span class="onb-opt-em">🏠</span>Not working / full-time caregiver</div>
+      </div>
+      <div class="onb-card" id="ic-q4" style="display:none;">
+        <div class="onb-label">Step 4 of 5</div>
+        <div class="onb-q">Have you opened a Child Development Account (CDA)?</div>
+        <div class="onb-opt" onclick="icNext(5,this)"><span class="onb-opt-em">✅</span>Yes — CDA is open (DBS/POSB, OCBC, or UOB)</div>
+        <div class="onb-opt" onclick="icNext(5,this)"><span class="onb-opt-em">📋</span>Not yet — I'll open one now</div>
+        <div class="onb-opt" onclick="icNext(5,this)"><span class="onb-opt-em">🤔</span>Not sure</div>
+      </div>
+      <div class="onb-card" id="ic-q5" style="display:none;">
+        <div class="onb-label">Step 5 of 5</div>
+        <div class="onb-q">Does your child have an Integrated Shield Plan (IP) on top of MediShield Life?</div>
+        <div class="onb-opt" onclick="icDone(this)"><span class="onb-opt-em">🛡</span>Yes — IP is in place</div>
+        <div class="onb-opt" onclick="icDone(this)"><span class="onb-opt-em">❌</span>No — MediShield Life only</div>
+        <div class="onb-opt" onclick="icDone(this)"><span class="onb-opt-em">🤔</span>Not sure</div>
+      </div>
+      <div class="onb-card" id="ic-result" style="display:none;">
+        <div class="onb-result">
+          <div class="onb-result-icon">✅</div>
+          <div class="onb-result-title">Stage 3 Configured</div>
+          <div class="onb-result-sub">ECDA subsidy, CDA co-matching, vaccination schedule, and Financial Bar are now set for Infant Care.</div>
+          <div class="config-pills">
+            <span class="config-pill" style="background:var(--green-light);color:var(--green);">ECDA subsidy loaded</span>
+            <span class="config-pill" style="background:var(--green-light);color:var(--green);">CDA co-match tracked</span>
+            <span class="config-pill" style="background:var(--green-light);color:var(--green);">Vaccination schedule</span>
+            <span class="config-pill">MediShield Life</span>
+          </div>
+        </div>
+        <div class="action-row" style="padding:0;margin-top:4px;">
+          <button class="btn-secondary" onclick="goTo('s3')">Back to Newborn</button>
+          <button class="btn-primary" style="background:var(--green);" onclick="goTo('s3b')">Open Infant Care →</button>
+        </div>
+      </div>
+      <div style="height:20px;"></div>
+    </div><!-- /s3-onb -->
+
+
+    <!-- ════ S3B · Infant Care Dashboard ════ -->
+    <div class="screen" id="s3b">
+      <div class="hero-cr" style="background:linear-gradient(135deg,var(--green) 0%,#1d6b47 100%);">
+        <div class="hero-ctx-pill">👶 Child Raising Planning</div>
+        <div class="hero-greeting">Good morning, Qiquan 👋</div>
+        <div class="hero-name">Month 4 · Infant Care Stage</div>
+        <div class="hero-stage" style="background:rgba(255,255,255,.2);">🟢 On Track</div>
+      </div>
+      <div class="card" style="margin-top:12px;">
+        <div class="pill-label" style="margin-bottom:10px;">Financial Overview — Infant Care Stage</div>
+        <div class="fin-bar-labels">
+          <span class="fin-bar-label" style="color:#1a4f8c;">Spent</span>
+          <span class="fin-bar-label" style="color:var(--amber);">Upcoming · 3 mths</span>
+          <span class="fin-bar-label" style="color:var(--mid);">To Stage 4</span>
+        </div>
+        <div class="fin-bar">
+          <div class="fin-bar-seg" style="width:18%;background:#2E75B6;"></div>
+          <div class="fin-bar-seg" style="width:20%;background:var(--amber);"></div>
+          <div class="fin-bar-seg" style="width:62%;background:#D0DCE8;"></div>
+        </div>
+        <div class="fin-bar-amounts">
+          <span class="fin-bar-amount" style="color:#2E75B6;">$1,840</span>
+          <span class="fin-bar-amount" style="color:var(--amber);">$2,040</span>
+          <span class="fin-bar-amount" style="color:var(--mid);">~$7,200</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);">
+          <span style="font-size:10px;color:var(--light);">│ Mth 3</span>
+          <span style="font-size:10px;color:var(--green);font-weight:700;">│ Mth 4 ●</span>
+          <span style="font-size:10px;color:var(--light);">│ Mth 9</span>
+          <span style="font-size:10px;color:var(--light);">│ Mth 18</span>
+        </div>
+        <div style="margin-top:8px;padding:8px 10px;background:var(--green-light);border-radius:8px;font-size:11px;color:var(--green);font-weight:600;">
+          💡 Net out-of-pocket: ~$680/month after ECDA subsidy ($600 basic + $360 ACS)
+        </div>
+        <div class="drill-link">View breakdown →</div>
+      </div>
+      <!-- 18-month subsidy step-down warning -->
+      <div class="alert-banner" style="background:#FFF3CD;border-color:rgba(184,134,11,.35);" onclick="goTo('s3c')">
+        <div style="font-size:20px;">⚠️</div>
+        <div class="alert-text">
+          <strong style="color:#B8860B;">Planning ahead: Month 18 subsidy step-down</strong>
+          Basic Subsidy drops S$600→S$300 when moving to childcare. Net cost rises ~S$260/month.
+        </div>
+        <div style="color:#B8860B;font-size:18px;">›</div>
+      </div>
+      <div class="alert-banner" style="background:var(--green-light);border-color:rgba(58,158,111,.3);">
+        <div style="font-size:20px;">💳</div>
+        <div class="alert-text"><strong style="color:var(--green);">CDA top-up opportunity</strong>$2,500 co-matching headroom remaining. Top up now to get $1 government match per $1.</div>
+        <div style="color:var(--green);font-size:18px;">›</div>
+      </div>
+      <div class="status-grid">
+        <div class="status-pill"><div class="pill-label">ECDA Subsidy</div><div class="pill-value green">$960/mth</div><div class="pill-sub">Basic $600 + ACS $360</div></div>
+        <div class="status-pill"><div class="pill-label">CDA Co-match</div><div class="pill-value amber">$500 / $3,000</div><div class="pill-sub">$2,500 headroom left</div></div>
+        <div class="status-pill"><div class="pill-label">MediShield Life</div><div class="pill-value green">Active</div><div class="pill-sub">~$200/yr premium</div></div>
+        <div class="status-pill"><div class="pill-label">Next vaccine</div><div class="pill-value">6 months</div><div class="pill-sub">PCV · free at polyclinic</div></div>
+      </div>
+      <div class="section-head">Active Schemes</div>
+      <div class="cg-scheme-row">
+        <div class="cg-scheme">
+          <div class="cg-scheme-icon">🏫</div>
+          <div class="cg-scheme-body"><div class="cg-scheme-title">ECDA Basic Childcare Subsidy</div><div class="cg-scheme-desc">Working parent, SC child · Infant Care rate</div></div>
+          <div class="cg-scheme-val green">$600/mth</div>
+        </div>
+        <div class="cg-scheme">
+          <div class="cg-scheme-icon">➕</div>
+          <div class="cg-scheme-body"><div class="cg-scheme-title">Additional Childcare Subsidy (ACS)</div><div class="cg-scheme-desc">HHI $6,000–$9,000 bracket</div></div>
+          <div class="cg-scheme-val green">$360/mth</div>
+        </div>
+        <div class="cg-scheme">
+          <div class="cg-scheme-icon">💳</div>
+          <div class="cg-scheme-body"><div class="cg-scheme-title">CDA Co-Matching (1st child)</div><div class="cg-scheme-desc">Dollar-for-dollar up to $3,000 cap</div></div>
+          <div class="cg-scheme-val amber">$2,500 left</div>
+        </div>
+      </div>
+      <!-- Risk Engine teaser -->
+      <div class="card premium-card" style="margin-top:8px;margin-bottom:8px;cursor:pointer;" onclick="goTo('s-premium')">
+        <div class="premium-blur">
+          <div style="font-size:12px;font-weight:700;color:var(--mid);margin-bottom:8px;">📊 What parents at Month 4 are spending</div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--light);margin-bottom:4px;"><span>Monthly childcare (net)</span><span style="color:var(--dark);font-weight:700;">p25–p75</span></div>
+          <div class="p75-bar" style="width:70%;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-top:2px;"><span style="color:var(--green);">$520</span><span style="color:var(--blue);">$840</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--light);margin:8px 0 4px;"><span>Monthly medical</span><span style="color:var(--dark);font-weight:700;">p25–p75</span></div>
+          <div class="p75-bar" style="width:45%;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-top:2px;"><span style="color:var(--green);">$80</span><span style="color:var(--blue);">$260</span></div>
+        </div>
+        <div class="paywall-overlay">
+          <div class="cohort-chip">👥 68 parents · cohort ≥60 ✓</div>
+          <div class="pw-title">Statistical Risk Reference</div>
+          <div class="pw-sub">See what parents at this stage are actually spending — p25 to p75 benchmarks from the contributor pool.</div>
+          <div class="pw-cta-row">
+            <button class="pw-cta-contribute" onclick="event.stopPropagation();goTo('s-premium')">Contribute data → 90-day access</button>
+            <button class="pw-cta-subscribe" onclick="event.stopPropagation();goTo('s-founding')">Subscribe · S$5.99/month</button>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;"></div>
+      <div class="nav-bar">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item"><div class="nav-icon">💰</div>Costs</div>
+        <div class="nav-item"><div class="nav-icon">🗺</div>Journey</div>
+        <div class="nav-item"><div class="nav-icon">🎁</div>Grants</div>
+        <div class="nav-item" onclick="goTo('s1')"><div class="nav-icon">⊞</div>Contexts</div>
+      </div>
+    </div><!-- /s3b -->
+
+
+    <!-- ════ S3C · Stage 4 Toddler Dashboard (NEW) ════ -->
+    <div class="screen" id="s3c">
+      <div class="hero-cr" style="background:linear-gradient(135deg,#c45a00,#8b3a00);">
+        <div class="hero-ctx-pill">👶 Child Raising Planning</div>
+        <div class="hero-greeting">Good morning, Qiquan 👋</div>
+        <div class="hero-name">Month 18 · Toddler Stage</div>
+        <div class="hero-stage" style="background:rgba(255,255,255,.2);">🟠 18-Month Status Review Due</div>
+      </div>
+      <!-- Subsidy step-down CRITICAL alert -->
+      <div style="background:var(--red-light);border:1.5px solid rgba(217,79,79,.4);border-radius:14px;padding:14px 16px;margin:10px 16px 4px;display:flex;align-items:flex-start;gap:10px;">
+        <div style="font-size:22px;flex-shrink:0;">🔔</div>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--red);margin-bottom:4px;">Subsidy Step-Down · Action Required</div>
+          <div style="font-size:12px;color:var(--dark);line-height:1.6;">Basic Subsidy drops from <strong>S$600 → S$300/month</strong> as your child moves from infant care to childcare at 18 months. Net out-of-pocket rises by ~<strong>S$260/month</strong>. Confirm your new centre arrangement to update your projections.</div>
+          <div style="margin-top:8px;"><span class="chip" style="background:var(--red-light);color:var(--red);cursor:pointer;">Start 18-month review →</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:8px;">
+        <div class="pill-label" style="margin-bottom:10px;">Financial Overview — Toddler Stage</div>
+        <div class="fin-bar-labels">
+          <span class="fin-bar-label" style="color:#1a4f8c;">Spent</span>
+          <span class="fin-bar-label" style="color:var(--amber);">Upcoming · 3 mths</span>
+          <span class="fin-bar-label" style="color:var(--mid);">To Stage 5</span>
+        </div>
+        <div class="fin-bar">
+          <div class="fin-bar-seg" style="width:38%;background:#2E75B6;"></div>
+          <div class="fin-bar-seg" style="width:22%;background:var(--amber);"></div>
+          <div class="fin-bar-seg" style="width:40%;background:#D0DCE8;"></div>
+        </div>
+        <div class="fin-bar-amounts">
+          <span class="fin-bar-amount" style="color:#2E75B6;">$14,600</span>
+          <span class="fin-bar-amount" style="color:var(--amber);">$2,820</span>
+          <span class="fin-bar-amount" style="color:var(--mid);">~$8,400</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);">
+          <span style="font-size:10px;color:var(--light);">│ Mth 3</span>
+          <span style="font-size:10px;color:var(--amber);font-weight:700;">│ Mth 18 ●</span>
+          <span style="font-size:10px;color:var(--light);">│ Mth 24</span>
+          <span style="font-size:10px;color:var(--light);">│ Stage 5</span>
+        </div>
+        <div style="margin-top:8px;padding:8px 10px;background:var(--amber-light);border-radius:8px;font-size:11px;color:var(--amber);font-weight:600;">
+          ⚠️ Net out-of-pocket: ~$940/month after subsidy step-down (was $680/month in infant care)
+        </div>
+        <div class="drill-link">View breakdown →</div>
+      </div>
+      <div class="status-grid">
+        <div class="status-pill"><div class="pill-label">Basic Subsidy</div><div class="pill-value red">$300/mth</div><div class="pill-sub">↓ from $600 (infant care)</div></div>
+        <div class="status-pill"><div class="pill-label">CDA Headroom</div><div class="pill-value amber">$1,800</div><div class="pill-sub">Top up before age 12</div></div>
+        <div class="status-pill"><div class="pill-label">GPCL</div><div class="pill-value green">6 days/yr</div><div class="pill-sub">Per parent · SC child</div></div>
+        <div class="status-pill"><div class="pill-label">Next vaccines</div><div class="pill-value">Due now</div><div class="pill-sub">DTaP-IPV/Hib · MMR2</div></div>
+      </div>
+      <div class="section-head">Active Schemes</div>
+      <div class="cg-scheme-row">
+        <div class="cg-scheme" style="border-left:3px solid var(--red);">
+          <div class="cg-scheme-icon">🏫</div>
+          <div class="cg-scheme-body"><div class="cg-scheme-title">ECDA Basic Childcare Subsidy</div><div class="cg-scheme-desc">Childcare rate · was $600 (infant care)</div></div>
+          <div class="cg-scheme-val red">$300/mth</div>
+        </div>
+        <div class="cg-scheme">
+          <div class="cg-scheme-icon">➕</div>
+          <div class="cg-scheme-body"><div class="cg-scheme-title">Additional Childcare Subsidy (ACS)</div><div class="cg-scheme-desc">Means-tested · up to $467/month</div></div>
+          <div class="cg-scheme-val green">$360/mth</div>
+        </div>
+        <div class="cg-scheme">
+          <div class="cg-scheme-icon">💳</div>
+          <div class="cg-scheme-body"><div class="cg-scheme-title">CDA Co-Matching (1st child)</div><div class="cg-scheme-desc">$1,200 used · $1,800 headroom</div></div>
+          <div class="cg-scheme-val amber">$1,800 left</div>
+        </div>
+        <div class="cg-scheme">
+          <div class="cg-scheme-icon">🏖️</div>
+          <div class="cg-scheme-body"><div class="cg-scheme-title">Govt-Paid Childcare Leave (GPCL)</div><div class="cg-scheme-desc">6 days/year per working parent — independent</div></div>
+          <div class="cg-scheme-val green">Active</div>
+        </div>
+      </div>
+      <div class="section-head">18-Month Vaccination Schedule</div>
+      <div class="card" style="padding:14px 16px;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div><div style="font-size:13px;font-weight:700;color:var(--dark);">DTaP-IPV/Hib (booster)</div><div style="font-size:11px;color:var(--mid);">18 months · Polyclinic · Free</div></div>
+            <span style="font-size:11px;background:var(--red-light);color:var(--red);padding:3px 9px;border-radius:20px;font-weight:600;">Due now</span>
+          </div>
+          <div style="height:1px;background:var(--border);"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div><div style="font-size:13px;font-weight:700;color:var(--dark);">MMR (2nd dose)</div><div style="font-size:11px;color:var(--mid);">18 months · Polyclinic · Free</div></div>
+            <span style="font-size:11px;background:var(--red-light);color:var(--red);padding:3px 9px;border-radius:20px;font-weight:600;">Due now</span>
+          </div>
+          <div style="height:1px;background:var(--border);"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div><div style="font-size:13px;font-weight:700;color:var(--dark);">Varicella (2nd dose)</div><div style="font-size:11px;color:var(--mid);">18 months · Polyclinic · Free</div></div>
+            <span style="font-size:11px;background:var(--red-light);color:var(--red);padding:3px 9px;border-radius:20px;font-weight:600;">Due now</span>
+          </div>
+        </div>
+        <div class="drill-link">Full schedule →</div>
+      </div>
+      <!-- Risk Engine teaser -->
+      <div class="card premium-card" style="margin-top:8px;margin-bottom:8px;cursor:pointer;" onclick="goTo('s-premium')">
+        <div class="premium-blur">
+          <div style="font-size:12px;font-weight:700;color:var(--mid);margin-bottom:8px;">📊 What parents at Month 18 are spending</div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--light);margin-bottom:4px;"><span>Monthly childcare (net)</span><span style="color:var(--dark);font-weight:700;">p25–p75</span></div>
+          <div class="p75-bar" style="width:75%;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-top:2px;"><span style="color:var(--green);">$780</span><span style="color:var(--blue);">$1,100</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--light);margin:8px 0 4px;"><span>Ad-hoc care cost</span><span style="color:var(--dark);font-weight:700;">p25–p75</span></div>
+          <div class="p75-bar" style="width:55%;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-top:2px;"><span style="color:var(--green);">$150</span><span style="color:var(--blue);">$250</span></div>
+        </div>
+        <div class="paywall-overlay">
+          <div class="cohort-chip">👥 68 parents · cohort ≥60 ✓</div>
+          <div class="pw-title">Statistical Risk Reference</div>
+          <div class="pw-sub">Real spending benchmarks from the contributor pool — p25 to p75 at this exact stage.</div>
+          <div class="pw-cta-row">
+            <button class="pw-cta-contribute" onclick="event.stopPropagation();goTo('s-premium')">Contribute data → 90-day access</button>
+            <button class="pw-cta-subscribe" onclick="event.stopPropagation();goTo('s-founding')">Subscribe · S$5.99/month</button>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;"></div>
+      <div class="nav-bar">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item"><div class="nav-icon">💰</div>Costs</div>
+        <div class="nav-item"><div class="nav-icon">🗺</div>Journey</div>
+        <div class="nav-item"><div class="nav-icon">🎁</div>Grants</div>
+        <div class="nav-item" onclick="goTo('s1')"><div class="nav-icon">⊞</div>Contexts</div>
+      </div>
+    </div><!-- /s3c -->
+
+
+    <!-- ════ S4 · Family Planning Dashboard ════ -->
+    <div class="screen" id="s4">
+      <div class="hero-fp">
+        <div class="hero-ctx-pill" style="background:rgba(255,255,255,.15);">🏠 Family Planning</div>
+        <div class="hero-greeting">Good morning, Qiquan 👋</div>
+        <div class="hero-name" style="font-size:22px;font-weight:900;color:var(--white);margin-bottom:10px;">HDB Purchase Window</div>
+        <div style="margin-top:4px;">
+          <div style="font-size:11px;opacity:.6;margin-bottom:8px;">Planning timeline</div>
+          <div style="display:flex;align-items:center;">
+            <div style="display:flex;flex-direction:column;align-items:center;"><div style="width:10px;height:10px;border-radius:50%;background:var(--white);opacity:.9;"></div><div style="font-size:9px;opacity:.55;margin-top:3px;">2024</div></div>
+            <div style="flex:1;height:2px;background:rgba(255,255,255,.5);"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;"><div style="width:12px;height:12px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px rgba(237,125,49,.35);"></div><div style="font-size:9px;color:var(--amber);font-weight:700;margin-top:3px;">Now</div></div>
+            <div style="flex:1;height:2px;background:rgba(255,255,255,.2);"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;"><div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);"></div><div style="font-size:9px;opacity:.4;margin-top:3px;">BTO</div></div>
+            <div style="flex:1;height:2px;background:rgba(255,255,255,.2);"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;"><div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);"></div><div style="font-size:9px;opacity:.4;margin-top:3px;">Keys</div></div>
+            <div style="flex:1;height:2px;background:rgba(255,255,255,.2);"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;"><div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);"></div><div style="font-size:9px;opacity:.4;margin-top:3px;">2030</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="alert-banner" style="background:#E5F5F5;border-color:rgba(26,138,138,.3);">
+        <div style="font-size:20px;">⏰</div>
+        <div class="alert-text"><strong style="color:var(--teal);">BTO Application Window Open</strong>Tengah BTO — closes in 18 days. Check your eligibility.</div>
+        <div style="color:var(--teal);font-size:18px;">›</div>
+      </div>
+      <div class="section-head">Grant Eligibility</div>
+      <div class="decision-card">
+        <div class="dc-header"><div class="dc-title">Enhanced CPF Housing Grant (EHG)</div><div class="dc-sub">Based on: $6,500/mth household · First-time buyers</div></div>
+        <div class="dc-body">
+          <div class="dc-row"><span class="dc-item">EHG (couples)</span><span class="dc-val green">$40,000 ✓</span></div>
+          <div class="dc-row"><span class="dc-item">Family Grant</span><span class="dc-val green">$50,000 ✓</span></div>
+          <div class="dc-row"><span class="dc-item">Proximity Housing Grant</span><span class="dc-val amber">Check eligibility</span></div>
+          <div class="dc-row"><span class="dc-item">Total eligible grants</span><span class="dc-val" style="font-size:15px;">~$90,000</span></div>
+        </div>
+      </div>
+      <div class="section-head">Financial Impact Model</div>
+      <div class="impact-row">
+        <div class="impact-box pos"><div class="impact-label">CPF OA Available</div><div class="impact-val">$87K</div><div class="impact-desc">Combined CPF OA for downpayment + monthly servicing</div></div>
+        <div class="impact-box neg"><div class="impact-label">Monthly Impact</div><div class="impact-val">$1,340</div><div class="impact-desc">Est. mortgage after CPF, net of child cost overlap</div></div>
+      </div>
+      <div class="card" style="margin-top:8px;">
+        <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:8px;">⚡ Downstream planning alert</div>
+        <div style="font-size:12px;color:var(--mid);line-height:1.6;">A BTO purchase now overlaps with <strong>Infant Care Stage</strong> in your Child Raising plan. Combined monthly outflow: <strong>~$3,200</strong>. Recommend reviewing Child Raising cash buffer before committing.</div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <span class="chip chip-blue" onclick="goTo('s3b')">Switch to Child Raising →</span>
+          <span class="chip chip-teal">View combined model</span>
+        </div>
+      </div>
+      <div style="flex:1;"></div>
+      <div class="nav-bar">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item"><div class="nav-icon">📊</div>Model</div>
+        <div class="nav-item"><div class="nav-icon">🎁</div>Grants</div>
+        <div class="nav-item"><div class="nav-icon">📅</div>Timeline</div>
+        <div class="nav-item" onclick="goTo('s1')"><div class="nav-icon">⊞</div>Contexts</div>
+      </div>
+    </div><!-- /s4 -->
+
+
+    <!-- ════ S5 · Caregiver Planning Dashboard ════ -->
+    <div class="screen" id="s5">
+      <div class="hero-cg">
+        <div class="hero-ctx-pill" style="background:rgba(255,255,255,.15);">🧓 Caregiver Planning</div>
+        <div class="hero-greeting">Planning for Mum, Dad</div>
+        <div class="hero-name" style="font-size:22px;font-weight:900;color:var(--white);margin-bottom:8px;">Care Readiness</div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div>
+            <div class="care-score-ring"><span class="care-score-val">68</span></div>
+            <div class="care-score-label">Readiness score</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.6;">
+              <div style="margin-bottom:4px;">✅ CHAS Blue enrolled</div>
+              <div style="margin-bottom:4px;">✅ Caregiver Training Grant applied</div>
+              <div style="margin-bottom:4px;color:var(--amber);">⚠ LTCI not yet reviewed</div>
+              <div style="color:var(--amber);">⚠ Lasting Power of Attorney pending</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="alert-banner" style="background:var(--purple-light);border-color:rgba(123,94,167,.3);">
+        <div style="font-size:20px;">📋</div>
+        <div class="alert-text"><strong style="color:var(--purple);">Action required: LPA application</strong>Lasting Power of Attorney protects your parent's financial decisions. Free with $75 cert fee.</div>
+        <div style="color:var(--purple);font-size:18px;">›</div>
+      </div>
+      <div class="section-head">Active Schemes</div>
+      <div class="cg-scheme-row">
+        <div class="cg-scheme"><div class="cg-scheme-icon">🏥</div><div class="cg-scheme-body"><div class="cg-scheme-title">CHAS Blue (Chronic disease)</div><div class="cg-scheme-desc">GP and specialist subsidies for chronic conditions</div></div><div class="cg-scheme-val green">Active</div></div>
+        <div class="cg-scheme"><div class="cg-scheme-icon">🎓</div><div class="cg-scheme-body"><div class="cg-scheme-title">Caregiver Training Grant</div><div class="cg-scheme-desc">Up to $200/yr per care recipient for training courses</div></div><div class="cg-scheme-val blue">$400 left</div></div>
+        <div class="cg-scheme"><div class="cg-scheme-icon">💊</div><div class="cg-scheme-body"><div class="cg-scheme-title">IDAPE (Disability Allowance)</div><div class="cg-scheme-desc">Monthly allowance if parent meets disability criteria</div></div><div class="cg-scheme-val amber">Check</div></div>
+        <div class="cg-scheme"><div class="cg-scheme-icon">🛡</div><div class="cg-scheme-body"><div class="cg-scheme-title">CareShield Life</div><div class="cg-scheme-desc">Long-term disability insurance — auto-enrolled (born 1980+)</div></div><div class="cg-scheme-val green">Enrolled</div></div>
+      </div>
+      <div class="section-head">Monthly Care Cost Benchmarks</div>
+      <div class="cost-compare">
+        <div class="cc-cell"><div class="cc-icon">🏠</div><div class="cc-title">Home Care</div><div class="cc-val">$800</div><div class="cc-sub">After subsidies</div></div>
+        <div class="cc-cell"><div class="cc-icon">🌅</div><div class="cc-title">Day Care</div><div class="cc-val">$1,400</div><div class="cc-sub">After subsidies</div></div>
+        <div class="cc-cell"><div class="cc-icon">🏥</div><div class="cc-title">Nursing Home</div><div class="cc-val">$2,200</div><div class="cc-sub">B2 ward est.</div></div>
+      </div>
+      <div class="card" style="margin-top:8px;">
+        <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:8px;">⚡ Cross-context planning note</div>
+        <div style="font-size:12px;color:var(--mid);line-height:1.6;">Nursing home costs in 2–3 years may overlap with your <strong>Primary School stage</strong> in Child Raising. Recommend reviewing long-term savings buffer across both contexts.</div>
+        <div style="margin-top:10px;"><span class="chip chip-purple">View combined cashflow</span></div>
+      </div>
+      <div style="flex:1;"></div>
+      <div class="nav-bar">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item"><div class="nav-icon">📋</div>Schemes</div>
+        <div class="nav-item"><div class="nav-icon">💰</div>Costs</div>
+        <div class="nav-item"><div class="nav-icon">📅</div>Timeline</div>
+        <div class="nav-item" onclick="goTo('s1')"><div class="nav-icon">⊞</div>Contexts</div>
+      </div>
+    </div><!-- /s5 -->
+
+
+    <!-- ════ S-PREMIUM · Risk Reference Engine (NEW) ════ -->
+    <div class="screen" id="s-premium">
+      <div class="app-hdr">
+        <div class="back" onclick="goTo('s3c')">Back</div>
+        <span class="screen-tag" style="background:var(--blue-light);color:var(--blue);">Premium Feature</span>
+      </div>
+      <div style="background:linear-gradient(150deg,#0f1117,#1a2340);padding:20px 20px 18px;color:var(--white);">
+        <div style="font-size:10px;font-weight:700;opacity:.5;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;">Statistical Risk Reference Engine</div>
+        <div style="font-size:22px;font-weight:900;line-height:1.2;margin-bottom:6px;">What are parents at<br>Month 18 actually spending?</div>
+        <div style="font-size:12px;opacity:.6;line-height:1.5;">Real data from the contributor pool — p25 to p75 benchmarks. Cohort: 68 parents · ≥60 threshold met ✓</div>
+        <div style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;background:rgba(58,158,111,.2);border:1px solid rgba(58,158,111,.4);border-radius:20px;padding:4px 12px;">
+          <span style="font-size:11px;font-weight:700;color:#7fffd4;">👥 68 contributors · cohort valid</span>
+        </div>
+      </div>
+      <!-- Blurred data preview -->
+      <div class="card premium-card" style="margin-top:12px;">
+        <div class="premium-blur">
+          <div style="font-size:12px;font-weight:700;color:var(--mid);margin-bottom:12px;">Monthly Childcare Cost (net of subsidy)</div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--light);margin-bottom:3px;"><span>p25 (lower quartile)</span><span>p75 (upper quartile)</span></div>
+          <div class="p75-bar" style="width:100%;height:12px;border-radius:6px;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:900;margin-top:4px;"><span style="color:var(--green);">$780</span><span style="color:var(--blue);">$1,100</span></div>
+          <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+          <div style="font-size:12px;font-weight:700;color:var(--mid);margin-bottom:12px;">Monthly Medical &amp; Healthcare</div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--light);margin-bottom:3px;"><span>p25</span><span>p75</span></div>
+          <div class="p75-bar" style="width:60%;height:12px;border-radius:6px;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:900;margin-top:4px;"><span style="color:var(--green);">$90</span><span style="color:var(--blue);">$280</span></div>
+          <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+          <div style="font-size:12px;font-weight:700;color:var(--mid);margin-bottom:12px;">Ad-hoc Emergency Care</div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--light);margin-bottom:3px;"><span>p25</span><span>p75</span></div>
+          <div class="p75-bar" style="width:45%;height:12px;border-radius:6px;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:900;margin-top:4px;"><span style="color:var(--green);">$150</span><span style="color:var(--blue);">$250</span></div>
+        </div>
+        <div class="paywall-overlay" style="padding:24px 16px 24px;">
+          <div style="font-size:28px;margin-bottom:8px;">🔐</div>
+          <div class="pw-title" style="font-size:18px;">Unlock Real Benchmarks</div>
+          <div class="pw-sub">Contribute your own spending data and get 90 days of full access — or subscribe for ongoing access.</div>
+          <div class="pw-cta-row">
+            <button class="pw-cta-contribute">Contribute my data → 90-day access free</button>
+            <button class="pw-cta-subscribe" onclick="goTo('s-founding')">Subscribe S$5.99/month →</button>
+          </div>
+        </div>
+      </div>
+      <!-- How contribution-as-access works -->
+      <div class="card" style="margin-top:8px;">
+        <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:10px;">How contribution access works</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:18px;flex-shrink:0;">📊</div><div style="font-size:12px;color:var(--mid);line-height:1.5;"><strong style="color:var(--dark);">Submit one month of spending data</strong> — childcare costs, medical, one-off purchases. Takes 3–5 minutes.</div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:18px;flex-shrink:0;">🔓</div><div style="font-size:12px;color:var(--mid);line-height:1.5;"><strong style="color:var(--dark);">Get 90-day access</strong> to all p25/p75 benchmarks across every stage in the engine.</div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;"><div style="font-size:18px;flex-shrink:0;">🔒</div><div style="font-size:12px;color:var(--mid);line-height:1.5;"><strong style="color:var(--dark);">Data is anonymised</strong> — no personally identifiable information is ever stored. Cohort minimum: 60 contributors before any distribution is shown.</div></div>
+        </div>
+      </div>
+      <!-- Founding Member banner -->
+      <div style="background:linear-gradient(135deg,#1a1205,#2d2007);border:1px solid #B8860B;border-radius:16px;padding:16px;margin:8px 16px;cursor:pointer;" onclick="goTo('s-founding')">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <span class="fm-badge">✦ FOUNDING MEMBER</span>
+          <span style="font-size:11px;color:rgba(255,215,0,.7);font-weight:700;">27 spots left</span>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:#FFD700;margin-bottom:4px;">Lock S$2.99/month for life</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:10px;">Phase 2 Closed Beta · 50% off the S$5.99 full price. Rate locked while subscribed continuously.</div>
+        <div style="font-size:12px;color:#FFD700;font-weight:700;">See Founding Member benefits →</div>
+      </div>
+      <div style="height:16px;"></div>
+    </div><!-- /s-premium -->
+
+
+    <!-- ════ S-FOUNDING · Founding Member Offer (NEW) ════ -->
+    <div class="screen" id="s-founding">
+      <div class="fm-hero">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div class="back" style="color:rgba(255,215,0,.7);" onclick="goTo('s-premium')">Back</div>
+          <span class="fm-badge">✦ FOUNDING MEMBER</span>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,215,0,.6);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;">Phase 2 Closed Beta · 50 spots total</div>
+        <div style="font-size:26px;font-weight:900;color:var(--white);line-height:1.2;margin-bottom:8px;">Founding Member<br>Early Access</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:16px;">Be among the first 50 families to access SG Family Finance. Lock in S$2.99/month — that's 50% off the full price — for as long as you stay subscribed.</div>
+        <!-- Spots claimed bar -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:12px;font-weight:700;color:rgba(255,215,0,.8);">23 of 50 spots claimed</span>
+          <span style="font-size:11px;color:rgba(255,255,255,.35);">27 remaining</span>
+        </div>
+        <div class="spots-bar-wrap"><div class="spots-bar-fill" style="width:46%;"></div></div>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:4px;">Phase 2 Closed Beta · S$1.99/month during beta</div>
+      </div>
+
+      <!-- Pricing comparison -->
+      <div class="pricing-row" style="padding:12px 16px 0;">
+        <div class="price-cell beta"><div class="price-label">Beta price</div><div class="price-val">$1.99</div><div class="price-sub">/month · during beta</div></div>
+        <div class="price-cell fm"><div class="price-label">Founding Member</div><div class="price-val">$2.99</div><div class="price-sub">/month · locked for life</div></div>
+        <div class="price-cell full"><div class="price-label">Full launch</div><div class="price-val">$5.99</div><div class="price-sub">/month</div></div>
+      </div>
+
+      <!-- Benefits -->
+      <div class="fm-card">
+        <div style="font-size:12px;font-weight:700;color:rgba(255,215,0,.7);letter-spacing:.6px;text-transform:uppercase;margin-bottom:12px;">Founding Member Benefits</div>
+        <div class="fm-benefit-row">
+          <div class="fm-benefit-icon">✦</div>
+          <div class="fm-benefit-body"><div class="fm-benefit-title">Permanent Founding Member badge</div><div class="fm-benefit-desc">Visible in-app recognition as an early supporter — yours permanently once earned.</div></div>
+        </div>
+        <div class="fm-benefit-row">
+          <div class="fm-benefit-icon">🔒</div>
+          <div class="fm-benefit-body"><div class="fm-benefit-title">S$2.99/month rate locked for life</div><div class="fm-benefit-desc">Rate is locked while subscribed continuously. Any subscription break forfeits the rate permanently.</div></div>
+        </div>
+        <div class="fm-benefit-row">
+          <div class="fm-benefit-icon">📊</div>
+          <div class="fm-benefit-body"><div class="fm-benefit-title">Full access to Risk Reference Engine</div><div class="fm-benefit-desc">All p25/p75 benchmarks across every life stage — updated as the contributor pool grows.</div></div>
+        </div>
+        <div class="fm-benefit-row">
+          <div class="fm-benefit-icon">🏅</div>
+          <div class="fm-benefit-body"><div class="fm-benefit-title">Path to Tier 2 contributor trust</div><div class="fm-benefit-desc">Active Founding Members who contribute data and provide feedback qualify for Tier 2 weighting — your data carries more weight in the pool.</div></div>
+        </div>
+        <div class="fm-benefit-row">
+          <div class="fm-benefit-icon">⚡</div>
+          <div class="fm-benefit-body"><div class="fm-benefit-title">Early access to new stages &amp; features</div><div class="fm-benefit-desc">New life stages, decision tools, and engine updates ship to Founding Members first.</div></div>
+        </div>
+      </div>
+
+      <button class="fm-cta" onclick="goTo('s-premium')">Claim my Founding Member spot →</button>
+      <div class="fm-tc" style="margin-bottom:12px;">S$1.99/month during Phase 2 Closed Beta. Rate converts to S$2.99/month at full launch and is locked for life while subscribed continuously. Any subscription break — including one missed payment — permanently forfeits the S$2.99 rate. The Founding Member badge is permanent once earned. Powered by HitPay. Cancel anytime.</div>
+      <div style="height:16px;"></div>
+    </div><!-- /s-founding -->
+
+  </div><!-- /screen-wrap -->
+</div><!-- /phone -->
+
+
+<!-- ══ Sidebar ══ -->
+<div class="sidebar">
+  <div class="snav-section">Engine Hub</div>
+  <div class="snav-btn active" id="nb-s1" onclick="goTo('s1')">⊞ Context Hub</div>
+
+  <div class="snav-section">Onboarding Flows</div>
+  <div class="snav-btn teal-btn" id="nb-s2" onclick="goTo('s2')">🏠 Family Planning setup</div>
+  <div class="snav-btn purple-btn" id="nb-s2b" onclick="goTo('s2b')">🧓 Caregiver setup</div>
+
+  <div class="snav-section">Config A · Child Raising</div>
+  <div class="snav-btn" id="nb-s3" onclick="goTo('s3')">👶 Dashboard · Newborn (Stage 2)</div>
+  <div class="snav-btn" id="nb-s3-onb" onclick="goTo('s3-onb')" style="background:var(--green-light);color:var(--green);border-left:3px solid var(--green);">🍼 Stage 3 Setup · Infant Care</div>
+  <div class="snav-btn" id="nb-s3b" onclick="goTo('s3b')" style="background:var(--green-light);color:var(--green);border-left:3px solid var(--green);">🍼 Dashboard · Infant Care (Stage 3)</div>
+  <div class="snav-btn amber-btn" id="nb-s3c" onclick="goTo('s3c')" style="background:var(--amber-light);color:var(--amber);border-left:3px solid var(--amber);">🧒 Dashboard · Toddler (Stage 4) · NEW</div>
+
+  <div class="snav-section">Config B · Family Planning</div>
+  <div class="snav-btn teal-btn" id="nb-s4" onclick="goTo('s4')">📊 Dashboard · HDB window</div>
+
+  <div class="snav-section">Config C · Caregiver</div>
+  <div class="snav-btn purple-btn" id="nb-s5" onclick="goTo('s5')">🧓 Dashboard · Care Readiness</div>
+
+  <div class="snav-section">Premium Features · NEW</div>
+  <div class="snav-btn" id="nb-s-premium" onclick="goTo('s-premium')" style="background:var(--blue-light);color:var(--blue);border-left:3px solid var(--blue);">📊 Risk Reference Engine · paywall</div>
+  <div class="snav-btn gold-btn" id="nb-s-founding" onclick="goTo('s-founding')" style="background:var(--gold-light);color:var(--gold);border-left:3px solid var(--gold);">✦ Founding Member Offer · NEW</div>
+</div>
+
+</div><!-- /outer -->
+
+<div class="footer-note">
+  <strong>Demo v3 · Updated June 2026</strong> · New in v3: Stage 4 Toddler dashboard (S$300 subsidy step-down, GPCL 6 days/parent, 18-month vaccines), Statistical Risk Reference Engine paywall (cohort ≥60, p25/p75 benchmarks, contribution-as-access model), Founding Member offer screen (23/50 spots, S$2.99/month locked rate, HitPay).<br>
+  Password protected · Shared privately by Qiquan
+</div>
+
+<script>
+const allScreens = ['s1','s2','s2b','s3','s3-onb','s3b','s3c','s4','s5','s-premium','s-founding'];
+const allNavBtns = ['nb-s1','nb-s2','nb-s2b','nb-s3','nb-s3-onb','nb-s3b','nb-s3c','nb-s4','nb-s5','nb-s-premium','nb-s-founding'];
+
+function goTo(id) {
+  allScreens.forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.classList.remove('active');
+  });
+  const target = document.getElementById(id);
+  if (target) { target.classList.add('active'); target.scrollTop = 0; }
+
+  allNavBtns.forEach(nb => {
+    const el = document.getElementById(nb);
+    if (el) el.classList.remove('active');
+  });
+  const nbTarget = document.getElementById('nb-' + id);
+  if (nbTarget) nbTarget.classList.add('active');
+}
+
+/* Infant Care onboarding */
+let icStep = 1;
+function icNext(n, el) {
+  document.querySelectorAll('#ic-q' + icStep + ' .onb-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('ic-q' + icStep).style.display = 'none';
+    document.getElementById('ic-step-' + icStep).style.background = 'var(--green)';
+    icStep = n;
+    const next = document.getElementById('ic-q' + n);
+    if (next) { next.style.display = 'block'; const s = document.getElementById('ic-step-' + n); if (s) s.style.background = 'rgba(58,158,111,.35)'; }
+  }, 200);
+}
+function icDone(el) {
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('ic-q5').style.display = 'none';
+    document.getElementById('ic-step-5').style.background = 'var(--green)';
+    document.getElementById('ic-result').style.display = 'block';
+  }, 200);
+}
+
+/* Family Planning onboarding */
+let fpStep = 1;
+function fpNext(n, el) {
+  document.querySelectorAll('#fp-q' + fpStep + ' .onb-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('fp-q' + fpStep).style.display = 'none';
+    document.getElementById('fp-step-' + fpStep).style.background = 'var(--teal)';
+    fpStep = n;
+    const next = document.getElementById('fp-q' + n);
+    if (next) { next.style.display = 'block'; const s = document.getElementById('fp-step-' + n); if (s) s.style.background = 'rgba(26,138,138,.35)'; }
+  }, 200);
+}
+function fpDone(el) {
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('fp-q3').style.display = 'none';
+    document.getElementById('fp-step-3').style.background = 'var(--teal)';
+    document.getElementById('fp-result').style.display = 'block';
+  }, 200);
+}
+
+/* Caregiver onboarding */
+let cgStep = 1;
+function cgNext(n, el) {
+  document.querySelectorAll('#cg-q' + cgStep + ' .onb-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('cg-q' + cgStep).style.display = 'none';
+    document.getElementById('cg-step-' + cgStep).style.background = 'var(--purple)';
+    cgStep = n;
+    const next = document.getElementById('cg-q' + n);
+    if (next) { next.style.display = 'block'; const s = document.getElementById('cg-step-' + n); if (s) s.style.background = 'rgba(123,94,167,.35)'; }
+  }, 200);
+}
+function cgDone(el) {
+  el.classList.add('sel');
+  setTimeout(() => {
+    document.getElementById('cg-q3').style.display = 'none';
+    document.getElementById('cg-step-3').style.background = 'var(--purple)';
+    document.getElementById('cg-result').style.display = 'block';
+  }, 200);
+}
+</script>
+
+</div><!-- /app-root -->
+</body>
+</html>

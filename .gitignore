@@ -1,0 +1,15 @@
+# Internal research and governance docs — not for public repo
+raphael-sensei-output/
+docs/
+archive/
+prototype/
+ui-designer.skill
+ui-designer-eval-viewer.html
+
+# Binary files
+*.pptx
+*.docx
+
+# OS
+.DS_Store
+Thumbs.db

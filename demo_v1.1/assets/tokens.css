@@ -1,0 +1,134 @@
+/*
+ * Children Finance Planner — Design Tokens
+ * Demo version: v1.1  (matches PRD_ChildrenFinanceApp_v1.1)
+ * iPhone 17 target: 393 × 852 logical pixels
+ *
+ * Import this file into any screen HTML:
+ *   <link rel="stylesheet" href="../assets/tokens.css">
+ */
+
+:root {
+  /* ── Brand ─────────────────────────────────────────────── */
+  --brand-blue:     #2E75B6;   /* Primary CTA, links, bar */
+  --light-blue:     #D5E8F0;   /* Card fill, badge bg */
+  --mid-blue:       #BDD7EE;   /* Progress indicator */
+
+  /* ── Semantic / Status ──────────────────────────────────── */
+  --accent-green:   #70AD47;   /* Grants, positive values */
+  --light-green:    #E2EFDA;   /* Grant column bg, soft prompts */
+  --accent-amber:   #ED7D31;   /* Upcoming costs, alerts */
+  --light-amber:    #FCE4D6;   /* Alert banner bg */
+  --danger:         #E53E3E;   /* Overdue, errors */
+
+  /* ── Financial Bar (Spent / Upcoming / Future) ──────────── */
+  --bar-spent:      #2E75B6;   /* Deep blue */
+  --bar-upcoming:   #ED7D31;   /* Amber */
+  --bar-future:     #70AD47;   /* Green */
+
+  /* ── Neutrals ───────────────────────────────────────────── */
+  --grey-bg:        #F5F6F8;   /* Screen background */
+  --white:          #FFFFFF;   /* Card surface */
+  --dark-text:      #1F2D3D;   /* Primary text */
+  --mid-text:       #4A5568;   /* Secondary text */
+  --light-text:     #718096;   /* Placeholder, labels */
+  --border:         #E2E8F0;   /* Dividers, card borders */
+
+  /* ── Radius ─────────────────────────────────────────────── */
+  --radius-card:    16px;
+  --radius-btn:     12px;
+  --radius-pill:    20px;
+  --radius-tag:     6px;
+
+  /* ── Shadows ─────────────────────────────────────────────── */
+  --shadow-card:    0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-raised:  0 4px 20px rgba(0, 0, 0, 0.10);
+
+  /* ── Typography (iOS SF Pro equivalents) ────────────────── */
+  --font-stack:     -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  --text-xs:        10px;
+  --text-sm:        12px;
+  --text-base:      14px;
+  --text-md:        16px;
+  --text-lg:        20px;
+  --text-xl:        24px;
+  --weight-regular: 400;
+  --weight-semibold:600;
+  --weight-bold:    700;
+  --weight-heavy:   800;
+
+  /* ── Spacing ─────────────────────────────────────────────── */
+  --space-xs:       4px;
+  --space-sm:       8px;
+  --space-md:       12px;
+  --space-lg:       16px;
+  --space-xl:       24px;
+
+  /* ── Device frame ────────────────────────────────────────── */
+  --phone-width:    393px;
+  --phone-height:   852px;
+  --safe-top:       59px;   /* Dynamic Island clearance */
+  --safe-bottom:    34px;   /* Home indicator clearance */
+  --dynamic-island-w: 126px;
+  --dynamic-island-h: 37px;
+}
+
+/* ── Utility classes ────────────────────────────────────────── */
+.text-brand   { color: var(--brand-blue); }
+.text-green   { color: var(--accent-green); }
+.text-amber   { color: var(--accent-amber); }
+.text-danger  { color: var(--danger); }
+.text-muted   { color: var(--light-text); }
+.text-mid     { color: var(--mid-text); }
+.text-dark    { color: var(--dark-text); }
+
+.bg-brand     { background: var(--brand-blue); color: var(--white); }
+.bg-lb        { background: var(--light-blue); }
+.bg-green     { background: var(--accent-green); color: var(--white); }
+.bg-lg        { background: var(--light-green); }
+.bg-amber     { background: var(--accent-amber); color: var(--white); }
+.bg-la        { background: var(--light-amber); }
+.bg-grey      { background: var(--grey-bg); }
+.bg-white     { background: var(--white); }
+
+.card {
+  background: var(--white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-lg);
+  margin: var(--space-sm) var(--space-lg);
+}
+
+.btn-primary {
+  background: var(--brand-blue);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 13px var(--space-lg);
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn-secondary {
+  background: var(--light-blue);
+  color: var(--brand-blue);
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 13px var(--space-lg);
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  width: 100%;
+}
+
+.chip {
+  display: inline-block;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+}
+.chip-blue   { background: var(--light-blue);  color: var(--brand-blue); }
+.chip-green  { background: var(--light-green); color: var(--accent-green); }
+.chip-amber  { background: var(--light-amber); color: var(--accent-amber); }

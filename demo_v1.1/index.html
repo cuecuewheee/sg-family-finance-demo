@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Children Finance Planner — Demo v1.1</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  /* ── Shell & layout ────────────────────────────────────── */
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:#1a1a2e;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    min-height:100vh;padding:24px 16px;
+    font-family:var(--font-stack);
+  }
+  .demo-label{
+    color:rgba(255,255,255,.45);
+    font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    margin-bottom:16px;font-weight:500;
+  }
+  .outer{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+
+  /* ── Phone shell — iPhone 17 (393×852) ────────────────── */
+  .phone{
+    width:var(--phone-width);height:var(--phone-height);
+    background:var(--white);border-radius:52px;
+    box-shadow:0 0 0 1px rgba(255,255,255,.1),0 32px 90px rgba(0,0,0,.65);
+    overflow:hidden;position:relative;
+    display:flex;flex-direction:column;flex-shrink:0;
+  }
+  .dynamic-island{
+    position:absolute;top:13px;left:50%;transform:translateX(-50%);
+    width:var(--dynamic-island-w);height:var(--dynamic-island-h);
+    background:#000;border-radius:20px;z-index:100;
+  }
+  .home-indicator{
+    position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    width:134px;height:5px;background:#000;border-radius:3px;opacity:.2;z-index:100;
+  }
+
+  /* ── Status bar ────────────────────────────────────────── */
+  .status-bar{
+    height:var(--safe-top);background:var(--white);
+    display:flex;align-items:flex-end;padding:0 24px 10px;
+    position:relative;z-index:50;flex-shrink:0;
+  }
+  .sb-time{font-size:15px;font-weight:700;color:var(--dark-text);}
+  .sb-icons{margin-left:auto;display:flex;gap:6px;align-items:center;}
+  .sb-icons img{width:16px;height:16px;opacity:.85;}
+
+  /* ── Screens ───────────────────────────────────────────── */
+  .screen-wrap{flex:1;overflow:hidden;position:relative;}
+  .screen{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    background:var(--grey-bg);
+    opacity:0;pointer-events:none;transition:opacity .22s ease;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+    padding-bottom:var(--safe-bottom);
+  }
+  .screen.active{opacity:1;pointer-events:all;}
+
+  /* ── App header ────────────────────────────────────────── */
+  .app-header{
+    background:var(--white);padding:14px 20px 12px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--border);flex-shrink:0;
+  }
+  .back-btn{
+    display:flex;align-items:center;gap:4px;
+    color:var(--brand-blue);font-size:14px;font-weight:600;cursor:pointer;
+  }
+  .back-btn img{width:18px;height:18px;filter:invert(32%) sepia(89%) saturate(504%) hue-rotate(181deg);}
+  .screen-id{
+    font-size:10px;color:var(--brand-blue);font-weight:700;
+    background:var(--light-blue);padding:3px 9px;border-radius:var(--radius-tag);
+    letter-spacing:.8px;text-transform:uppercase;
+  }
+
+  /* ── Hero banner ───────────────────────────────────────── */
+  .hero{
+    background:linear-gradient(135deg,#2E75B6 0%,#1a4f8c 100%);
+    padding:20px 20px 18px;color:var(--white);flex-shrink:0;
+  }
+  .hero-greeting{font-size:13px;opacity:.8;margin-bottom:2px;}
+  .hero-name{font-size:22px;font-weight:800;margin-bottom:7px;}
+  .hero-stage{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(255,255,255,.15);border-radius:var(--radius-pill);
+    padding:4px 13px;font-size:12px;font-weight:600;
+  }
+
+  /* ── Financial bar ─────────────────────────────────────── */
+  .fin-bar-labels,.fin-bar-amounts{display:flex;justify-content:space-between;}
+  .fin-bar-label{font-size:11px;font-weight:700;}
+  .fin-bar{
+    height:22px;border-radius:11px;overflow:hidden;display:flex;
+    margin:6px 0;box-shadow:inset 0 1px 3px rgba(0,0,0,.1);
+  }
+  .fin-bar-seg{height:100%;}
+  .fin-bar-amount{font-size:12px;font-weight:700;}
+  .stage-dots{display:flex;align-items:center;margin-top:10px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.08);}
+  .stage-seg{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+  .stage-dot-label{font-size:9px;color:var(--light-text);}
+  .drill-link{text-align:right;margin-top:8px;font-size:12px;color:var(--brand-blue);font-weight:700;cursor:pointer;}
+
+  /* ── Alert banner ──────────────────────────────────────── */
+  .alert-banner{
+    background:var(--light-amber);border-radius:var(--radius-card);
+    padding:12px 14px;margin:4px 16px;
+    display:flex;align-items:center;gap:10px;
+    border:1px solid rgba(237,125,49,.3);cursor:pointer;
+  }
+  .alert-icon{font-size:20px;}
+  .alert-text{font-size:12px;color:var(--dark-text);flex:1;line-height:1.5;}
+  .alert-text strong{display:block;font-size:13px;margin-bottom:1px;}
+
+  /* ── Status grid ───────────────────────────────────────── */
+  .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-top:4px;}
+  .status-pill{background:var(--white);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow-card);}
+  .pill-label{font-size:10px;color:var(--light-text);font-weight:700;text-transform:uppercase;letter-spacing:.6px;}
+  .pill-value{font-size:16px;font-weight:900;color:var(--dark-text);margin:3px 0;}
+  .pill-value.green{color:var(--accent-green);}
+  .pill-value.amber{color:var(--accent-amber);}
+  .pill-sub{font-size:10px;color:var(--mid-text);}
+
+  /* ── Nav bar ───────────────────────────────────────────── */
+  .nav-bar{
+    background:var(--white);border-top:1px solid var(--border);
+    display:flex;justify-content:space-around;
+    padding:10px 0 20px;flex-shrink:0;
+  }
+  .nav-item{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-size:10px;color:var(--light-text);cursor:pointer;padding:4px 12px;
+    border-radius:8px;transition:color .18s;
+  }
+  .nav-item.active{color:var(--brand-blue);}
+  .nav-item img{width:22px;height:22px;}
+  .nav-item.active img{filter:invert(32%) sepia(89%) saturate(504%) hue-rotate(181deg);}
+
+  /* ── Split columns ─────────────────────────────────────── */
+  .split-row{display:flex;gap:10px;padding:0 16px;margin-top:4px;}
+  .split-col{flex:1;border-radius:14px;padding:14px;}
+  .split-col.cash{background:#EBF3FA;}
+  .split-col.grants{background:var(--light-green);}
+  .split-col-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px;}
+  .split-col.cash .split-col-label{color:var(--brand-blue);}
+  .split-col.grants .split-col-label{color:var(--accent-green);}
+  .split-col-total{font-size:22px;font-weight:900;margin-bottom:8px;}
+  .split-col.cash .split-col-total{color:var(--brand-blue);}
+  .split-col.grants .split-col-total{color:var(--accent-green);}
+  .split-item{font-size:11px;color:var(--mid-text);display:flex;justify-content:space-between;padding:2px 0;}
+  .split-item-val{font-weight:600;color:var(--dark-text);}
+
+  /* ── Bill rows ─────────────────────────────────────────── */
+  .bill-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+  .bill-row:last-child{border-bottom:none;}
+  .bill-label{font-size:14px;color:var(--dark-text);}
+  .bill-sub{font-size:11px;color:var(--light-text);margin-top:1px;}
+  .bill-value{font-size:14px;font-weight:700;color:var(--dark-text);}
+  .bill-value.covered{color:var(--accent-green);}
+  .bill-value.cash-pay{color:var(--brand-blue);}
+  .medisave-tag{font-size:10px;background:var(--light-green);color:var(--accent-green);padding:2px 7px;border-radius:5px;font-weight:700;margin-left:5px;}
+  .dispute-banner{background:var(--light-amber);border-radius:12px;padding:12px 14px;margin:8px 16px;display:flex;gap:10px;align-items:flex-start;border-left:3px solid var(--accent-amber);}
+  .dispute-text{font-size:12px;color:var(--dark-text);line-height:1.5;}
+
+  /* ── Swipe cards ───────────────────────────────────────── */
+  .swipe-card{
+    background:var(--white);border-radius:var(--radius-card);
+    padding:18px;margin:8px 16px;
+    border-left:4px solid var(--brand-blue);
+    box-shadow:var(--shadow-raised);cursor:pointer;
+    transition:transform .12s;
+  }
+  .swipe-card:nth-child(even){border-left-color:var(--accent-green);}
+  .swipe-card:active{transform:scale(.98);}
+  .sc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .sc-title{font-size:15px;font-weight:800;color:var(--dark-text);}
+  .sc-cost{font-size:13px;font-weight:700;color:var(--brand-blue);background:var(--light-blue);padding:4px 10px;border-radius:8px;white-space:nowrap;}
+  .swipe-card:nth-child(even) .sc-cost{color:var(--accent-green);background:var(--light-green);}
+  .sc-label{font-size:10px;font-weight:700;color:var(--mid-text);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+  .sc-bullet{font-size:12px;color:var(--mid-text);line-height:1.5;display:flex;gap:6px;}
+  .sc-bullet::before{content:"•";color:var(--accent-green);flex-shrink:0;}
+  .sc-watchout{font-size:12px;color:var(--mid-text);line-height:1.5;display:flex;gap:6px;}
+  .sc-watchout::before{content:"!";font-size:10px;flex-shrink:0;color:var(--accent-amber);font-weight:700;}
+  .sc-select-btn{width:100%;margin-top:12px;background:var(--brand-blue);color:var(--white);border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;}
+  .swipe-card:nth-child(even) .sc-select-btn{background:var(--accent-green);}
+
+  /* ── Check-in ──────────────────────────────────────────── */
+  .checkin-progress{display:flex;gap:6px;padding:0 16px;margin:8px 0;}
+  .checkin-dot{flex:1;height:4px;border-radius:2px;background:var(--border);}
+  .checkin-dot.done{background:var(--brand-blue);}
+  .checkin-dot.active{background:var(--mid-blue);}
+  .checkin-card{background:var(--white);border-radius:var(--radius-card);padding:22px 20px;margin:8px 16px;box-shadow:var(--shadow-raised);}
+  .checkin-question{font-size:18px;font-weight:700;color:var(--dark-text);line-height:1.4;margin-bottom:16px;}
+  .checkin-option{
+    border:1.5px solid var(--border);border-radius:12px;padding:13px 16px;
+    font-size:14px;color:var(--dark-text);cursor:pointer;margin-bottom:10px;
+    display:flex;align-items:center;gap:10px;transition:all .15s;
+  }
+  .checkin-option:hover{border-color:var(--brand-blue);background:var(--light-blue);color:var(--brand-blue);font-weight:600;}
+  .opt-emoji{font-size:18px;}
+  .soft-prompt{background:var(--light-green);border-radius:12px;padding:12px 14px;margin:0 16px 8px;font-size:12px;color:var(--dark-text);line-height:1.5;border-left:3px solid var(--accent-green);}
+
+  /* ── Cost tracker ──────────────────────────────────────── */
+  .tracker-toggle{display:flex;background:var(--grey-bg);border-radius:12px;padding:4px;margin:8px 16px;}
+  .toggle-btn{flex:1;text-align:center;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:600;color:var(--light-text);cursor:pointer;transition:all .18s;}
+  .toggle-btn.active{background:var(--white);color:var(--dark-text);box-shadow:var(--shadow-card);}
+  .cost-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;}
+  .cost-label{font-size:13px;color:var(--mid-text);}
+  .cost-value{font-size:15px;font-weight:700;color:var(--dark-text);}
+  .cost-value.green{color:var(--accent-green);}
+  .cost-divider{height:1px;background:var(--border);margin:10px 0;}
+  .progress-bg{height:8px;border-radius:4px;background:var(--grey-bg);overflow:hidden;margin-top:8px;}
+  .progress-fill{height:100%;border-radius:4px;background:var(--brand-blue);}
+  .progress-labels{display:flex;justify-content:space-between;margin-top:3px;}
+  .progress-label{font-size:10px;color:var(--light-text);}
+  .info-tip{background:var(--light-green);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--dark-text);line-height:1.5;}
+
+  /* ── Action row ────────────────────────────────────────── */
+  .action-row{display:flex;gap:10px;padding:0 16px;margin-top:8px;}
+
+  /* ── Section head ──────────────────────────────────────── */
+  .section-head{padding:16px 20px 4px;font-size:13px;font-weight:700;color:var(--mid-text);text-transform:uppercase;letter-spacing:.8px;}
+
+  /* ── Screen nav sidebar ────────────────────────────────── */
+  .screen-nav-sidebar{display:flex;flex-direction:column;gap:6px;align-self:flex-start;padding-top:8px;}
+  .snav-label{font-size:10px;color:rgba(255,255,255,.4);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
+  .snav-btn{
+    font-size:12px;padding:9px 16px;border-radius:10px;cursor:pointer;
+    background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);
+    border:1px solid rgba(255,255,255,.1);
+    transition:all .15s;white-space:nowrap;
+  }
+  .snav-btn:hover,.snav-btn.active{background:#2E75B6;color:#fff;border-color:#2E75B6;font-weight:600;}
+
+  /* ── Footer ────────────────────────────────────────────── */
+  .figma-tip{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;padding:12px 18px;margin-top:20px;
+    max-width:600px;color:rgba(255,255,255,.5);font-size:11px;line-height:1.7;
+    text-align:center;
+  }
+  .figma-tip strong{color:rgba(255,255,255,.8);}
+</style>
+</head>
+<body>
+
+<div class="demo-label">Children Finance Planner · Demo v1.1 · iPhone 17 (393 × 852)</div>
+
+<div class="outer">
+
+  <!-- ── Phone shell ──────────────────────────────────────── -->
+  <div class="phone">
+    <div class="dynamic-island"></div>
+    <div class="home-indicator"></div>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <span class="sb-time">9:41</span>
+      <div class="sb-icons">
+        <img src="assets/icons/wifi.svg" alt="wifi">
+      </div>
+    </div>
+
+    <div class="screen-wrap">
+
+      <!-- ══ S1: Dashboard ══════════════════════════════════ -->
+      <div class="screen active" id="s1">
+        <div class="hero">
+          <div class="hero-greeting">Good morning, Qiquan 👋</div>
+          <div class="hero-name">Week 6 · Newborn Stage</div>
+          <div class="hero-stage">🟠 Financial Check-In Due</div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <div class="pill-label" style="margin-bottom:10px;">Financial Overview</div>
+          <div class="fin-bar-labels">
+            <span class="fin-bar-label" style="color:var(--bar-spent)">Spent</span>
+            <span class="fin-bar-label" style="color:var(--bar-upcoming)">Upcoming</span>
+            <span class="fin-bar-label" style="color:var(--bar-future)">Future Est.</span>
+          </div>
+          <div class="fin-bar">
+            <div class="fin-bar-seg" style="width:30%;background:var(--bar-spent)"></div>
+            <div class="fin-bar-seg" style="width:22%;background:var(--bar-upcoming)"></div>
+            <div class="fin-bar-seg" style="width:48%;background:var(--bar-future)"></div>
+          </div>
+          <div class="fin-bar-amounts">
+            <span class="fin-bar-amount" style="color:var(--bar-spent)">$8,420</span>
+            <span class="fin-bar-amount" style="color:var(--bar-upcoming)">$6,200</span>
+            <span class="fin-bar-amount" style="color:var(--bar-future)">~$13,500</span>
+          </div>
+          <div class="stage-dots">
+            <div class="stage-seg"><div class="stage-dot-label">│ Birth</div></div>
+            <div class="stage-seg"><div class="stage-dot-label">│ Wk 6</div></div>
+            <div class="stage-seg"><div class="stage-dot-label">│ Mth 3</div></div>
+            <div class="stage-seg"><div class="stage-dot-label">│ Stage 3</div></div>
+          </div>
+          <div class="drill-link" onclick="goTo('s2')">View breakdown →</div>
+        </div>
+
+        <div class="alert-banner" onclick="goTo('s5')">
+          <div class="alert-icon">🟠</div>
+          <div class="alert-text">
+            <strong>Week 6 Financial Check-In</strong>
+            3-card review — cash flow, food costs, grants status
+          </div>
+          <div style="color:var(--accent-amber);font-size:18px;">›</div>
+        </div>
+
+        <div class="status-grid">
+          <div class="status-pill">
+            <div class="pill-label">CDA Balance</div>
+            <div class="pill-value green">$3,000</div>
+            <div class="pill-sub">Co-match: $500 used</div>
+          </div>
+          <div class="status-pill">
+            <div class="pill-label">Hospital Bill</div>
+            <div class="pill-value amber">$720</div>
+            <div class="pill-sub">Medisave saved $1,500</div>
+          </div>
+          <div class="status-pill">
+            <div class="pill-label">Baby Bonus</div>
+            <div class="pill-value green">$3,000</div>
+            <div class="pill-sub">1st instalment ✓</div>
+          </div>
+          <div class="status-pill">
+            <div class="pill-label">Confinement</div>
+            <div class="pill-value">Centre</div>
+            <div class="pill-sub">28 days · $3,800</div>
+          </div>
+        </div>
+
+        <div style="flex:1;"></div>
+
+        <div class="nav-bar">
+          <div class="nav-item active">
+            <img src="assets/icons/home.svg" alt="">Home
+          </div>
+          <div class="nav-item" onclick="goTo('s6')">
+            <img src="assets/icons/costs.svg" alt="">Costs
+          </div>
+          <div class="nav-item" onclick="goTo('s4')">
+            <img src="assets/icons/journey.svg" alt="">Journey
+          </div>
+          <div class="nav-item">
+            <img src="assets/icons/grants.svg" alt="">Grants
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ S2: Drill-down ═════════════════════════════════ -->
+      <div class="screen" id="s2">
+        <div class="app-header">
+          <div class="back-btn" onclick="goTo('s1')">
+            <img src="assets/icons/chevron-left.svg" alt="back">Back
+          </div>
+          <span class="screen-id">S2.01</span>
+        </div>
+        <div style="padding:16px 16px 4px;">
+          <div style="font-size:20px;font-weight:800;color:var(--dark-text);">Spending Breakdown</div>
+          <div style="font-size:13px;color:var(--light-text);margin-top:2px;">Week 6 · Total committed: $28,120</div>
+        </div>
+        <div class="split-row">
+          <div class="split-col cash">
+            <div class="split-col-label">Cash Outlay</div>
+            <div class="split-col-total">$14,540</div>
+            <div class="split-item"><span>Confinement ctr</span><span class="split-item-val">$3,800</span></div>
+            <div class="split-item"><span>Hospital (net)</span><span class="split-item-val">$720</span></div>
+            <div class="split-item"><span>Formula (2 mth)</span><span class="split-item-val">$380</span></div>
+            <div class="split-item"><span>Baby supplies</span><span class="split-item-val">$920</span></div>
+            <div class="split-item"><span>Vaccination</span><span class="split-item-val">$280</span></div>
+            <div class="split-item" style="margin-top:6px;font-weight:700;"><span>Upcoming est.</span><span class="split-item-val">$6,120</span></div>
+          </div>
+          <div class="split-col grants">
+            <div class="split-col-label">Grants / Subsidies</div>
+            <div class="split-col-total">$13,580</div>
+            <div class="split-item"><span>Baby Bonus</span><span class="split-item-val">$3,000 ✓</span></div>
+            <div class="split-item"><span>CDA First Step</span><span class="split-item-val">$3,000 ✓</span></div>
+            <div class="split-item"><span>Medisave Grant</span><span class="split-item-val">$4,000 ✓</span></div>
+            <div class="split-item"><span>Medisave (hosp)</span><span class="split-item-val">$1,500 ✓</span></div>
+            <div class="split-item" style="color:var(--accent-amber);"><span>Baby Bonus 2nd</span><span class="split-item-val">$3,000 ⏳</span></div>
+            <div class="split-item" style="margin-top:6px;font-weight:700;"><span>Net benefit</span><span class="split-item-val">$10,580</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="cost-row"><span class="cost-label">Total cash out</span><span class="cost-value">$14,540</span></div>
+          <div class="cost-row"><span class="cost-label">Grants received</span><span class="cost-value green">- $10,580</span></div>
+          <div class="cost-divider"></div>
+          <div class="cost-row"><span class="cost-label" style="font-weight:700;">Net cost to date</span><span class="cost-value" style="font-size:18px;">$3,960</span></div>
+          <div class="progress-bg"><div class="progress-fill" style="width:52%;"></div></div>
+          <div class="progress-labels"><span class="progress-label">$0</span><span class="progress-label">Budget: $28,000</span></div>
+        </div>
+        <div class="action-row">
+          <button class="btn-secondary" onclick="goTo('s1')">← Dashboard</button>
+          <button class="btn-primary" onclick="goTo('s6')">Cost Tracker →</button>
+        </div>
+        <div style="height:20px;"></div>
+      </div>
+
+      <!-- ══ S3: Hospital Bill ══════════════════════════════ -->
+      <div class="screen" id="s3">
+        <div class="app-header">
+          <div class="back-btn" onclick="goTo('s1')">
+            <img src="assets/icons/chevron-left.svg" alt="back">Back
+          </div>
+          <span class="screen-id">S2.02</span>
+        </div>
+        <div style="padding:14px 20px 8px;">
+          <div style="font-size:20px;font-weight:800;color:var(--dark-text);">Hospital Bill</div>
+          <div style="font-size:13px;color:var(--light-text);margin-top:2px;">KK Women's & Children's · B2 Ward</div>
+          <div style="margin-top:8px;">
+            <span class="chip chip-blue">Medisave eligible</span>
+            <span class="chip chip-amber">1 item to review</span>
+          </div>
+        </div>
+        <div class="dispute-banner">
+          <div style="font-size:20px;">⚠️</div>
+          <div class="dispute-text"><strong>Review recommended:</strong> Miscellaneous charges ($120) — request itemised breakdown from billing. Commonly disputed successfully.</div>
+        </div>
+        <div class="card">
+          <div class="pill-label" style="margin-bottom:10px;">Bill Summary</div>
+          <div class="bill-row">
+            <div><div class="bill-label">Delivery & ward fees</div><div class="bill-sub">3 nights B2 ward</div></div>
+            <div class="bill-value">$2,100</div>
+          </div>
+          <div class="bill-row">
+            <div><div class="bill-label">Medisave (delivery) <span class="medisave-tag">MediSave</span></div></div>
+            <div class="bill-value covered">- $900</div>
+          </div>
+          <div class="bill-row">
+            <div><div class="bill-label">Medisave (hospitalisation) <span class="medisave-tag">MediSave</span></div></div>
+            <div class="bill-value covered">- $600</div>
+          </div>
+          <div class="bill-row">
+            <div><div class="bill-label">Miscellaneous charges</div><div class="bill-sub" style="color:var(--accent-amber);">⚠ Request itemisation</div></div>
+            <div class="bill-value" style="color:var(--accent-amber);">$120</div>
+          </div>
+          <div class="bill-row" style="border-top:2px solid var(--border);padding-top:14px;margin-top:2px;">
+            <div class="bill-label" style="font-weight:700;font-size:15px;">Total to pay</div>
+            <div class="bill-value cash-pay" style="font-size:18px;">$720</div>
+          </div>
+          <div class="info-tip">💡 <strong>Medisave saved you $1,500</strong> on this bill. Balance remaining: ~$38,200.</div>
+        </div>
+        <div class="action-row">
+          <button class="btn-secondary">📋 Request itemisation</button>
+          <button class="btn-primary">✓ Mark paid</button>
+        </div>
+        <div style="height:20px;"></div>
+      </div>
+
+      <!-- ══ S4: Confinement Care ═══════════════════════════ -->
+      <div class="screen" id="s4">
+        <div class="app-header">
+          <div class="back-btn" onclick="goTo('s1')">
+            <img src="assets/icons/chevron-left.svg" alt="back">Back
+          </div>
+          <span class="screen-id">S2.07</span>
+        </div>
+        <div style="padding:14px 20px 4px;">
+          <div style="font-size:20px;font-weight:800;color:var(--dark-text);">Confinement Care</div>
+          <div style="font-size:13px;color:var(--light-text);margin-top:2px;">Select your care arrangement — tap to choose</div>
+        </div>
+
+        <div class="swipe-card" onclick="selectConfinement(this)">
+          <div class="sc-header"><div class="sc-title">🏥 Confinement Centre</div><div class="sc-cost">$3,200–$5,500</div></div>
+          <div class="sc-label">What's included</div>
+          <div class="sc-bullet">24/7 neonatal nursing care</div>
+          <div class="sc-bullet">3 meals + herbal soups daily</div>
+          <div class="sc-bullet">Lactation consultant on-site</div>
+          <div class="sc-label" style="color:var(--accent-amber);margin-top:8px;">Watch out</div>
+          <div class="sc-watchout">Book 6–9 months ahead</div>
+          <div class="sc-watchout">Premium cost — check IP coverage</div>
+          <button class="sc-select-btn">Select Confinement Centre</button>
+        </div>
+
+        <div class="swipe-card" onclick="selectConfinement(this)">
+          <div class="sc-header"><div class="sc-title">👩 Confinement Nanny</div><div class="sc-cost">$2,800–$4,500</div></div>
+          <div class="sc-label">What's included</div>
+          <div class="sc-bullet">Live-in, 28 days, night duty</div>
+          <div class="sc-bullet">Confinement cooking + herbal prep</div>
+          <div class="sc-label" style="color:var(--accent-amber);margin-top:8px;">Watch out</div>
+          <div class="sc-watchout">Interview before booking — fit matters</div>
+          <button class="sc-select-btn">Select Confinement Nanny</button>
+        </div>
+
+        <div class="swipe-card" onclick="selectConfinement(this)">
+          <div class="sc-header"><div class="sc-title">👨‍👩‍👧 Family Support</div><div class="sc-cost">~$600–$1,200</div></div>
+          <div class="sc-label">What's included</div>
+          <div class="sc-bullet">Maximum flexibility, no contract</div>
+          <div class="sc-bullet">Built-in emotional support</div>
+          <div class="sc-label" style="color:var(--accent-amber);margin-top:8px;">Watch out</div>
+          <div class="sc-watchout">Coordinate roles clearly upfront</div>
+          <button class="sc-select-btn">Select Family Support</button>
+        </div>
+
+        <div class="swipe-card" onclick="selectConfinement(this)">
+          <div class="sc-header"><div class="sc-title">🏠 Self-Managed</div><div class="sc-cost">~$300–$800</div></div>
+          <div class="sc-label">What's included</div>
+          <div class="sc-bullet">Full flexibility, partner fully involved</div>
+          <div class="sc-label" style="color:var(--accent-amber);margin-top:8px;">Watch out</div>
+          <div class="sc-watchout">Budget for meal delivery (~$15–25/day)</div>
+          <div class="sc-watchout">FSC support available free via CHAS</div>
+          <button class="sc-select-btn">Select Self-Managed</button>
+        </div>
+        <div style="height:20px;"></div>
+      </div>
+
+      <!-- ══ S5: Financial Wellbeing Check-In ══════════════ -->
+      <div class="screen" id="s5">
+        <div class="app-header">
+          <div class="back-btn" onclick="goTo('s1')">
+            <img src="assets/icons/chevron-left.svg" alt="back">Back
+          </div>
+          <span class="screen-id">S2.09</span>
+        </div>
+        <div style="padding:14px 20px 8px;">
+          <div style="font-size:20px;font-weight:800;color:var(--dark-text);">Week 6 Check-In</div>
+          <div style="font-size:13px;color:var(--light-text);margin-top:2px;">Financial wellbeing · 3 quick questions</div>
+        </div>
+        <div class="checkin-progress">
+          <div class="checkin-dot done" id="dot-1"></div>
+          <div class="checkin-dot active" id="dot-2"></div>
+          <div class="checkin-dot" id="dot-3"></div>
+        </div>
+
+        <div class="checkin-card" id="q1">
+          <div class="checkin-question">How are your confinement costs tracking compared to your plan?</div>
+          <div class="checkin-option" onclick="nextQ(2)"><span class="opt-emoji">✅</span>Within budget — no surprises</div>
+          <div class="checkin-option" onclick="nextQ(2)"><span class="opt-emoji">🟡</span>Slightly over, still manageable</div>
+          <div class="checkin-option" onclick="nextQ(2)"><span class="opt-emoji">🔴</span>Significantly over — need to review</div>
+        </div>
+
+        <div class="checkin-card" id="q2" style="display:none;">
+          <div class="checkin-question">Are you breastfeeding, using formula, or a mix?</div>
+          <div style="font-size:12px;color:var(--light-text);margin-bottom:14px;">Helps us estimate your monthly feeding costs accurately.</div>
+          <div class="checkin-option" onclick="nextQ(3)"><span class="opt-emoji">🤱</span>Breastfeeding — $0 formula cost</div>
+          <div class="checkin-option" onclick="nextQ(3)"><span class="opt-emoji">🍼</span>Formula — ~$100–200/month</div>
+          <div class="checkin-option" onclick="nextQ(3)"><span class="opt-emoji">🔄</span>Mix — ~$60–100/month</div>
+        </div>
+
+        <div class="checkin-card" id="q3" style="display:none;">
+          <div class="checkin-question">Is the overall financial picture feeling manageable right now?</div>
+          <div class="checkin-option" onclick="showResult()"><span class="opt-emoji">😌</span>Yes — feeling in control</div>
+          <div class="checkin-option" onclick="showResult()"><span class="opt-emoji">😐</span>Somewhat — keeping an eye on it</div>
+          <div class="checkin-option" onclick="showResult()"><span class="opt-emoji">😟</span>Stressed — finding it difficult</div>
+        </div>
+
+        <div class="checkin-card" id="q-result" style="display:none;text-align:center;">
+          <div style="font-size:36px;margin-bottom:10px;">✅</div>
+          <div style="font-size:17px;font-weight:800;color:var(--dark-text);margin-bottom:6px;">Check-In Complete</div>
+          <div style="font-size:13px;color:var(--mid-text);margin-bottom:16px;">Monthly baseline updated.</div>
+          <div style="background:var(--grey-bg);border-radius:12px;padding:12px;">
+            <div class="cost-row"><span class="cost-label">Monthly food est.</span><span class="cost-value">$180</span></div>
+            <div class="cost-row"><span class="cost-label">Feeding cost</span><span class="cost-value">$0 (BF)</span></div>
+            <div class="cost-row"><span class="cost-label">Next check-in</span><span class="cost-value">Month 3</span></div>
+          </div>
+        </div>
+
+        <div class="soft-prompt" id="fsc-prompt" style="display:none;">
+          💚 <strong>If financial stress is affecting your wellbeing,</strong> a Family Service Centre visit is free with CHAS.
+          <span style="color:var(--brand-blue);font-weight:700;">Find your nearest FSC →</span>
+        </div>
+        <div style="height:20px;"></div>
+      </div>
+
+      <!-- ══ S6: Monthly Cost Tracker ═══════════════════════ -->
+      <div class="screen" id="s6">
+        <div class="app-header">
+          <div class="back-btn" onclick="goTo('s1')">
+            <img src="assets/icons/chevron-left.svg" alt="back">Back
+          </div>
+          <span class="screen-id">S2.12</span>
+        </div>
+        <div style="padding:14px 20px 4px;">
+          <div style="font-size:20px;font-weight:800;color:var(--dark-text);">Monthly Cost Tracker</div>
+          <div style="font-size:13px;color:var(--light-text);margin-top:2px;">Month 2 · Estimates based on your choices</div>
+        </div>
+
+        <div class="tracker-toggle">
+          <div class="toggle-btn active" id="tab-bf" onclick="switchTab('bf')">🤱 Breastfeeding</div>
+          <div class="toggle-btn" id="tab-ff" onclick="switchTab('ff')">🍼 Formula</div>
+        </div>
+
+        <div class="card" id="cost-bf">
+          <div class="pill-label" style="margin-bottom:8px;">Breastfeeding</div>
+          <div class="bill-row"><div class="bill-label">Confinement (amortised)</div><div class="bill-value">$950</div></div>
+          <div class="bill-row"><div class="bill-label">Diapers & wipes</div><div class="bill-value">$120</div></div>
+          <div class="bill-row"><div class="bill-label">Baby clothing / gear</div><div class="bill-value">$80</div></div>
+          <div class="bill-row"><div class="bill-label">Mother's food & supplements</div><div class="bill-value">$220</div></div>
+          <div class="bill-row"><div class="bill-label">Formula cost</div><div class="bill-value covered">$0</div></div>
+          <div class="bill-row" style="border-top:2px solid var(--border);padding-top:14px;margin-top:2px;">
+            <div class="bill-label" style="font-weight:700;font-size:15px;">Est. monthly total</div>
+            <div class="bill-value cash-pay" style="font-size:18px;">$1,450</div>
+          </div>
+          <div class="info-tip">💡 Switching to formula adds ~$150–200/month. Pump rental ~$40/month on return to work.</div>
+        </div>
+
+        <div class="card" id="cost-ff" style="display:none;">
+          <div class="pill-label" style="margin-bottom:8px;">Formula</div>
+          <div class="bill-row"><div class="bill-label">Confinement (amortised)</div><div class="bill-value">$950</div></div>
+          <div class="bill-row"><div class="bill-label">Diapers & wipes</div><div class="bill-value">$120</div></div>
+          <div class="bill-row"><div class="bill-label">Baby clothing / gear</div><div class="bill-value">$80</div></div>
+          <div class="bill-row"><div class="bill-label">Mother's food & supplements</div><div class="bill-value">$150</div></div>
+          <div class="bill-row"><div class="bill-label">Formula (Stage 1)</div><div class="bill-value" style="color:var(--accent-amber);">$180</div></div>
+          <div class="bill-row" style="border-top:2px solid var(--border);padding-top:14px;margin-top:2px;">
+            <div class="bill-label" style="font-weight:700;font-size:15px;">Est. monthly total</div>
+            <div class="bill-value cash-pay" style="font-size:18px;">$1,525</div>
+          </div>
+          <div class="info-tip" style="background:var(--light-amber);">💡 Formula costs rise to $200–280/month by Month 6. CDA co-matching can offset costs.</div>
+        </div>
+
+        <div class="section-head">3-Month Roll-Up</div>
+        <div class="card">
+          <div class="cost-row"><span class="cost-label">Month 1 (confinement heavy)</span><span class="cost-value">$4,900</span></div>
+          <div class="cost-row"><span class="cost-label">Month 2</span><span class="cost-value">$1,450</span></div>
+          <div class="cost-row"><span class="cost-label">Month 3 (est.)</span><span class="cost-value">$1,380</span></div>
+          <div class="cost-divider"></div>
+          <div class="cost-row"><span class="cost-label" style="font-weight:700;">Stage 2 total (3 mth)</span><span class="cost-value" style="font-size:17px;">$7,730</span></div>
+          <div class="progress-bg"><div class="progress-fill" style="width:55%;"></div></div>
+          <div class="progress-labels"><span class="progress-label">$0</span><span class="progress-label">Stage 2 est: $14,000</span></div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn-secondary" onclick="goTo('s2')">← Breakdown</button>
+          <button class="btn-primary" onclick="goTo('s1')">Dashboard →</button>
+        </div>
+        <div style="height:20px;"></div>
+
+        <div class="nav-bar">
+          <div class="nav-item" onclick="goTo('s1')"><img src="assets/icons/home.svg" alt="">Home</div>
+          <div class="nav-item active"><img src="assets/icons/costs.svg" alt="">Costs</div>
+          <div class="nav-item" onclick="goTo('s4')"><img src="assets/icons/journey.svg" alt="">Journey</div>
+          <div class="nav-item"><img src="assets/icons/grants.svg" alt="">Grants</div>
+        </div>
+      </div>
+
+    </div><!-- /screen-wrap -->
+  </div><!-- /phone -->
+
+  <!-- ── Screen nav sidebar ────────────────────────────────── -->
+  <div class="screen-nav-sidebar">
+    <div class="snav-label">Screens</div>
+    <div class="snav-btn active" id="nb-s1" onclick="goTo('s1')">S2.01 Dashboard</div>
+    <div class="snav-btn" id="nb-s2" onclick="goTo('s2')">S2.01 Drill-down</div>
+    <div class="snav-btn" id="nb-s3" onclick="goTo('s3')">S2.02 Hospital Bill</div>
+    <div class="snav-btn" id="nb-s4" onclick="goTo('s4')">S2.07 Confinement</div>
+    <div class="snav-btn" id="nb-s5" onclick="goTo('s5')">S2.09 Wellbeing</div>
+    <div class="snav-btn" id="nb-s6" onclick="goTo('s6')">S2.12 Cost Tracker</div>
+
+    <div style="height:16px;"></div>
+    <div class="snav-label">Assets</div>
+    <div class="snav-btn" onclick="window.open('assets/colour_palette.svg')">🎨 Colour palette</div>
+    <div class="snav-btn" onclick="window.open('assets/tokens.css')">🔡 Design tokens</div>
+    <div class="snav-btn" onclick="window.open('assets/icons/')">🖼 Icon set</div>
+  </div>
+
+</div><!-- /outer -->
+
+<div class="figma-tip">
+  <strong>Figma import:</strong> Open in Chrome → DevTools (F12) → Device toolbar → iPhone 14/15 Pro (393×852) → screenshot each screen → paste as frames into Figma.<br>
+  Tokens in <code>assets/tokens.css</code> · Icons in <code>assets/icons/</code> · Palette in <code>assets/colour_palette.svg</code>
+</div>
+
+<script>
+const screenIds = ['s1','s2','s3','s4','s5','s6'];
+function goTo(id) {
+  screenIds.forEach(s => document.getElementById(s).classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById(id).scrollTop = 0;
+  screenIds.forEach(s => {
+    const nb = document.getElementById('nb-' + s);
+    if (nb) nb.classList.toggle('active', s === id);
+  });
+}
+
+// Confinement selection
+function selectConfinement(card) {
+  document.querySelectorAll('.swipe-card').forEach(c => { c.style.outline = ''; c.style.background = ''; });
+  card.style.outline = '2.5px solid var(--brand-blue)';
+  card.style.background = 'var(--light-blue)';
+  setTimeout(() => goTo('s1'), 480);
+}
+
+// Check-in flow
+let currentQ = 1;
+function nextQ(n) {
+  document.getElementById('q' + currentQ).style.display = 'none';
+  document.getElementById('dot-' + currentQ).className = 'checkin-dot done';
+  if (n <= 3) {
+    const nd = document.getElementById('dot-' + n);
+    if (nd) nd.className = 'checkin-dot active';
+    document.getElementById('q' + n).style.display = 'block';
+    currentQ = n;
+  }
+}
+function showResult() {
+  document.getElementById('q3').style.display = 'none';
+  document.getElementById('dot-3').className = 'checkin-dot done';
+  document.getElementById('q-result').style.display = 'block';
+  document.getElementById('fsc-prompt').style.display = 'block';
+  currentQ = 4;
+}
+
+// Cost tracker tab
+function switchTab(t) {
+  document.getElementById('tab-bf').className = 'toggle-btn' + (t === 'bf' ? ' active' : '');
+  document.getElementById('tab-ff').className = 'toggle-btn' + (t === 'ff' ? ' active' : '');
+  document.getElementById('cost-bf').style.display = t === 'bf' ? 'block' : 'none';
+  document.getElementById('cost-ff').style.display = t === 'ff' ? 'block' : 'none';
+}
+</script>
+</body>
+</html>
