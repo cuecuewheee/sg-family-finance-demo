@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caregiver Financial Companion — Interactive Demo v0.3 · June 2026</title>
+<script>
+/* Access gate. NOTE: this is friction for a privately-shared link, NOT real security.
+   A static page cannot hold a true secret. The password is never stored in source — only
+   its SHA-256 hash is, so "View Source" reveals no usable code. A determined viewer could
+   still bypass any client-side gate; do not treat this as protecting sensitive data. */
+(function(){
+  const PASS_HASH = '5fc440decf4ca0b702995aa56c5bcfe50c9172b924a1a43c2378c1b3baeb0f03';
+  const KEY = 'cg_demo_auth';
+
+  function showGate(){
+    var gate = document.getElementById('auth-gate');
+    var app  = document.getElementById('app-root');
+    if (gate) gate.style.display = 'flex';
+    if (app)  app.style.display  = 'none';
+  }
+  function unlock(){
+    document.getElementById('auth-gate').style.display = 'none';
+    document.getElementById('app-root').style.display  = 'block';
+  }
+  async function sha256Hex(str){
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+  }
+
+  if (sessionStorage.getItem(KEY) !== PASS_HASH) {
+    document.addEventListener('DOMContentLoaded', showGate);
+  }
+
+  window._checkPass = async function() {
+    var input = document.getElementById('gate-input').value;
+    var h = await sha256Hex(input);
+    if (h === PASS_HASH) {
+      sessionStorage.setItem(KEY, PASS_HASH);
+      unlock();
+    } else {
+      var err = document.getElementById('gate-error');
+      err.style.display = 'block';
+      document.getElementById('gate-input').value = '';
+      document.getElementById('gate-input').focus();
+    }
+  };
+  window._gateKeydown = function(e) {
+    if (e.key === 'Enter') window._checkPass();
+    document.getElementById('gate-error').style.display = 'none';
+  };
+})();
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#2E75B6;--blue-mid:#4A90D9;--blue-light:#EBF3FA;--blue-dark:#1a4f8c;
+  --green:#3A9E6F;--green-light:#E8F6EF;
+  --amber:#ED7D31;--amber-light:#FEF3EA;
+  --purple:#7B5EA7;--purple-light:#F0EAF8;
+  --teal:#1A8A8A;--teal-light:#E5F5F5;
+  --red:#D94F4F;--red-light:#FDEAEA;
+  --gold:#B8860B;--gold-light:#FFF8E1;
+  --white:#FFFFFF;--grey-bg:#F5F6FA;--border:#E8EAF0;
+  --dark:#1A1D2E;--mid:#6B7280;--light:#9CA3AF;
+  --hub-text:rgba(255,255,255,0.55);
+  --elapsed-fill:#C7CBD6;        /* muted/desaturated — "what has passed" (v0.3, AD-B-012) */
+  --elapsed-fill-edge:#B4B9C7;   /* slightly darker leading edge of elapsed fill */
+  --now-marker:var(--dark);      /* "Today" marker stem — references --dark (17:1, high contrast on any zone) */
+  --sh-card:0 2px 8px rgba(0,0,0,.07);
+  --sh-raised:0 4px 18px rgba(0,0,0,.12);
+  --font:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --pw:393px;--ph:852px;
+  --safe-top:59px;--safe-bottom:34px;
+  --di-w:126px;--di-h:37px;
+  --cg-primary:#3A7D6E;--cg-dark:#1f5247;--cg-light:#E8F5F2;--cg-secondary:#6B8F71;
+}
+body{background:#0f1117;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:24px 16px 40px;font-family:var(--font);}
+.demo-label{color:rgba(255,255,255,.4);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;font-weight:500;text-align:center;}
+.outer{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+
+/* Phone shell */
+.phone{width:var(--pw);height:var(--ph);background:var(--white);border-radius:52px;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 36px 100px rgba(0,0,0,.7);overflow:hidden;position:relative;display:flex;flex-direction:column;flex-shrink:0;}
+.di{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:var(--di-w);height:var(--di-h);background:#000;border-radius:20px;z-index:100;}
+.home-ind{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;background:#000;border-radius:3px;opacity:.18;z-index:100;}
+.status-bar{height:var(--safe-top);background:var(--white);display:flex;align-items:flex-end;padding:0 28px 12px;flex-shrink:0;position:relative;z-index:50;}
+.sb-time{font-size:15px;font-weight:700;color:var(--dark);}
+.sb-right{margin-left:auto;font-size:12px;color:var(--mid);font-weight:600;}
+.screen-wrap{flex:1;overflow:hidden;position:relative;}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--grey-bg);opacity:0;pointer-events:none;transition:opacity .2s ease;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:var(--safe-bottom);}
+.screen.active{opacity:1;pointer-events:all;}
+
+/* Shared components */
+.app-hdr{background:var(--white);padding:14px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;}
+.back{display:flex;align-items:center;gap:4px;color:var(--cg-primary);font-size:14px;font-weight:600;cursor:pointer;}
+.back::before{content:"‹";font-size:20px;line-height:1;}
+.screen-tag{font-size:10px;color:var(--cg-primary);font-weight:700;background:var(--cg-light);padding:3px 9px;border-radius:20px;letter-spacing:.7px;text-transform:uppercase;}
+.card{background:var(--white);border-radius:16px;padding:16px;margin:8px 16px;box-shadow:var(--sh-card);}
+.section-head{padding:16px 20px 4px;font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.9px;}
+.btn-primary{flex:1;background:var(--cg-primary);color:var(--white);border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-primary:disabled{background:var(--light);cursor:not-allowed;}
+.btn-secondary{flex:1;background:var(--grey-bg);color:var(--dark);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;}
+.action-row{display:flex;gap:10px;padding:0 16px;margin-top:8px;}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.chip-green{background:var(--green-light);color:var(--green);}
+.chip-amber{background:var(--amber-light);color:var(--amber);}
+.chip-blue{background:var(--blue-light);color:var(--blue);}
+.chip-teal{background:var(--cg-light);color:var(--cg-primary);}
+.chip-red{background:var(--red-light);color:var(--red);}
+.nav-bar{background:var(--white);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 20px;flex-shrink:0;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--light);cursor:pointer;padding:4px 12px;border-radius:8px;}
+.nav-item.active{color:var(--cg-primary);}
+.nav-icon{font-size:22px;line-height:1;}
+
+/* Auth gate */
+#auth-gate{display:none;position:fixed;inset:0;z-index:9999;background:#0f1117;flex-direction:column;align-items:center;justify-content:center;padding:32px;}
+.gate-box{background:#1a1d2e;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px 28px;width:100%;max-width:340px;text-align:center;}
+.gate-logo{font-size:36px;margin-bottom:12px;}
+.gate-title{font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;}
+.gate-sub{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:24px;line-height:1.5;}
+.gate-input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:14px 16px;font-size:16px;color:#fff;text-align:center;letter-spacing:2px;outline:none;margin-bottom:12px;font-family:monospace;}
+.gate-input:focus{border-color:var(--cg-primary);}
+.gate-btn{width:100%;background:var(--cg-primary);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
+.gate-btn:hover{background:var(--cg-dark);}
+.gate-error{display:none;margin-top:12px;font-size:13px;color:#ED7D31;font-weight:600;}
+.gate-footer{margin-top:20px;font-size:11px;color:rgba(255,255,255,.2);}
+
+/* Context Hub */
+.hub-header{background:linear-gradient(150deg,#0f1117 0%,#1a2340 100%);padding:20px 20px 24px;color:var(--white);}
+.hub-wordmark{font-size:13px;font-weight:800;letter-spacing:.5px;opacity:.6;margin-bottom:12px;}
+.hub-title{font-size:26px;font-weight:900;line-height:1.2;margin-bottom:6px;}
+.hub-sub{font-size:13px;opacity:.6;line-height:1.5;}
+.ctx-card{margin:10px 16px;border-radius:18px;padding:18px;cursor:pointer;box-shadow:var(--sh-raised);position:relative;overflow:hidden;transition:transform .15s;}
+.ctx-card:active{transform:scale(.98);}
+.ctx-card.caregiver-active{background:linear-gradient(135deg,var(--cg-primary),var(--cg-dark));}
+.ctx-card.inactive{background:var(--white);border:1.5px solid var(--border);}
+.ctx-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;padding:4px 10px;border-radius:20px;margin-bottom:10px;}
+.ctx-badge.active-b{background:rgba(255,255,255,.2);color:rgba(255,255,255,.9);}
+.ctx-badge.add-b{background:var(--grey-bg);color:var(--mid);}
+.ctx-icon{font-size:32px;margin-bottom:8px;display:block;}
+.ctx-title{font-size:18px;font-weight:800;margin-bottom:4px;}
+.ctx-title.white{color:var(--white);}
+.ctx-title.dark{color:var(--dark);}
+.ctx-desc{font-size:12px;line-height:1.5;margin-bottom:12px;}
+.ctx-desc.white{color:rgba(255,255,255,.7);}
+.ctx-desc.dark{color:var(--mid);}
+.ctx-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.ctx-cta{width:100%;border:none;border-radius:11px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;}
+.ctx-cta.open{background:rgba(255,255,255,.15);color:var(--white);}
+.ctx-cta.add{background:var(--blue);color:var(--white);}
+
+/* Onboarding */
+.onb-hero{padding:24px 24px 16px;background:var(--white);}
+.onb-icon{font-size:40px;margin-bottom:10px;}
+.onb-title{font-size:21px;font-weight:900;color:var(--dark);line-height:1.2;margin-bottom:6px;}
+.onb-sub{font-size:13px;color:var(--mid);line-height:1.6;}
+.onb-step-row{display:flex;gap:6px;padding:0 24px;margin:14px 0 8px;}
+.onb-step{flex:1;height:4px;border-radius:2px;background:var(--border);}
+.onb-step.done{background:var(--cg-primary);}
+.onb-step.active{background:rgba(58,125,110,.35);}
+.onb-card{background:var(--white);border-radius:18px;padding:18px;margin:8px 16px;box-shadow:var(--sh-card);}
+.onb-q{font-size:15px;font-weight:700;color:var(--dark);margin-bottom:12px;line-height:1.4;}
+.onb-opt{border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--dark);cursor:pointer;margin-bottom:8px;display:flex;align-items:center;gap:10px;transition:all .12s;}
+.onb-opt:hover{border-color:var(--cg-secondary);}
+.onb-opt.sel{border-color:var(--cg-primary);background:var(--cg-light);color:var(--dark);font-weight:600;box-shadow:0 0 0 1px var(--cg-primary);}
+.onb-opt-em{font-size:19px;}
+.onb-label{font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.7px;margin:0 0 10px;}
+.onb-result{text-align:center;padding:8px 0;}
+.onb-result-icon{font-size:46px;margin-bottom:12px;}
+.onb-result-title{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:8px;}
+.onb-result-sub{font-size:13px;color:var(--mid);line-height:1.6;margin-bottom:18px;}
+.config-pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:8px;}
+.config-pill{background:var(--cg-light);color:var(--cg-primary);font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;}
+
+/* Dashboard hero */
+.hero-cg{background:linear-gradient(135deg,var(--cg-primary),var(--cg-dark));padding:20px 20px 18px;color:var(--white);}
+.hero-ctx-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px;}
+.hero-greeting{font-size:13px;opacity:.75;margin-bottom:2px;}
+.hero-name{font-size:22px;font-weight:900;margin-bottom:8px;}
+.hero-stage{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 13px;font-size:12px;font-weight:600;}
+
+/* Dashboard Reserves Bar (v0.3, AD-B-013) — reserves-depletion summary on the hero.
+   Bar = total reserves. Spent portion splits self-cash vs grant-offset; remainder = reserves left.
+   Replaces the old Runway/Upcoming/Received bar (mismatched units, drifting segments).
+   Segments are computed from one total so they always sum to 100% — no fixed-flex drift. */
+.dash-bar-wrap{margin:0 20px;}
+.dash-bar-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+.dash-bar-title{font-size:11px;font-weight:700;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.7px;}
+.dash-bar-runway{font-size:12px;font-weight:800;color:#fff;}
+.dash-bar{height:22px;border-radius:11px;overflow:hidden;display:flex;box-shadow:inset 0 1px 3px rgba(0,0,0,.18);background:rgba(255,255,255,.18);}
+.dash-bar-seg{height:100%;transition:flex-basis .4s ease;}
+.dash-seg-selfcash{background:var(--green);}        /* self-funded spend; zone colour set in JS */
+.dash-seg-selfcash.amber{background:var(--amber);}
+.dash-seg-selfcash.red{background:var(--red);}
+.dash-seg-grant{background:#7FD4C4;}                 /* grant offset — light teal, distinct from self-cash */
+.dash-seg-left{background:rgba(255,255,255,.28);}    /* reserves remaining */
+/* Legend: self-cash / grants / left — each with swatch + S$ amount, directly under the bar (aligned). */
+.dash-legend{display:flex;justify-content:space-between;gap:8px;margin-top:9px;}
+.dash-leg{flex:1;display:flex;flex-direction:column;gap:3px;}
+.dash-leg-key{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:.3px;}
+.dash-leg-sw{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.dash-leg-sw.selfcash{background:var(--green);}
+.dash-leg-sw.selfcash.amber{background:var(--amber);}
+.dash-leg-sw.selfcash.red{background:var(--red);}
+.dash-leg-sw.grant{background:#7FD4C4;}
+.dash-leg-sw.left{background:rgba(255,255,255,.4);}
+.dash-leg-val{font-size:13px;font-weight:800;color:#fff;}
+.dash-leg-sub{font-size:9px;color:rgba(255,255,255,.55);font-weight:600;}
+.dash-leg.right{align-items:flex-end;text-align:right;}
+.drill-link{text-align:right;margin-top:10px;font-size:12px;color:rgba(255,255,255,.75);font-weight:700;cursor:pointer;}
+
+/* Status grid */
+.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-top:4px;}
+.status-pill{background:var(--white);border-radius:12px;padding:12px 14px;box-shadow:var(--sh-card);}
+.pill-label{font-size:10px;color:var(--light);font-weight:700;text-transform:uppercase;letter-spacing:.6px;}
+.pill-value{font-size:16px;font-weight:900;color:var(--dark);margin:3px 0;}
+.pill-value.green{color:var(--green);}
+.pill-value.amber{color:var(--amber);}
+.pill-value.red{color:var(--red);}
+.pill-value.teal{color:var(--cg-primary);}
+.pill-sub{font-size:10px;color:var(--mid);}
+
+/* Alert banner */
+.alert-banner{background:var(--amber-light);border-radius:14px;padding:12px 14px;margin:4px 16px;display:flex;align-items:center;gap:10px;border:1px solid rgba(237,125,49,.3);cursor:pointer;}
+.alert-text{font-size:12px;color:var(--dark);flex:1;line-height:1.5;}
+.alert-text strong{display:block;font-size:13px;margin-bottom:1px;}
+.alert-banner.green{background:var(--green-light);border-color:rgba(58,158,111,.3);}
+.alert-banner.red{background:var(--red-light);border-color:rgba(217,79,79,.3);}
+
+/* Scheme rows */
+.scheme-row{display:flex;flex-direction:column;gap:8px;padding:0 16px;margin-top:4px;}
+.scheme-card{background:var(--white);border-radius:14px;padding:14px;box-shadow:var(--sh-card);display:flex;align-items:center;gap:12px;cursor:pointer;transition:transform .12s;}
+.scheme-card:active{transform:scale(.98);}
+.scheme-icon{font-size:26px;flex-shrink:0;}
+.scheme-body{flex:1;}
+.scheme-title{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:2px;}
+.scheme-desc{font-size:11px;color:var(--mid);line-height:1.4;}
+.scheme-val{font-size:13px;font-weight:700;flex-shrink:0;}
+.scheme-val.green{color:var(--green);}
+.scheme-val.amber{color:var(--dark);background:var(--amber-light);padding:3px 9px;border-radius:20px;font-size:11px;}
+.scheme-val.blue{color:var(--blue);}
+.scheme-val.grey{color:var(--mid);font-size:11px;}
+.zero-state{background:var(--white);border-radius:14px;padding:20px 16px;margin:8px 16px;box-shadow:var(--sh-card);text-align:center;}
+.zero-state .zs-icon{font-size:32px;margin-bottom:8px;}
+.zero-state .zs-text{font-size:13px;color:var(--mid);line-height:1.6;}
+
+/* Detail */
+.detail-hero{background:linear-gradient(135deg,var(--cg-primary),var(--cg-dark));padding:24px 20px 20px;color:var(--white);}
+.detail-icon{font-size:40px;margin-bottom:8px;}
+.detail-title{font-size:20px;font-weight:900;margin-bottom:4px;}
+.detail-sub{font-size:12px;opacity:.75;line-height:1.5;}
+.detail-amount{font-size:28px;font-weight:900;margin:10px 0 2px;}
+.detail-period{font-size:12px;opacity:.65;}
+.detail-row{display:flex;justify-content:space-between;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--border);}
+.detail-row:last-child{border-bottom:none;}
+.detail-key{font-size:13px;color:var(--mid);flex:1;padding-right:12px;}
+.detail-val{font-size:13px;font-weight:600;color:var(--dark);flex:1;text-align:right;}
+.criteria-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.criteria-item:last-child{border-bottom:none;}
+.criteria-check{font-size:16px;flex-shrink:0;margin-top:1px;}
+.criteria-text{font-size:13px;color:var(--dark);line-height:1.4;}
+
+/* Runway projection */
+.runway-ring-wrap{display:flex;align-items:center;justify-content:center;padding:18px 0 10px;}
+.runway-ring{width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;transition:background .4s ease;}
+.runway-ring::before{content:'';position:absolute;inset:11px;border-radius:50%;background:var(--white);}
+.runway-val{font-size:30px;font-weight:900;color:var(--dark);position:relative;z-index:1;text-align:center;line-height:1;}
+.runway-unit{font-size:11px;color:var(--mid);display:block;font-weight:600;}
+.scenario-tabs{display:flex;gap:6px;padding:0 16px;margin:8px 0;flex-wrap:wrap;}
+.s-tab{flex:1;min-width:70px;border:1.5px solid var(--border);border-radius:10px;padding:9px 6px;text-align:center;cursor:pointer;font-size:11px;font-weight:600;color:var(--mid);transition:all .15s;}
+.s-tab.active{border-color:var(--cg-primary);background:var(--cg-light);color:var(--cg-primary);}
+.projection-row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--border);}
+.projection-row:last-child{border-bottom:none;}
+.proj-key{font-size:13px;color:var(--mid);}
+.proj-val{font-size:13px;font-weight:700;color:var(--dark);}
+.disclaimer-box{background:var(--grey-bg);border-radius:12px;padding:12px 14px;margin:8px 16px;}
+.disclaimer-text{font-size:11px;color:var(--mid);line-height:1.6;}
+
+/* Runway Timeline bar (v0.3, AD-B-012) — today marker + elapsed/remaining fill.
+   Structure: [marker row: "Today" flag positioned at elapsed boundary]
+              [bar: elapsed (muted) segment | remaining (live zone colour) segment]
+              [endpoints row: "Plan start" ... "Projected depletion"]
+              [legend: elapsed / remaining, never colour-alone] */
+.rw-tl-wrap{margin:0 16px 4px;}
+/* "Today" marker sits ABOVE the bar with its label; the "Planned" indicator is drawn
+   INSIDE the bar as a vertical line (AD-B-014 fix per user) — no competing labels, cleaner read. */
+.rw-tl-marker-row{position:relative;height:18px;margin-bottom:2px;}
+.rw-tl-marker{position:absolute;bottom:0;transform:translateX(-50%);transition:left .4s ease;display:flex;flex-direction:column;align-items:center;white-space:nowrap;}
+.rw-tl-marker-label{font-size:10px;font-weight:800;color:var(--now-marker);letter-spacing:.4px;text-transform:uppercase;line-height:1;}
+.rw-tl-marker-stem{width:2px;height:6px;background:var(--now-marker);margin-top:2px;border-radius:1px;}
+.rw-tl-bar{position:relative;height:22px;border-radius:11px;overflow:hidden;display:flex;box-shadow:inset 0 1px 3px rgba(0,0,0,.1);background:var(--border);}
+/* "Planned" position drawn inside the bar as a dashed vertical line + small flag tab. */
+.rw-tl-plan-line{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed rgba(26,29,46,.55);transform:translateX(-1px);transition:left .4s ease;z-index:2;pointer-events:none;}
+.rw-tl-plan-line::after{content:'Planned';position:absolute;top:50%;left:4px;transform:translateY(-50%);font-size:8px;font-weight:800;color:var(--dark);background:rgba(255,255,255,.82);padding:1px 4px;border-radius:4px;letter-spacing:.2px;white-space:nowrap;}
+.rw-tl-plan-line.flip::after{left:auto;right:4px;}
+.rw-tl-seg{height:100%;transition:flex-basis .4s ease;}
+.rw-tl-elapsed{background:repeating-linear-gradient(135deg,var(--elapsed-fill) 0 6px,var(--elapsed-fill-edge) 6px 12px);}
+.rw-tl-remaining{background:var(--green);}        /* zone colour set in JS */
+.rw-tl-remaining.amber{background:var(--amber);}
+.rw-tl-remaining.red{background:var(--red);}
+.rw-tl-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--mid);font-weight:600;margin-top:5px;}
+.rw-tl-ends .end-r{text-align:right;}
+.rw-tl-legend{display:flex;gap:14px;margin-top:9px;flex-wrap:wrap;}
+.rw-tl-leg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mid);font-weight:600;}
+.rw-tl-swatch{width:13px;height:13px;border-radius:3px;flex-shrink:0;}
+.rw-tl-swatch.elapsed{background:repeating-linear-gradient(135deg,var(--elapsed-fill) 0 4px,var(--elapsed-fill-edge) 4px 8px);}
+.rw-tl-swatch.remaining{background:var(--green);}
+.rw-tl-swatch.remaining.amber{background:var(--amber);}
+.rw-tl-swatch.remaining.red{background:var(--red);}
+.rw-tl-elapsed-slider{margin:10px 16px 0;}
+/* Pace check (AD-B-014): planned-position ghost marker + actual-position, and a verdict line.
+   Answers "are we burning faster than planned, or building buffer?" */
+.pace-status{display:flex;align-items:flex-start;gap:10px;margin:10px 16px 0;padding:11px 13px;border-radius:12px;background:var(--grey-bg);}
+.pace-status.ahead{background:var(--green-light);}
+.pace-status.behind{background:var(--amber-light);}
+.pace-status.behind-red{background:var(--red-light);}
+.pace-ic{font-size:18px;line-height:1.2;flex-shrink:0;}
+.pace-txt{flex:1;}
+.pace-verdict{font-size:13px;font-weight:800;color:var(--dark);margin-bottom:2px;}
+.pace-detail{font-size:11px;color:var(--mid);line-height:1.5;}
+
+/* Sliders (interactive) */
+.slider-card{background:var(--white);border-radius:16px;padding:16px;margin:8px 16px;box-shadow:var(--sh-card);}
+.slider-row{margin-bottom:16px;}
+.slider-row:last-child{margin-bottom:0;}
+.slider-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.slider-name{font-size:12px;font-weight:700;color:var(--dark);}
+.slider-val{font-size:14px;font-weight:900;color:var(--cg-primary);}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:var(--border);outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--cg-primary);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.25);}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border:none;border-radius:50%;background:var(--cg-primary);cursor:pointer;}
+.slider-hint{font-size:10px;color:var(--light);margin-top:4px;}
+
+/* Cost band */
+.cost-band-wrap{margin:0 16px;}
+.cost-band{height:20px;border-radius:10px;overflow:hidden;display:flex;margin:6px 0;}
+.cost-band-seg{height:100%;}
+.cost-band-green{background:var(--green);flex:0 0 33%;}
+.cost-band-amber{background:var(--amber);flex:0 0 33%;}
+.cost-band-red{background:var(--red);flex:0 0 34%;}
+.cost-band-marker-wrap{position:relative;height:14px;margin-bottom:2px;}
+.cost-band-marker{position:absolute;transform:translateX(-50%);font-size:16px;transition:left .3s ease;}
+.cost-band-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--mid);font-weight:600;margin-top:2px;}
+
+/* Narration panel */
+.narration{width:340px;align-self:stretch;background:#161a26;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:22px;color:#fff;display:flex;flex-direction:column;min-height:520px;}
+.nar-kicker{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cg-secondary);font-weight:700;margin-bottom:10px;}
+.nar-step{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;margin-bottom:14px;}
+.nar-title{font-size:20px;font-weight:900;line-height:1.25;margin-bottom:12px;}
+.nar-body{font-size:13px;line-height:1.7;color:rgba(255,255,255,.72);}
+.nar-body strong{color:#fff;}
+.nar-points{margin-top:16px;display:flex;flex-direction:column;gap:10px;}
+.nar-point{display:flex;gap:10px;font-size:12px;line-height:1.5;color:rgba(255,255,255,.7);}
+.nar-point .np-dot{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:rgba(58,125,110,.25);color:var(--cg-secondary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+.nar-tag{margin-top:auto;padding-top:18px;font-size:10px;color:rgba(255,255,255,.3);line-height:1.6;border-top:1px solid rgba(255,255,255,.07);}
+.nar-tag strong{color:rgba(255,255,255,.6);}
+
+/* Sidebar */
+.sidebar{display:flex;flex-direction:column;gap:6px;align-self:flex-start;padding-top:8px;}
+.snav-section{font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin:10px 0 4px;padding-left:4px;}
+.snav-section:first-child{margin-top:0;}
+.snav-btn{font-size:12px;padding:9px 15px;border-radius:10px;cursor:pointer;white-space:nowrap;background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.08);transition:all .15s;text-align:left;}
+.snav-btn:hover,.snav-btn.active{background:var(--cg-primary);color:#fff;border-color:var(--cg-primary);font-weight:600;}
+.snav-reset{margin-top:14px;background:rgba(237,125,49,.15);color:var(--amber);border-color:rgba(237,125,49,.3);}
+.footer-note{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 18px;margin-top:20px;max-width:760px;color:rgba(255,255,255,.4);font-size:11px;line-height:1.7;text-align:center;}
+.footer-note strong{color:rgba(255,255,255,.7);}
+.live-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--green);background:var(--green-light);padding:3px 9px;border-radius:20px;}
+.live-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);}
+</style>
+</head>
+<body>
+
+<div id="auth-gate">
+  <div class="gate-box">
+    <div class="gate-logo">🧓</div>
+    <div class="gate-title">Private Demo</div>
+    <div class="gate-sub">Caregiver Financial Companion<br>Configuration B · Interactive v0.3<br>Enter the access code to continue.</div>
+    <input id="gate-input" class="gate-input" type="password" placeholder="Access code" autocomplete="off" onkeydown="window._gateKeydown(event)">
+    <button class="gate-btn" onclick="window._checkPass()">Unlock Demo</button>
+    <div id="gate-error" class="gate-error">Incorrect code — try again</div>
+    <div class="gate-footer">Shared privately by Qiquan</div>
+  </div>
+</div>
+
+<div id="app-root">
+<div class="demo-label">Caregiver Financial Companion · Configuration B · Interactive Demo v0.3 · June 2026 · iPhone 17 (393 × 852)</div>
+<div class="outer">
+
+<!-- ══ Phone ══ -->
+<div class="phone">
+  <div class="di"></div>
+  <div class="home-ind"></div>
+  <div class="status-bar">
+    <span class="sb-time">9:41</span>
+    <span class="sb-right">●●●●  WiFi  100%</span>
+  </div>
+
+  <div class="screen-wrap">
+
+    <!-- ════ S1 · Context Hub ════ -->
+    <div class="screen active" id="s1">
+      <div class="hub-header">
+        <div class="hub-wordmark">SG FAMILY FINANCE</div>
+        <div class="hub-title">Your Planning<br>Contexts</div>
+        <div class="hub-sub">One engine. Multiple life chapters.<br>Switch between plans as your life evolves.</div>
+      </div>
+      <div class="section-head" style="color:var(--hub-text);padding-top:12px;background:linear-gradient(150deg,#0f1117 0%,#1a2340 100%);margin:0;padding-bottom:8px;">Add a planning context</div>
+      <div style="background:linear-gradient(150deg,#0f1117 0%,#1a2340 100%);padding:0 0 4px;">
+        <div class="ctx-card caregiver-active" onclick="goTo('s2')">
+          <div class="ctx-badge active-b">+ Set Up</div>
+          <span class="ctx-icon">🧓</span>
+          <div class="ctx-title white">Caregiver Financial Planning</div>
+          <div class="ctx-desc white">Supporting a family member at home. Discover grants, project your runway, and manage care costs.</div>
+          <div class="ctx-meta">
+            <span style="background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">HCG</span>
+            <span style="background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">CTG</span>
+            <span style="background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">ElderFund</span>
+            <span style="background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">Runway</span>
+          </div>
+          <button class="ctx-cta open" onclick="event.stopPropagation();goTo('s2')">Set up Caregiver Planning →</button>
+        </div>
+      </div>
+      <div class="section-head">Other contexts</div>
+      <div class="ctx-card inactive">
+        <div class="ctx-badge add-b">+ Add</div>
+        <span class="ctx-icon">🍼</span>
+        <div class="ctx-title dark">Child Raising Planning</div>
+        <div class="ctx-desc dark">Pregnancy through early adulthood. Singapore grants, CPF mechanisms, education pathways.</div>
+        <div class="ctx-meta">
+          <span class="chip chip-blue">Baby Bonus</span>
+          <span class="chip chip-green">CDA</span>
+          <span class="chip chip-teal">Subsidies</span>
+        </div>
+        <button class="ctx-cta add" onclick="event.stopPropagation();">Set up Child Planning</button>
+      </div>
+    </div>
+
+    <!-- ════ S2 · Care Recipient Profile ════ -->
+    <div class="screen" id="s2">
+      <div class="app-hdr"><div class="back" onclick="goTo('s1')">Back</div><div class="screen-tag">Caregiver Setup</div></div>
+      <div class="onb-hero">
+        <div class="onb-icon">🧓</div>
+        <div class="onb-title">Tell us about who you're caring for</div>
+        <div class="onb-sub">This helps us find grants and schemes that fit your situation. <span class="live-pill">Live</span></div>
+      </div>
+      <div class="onb-step-row"><div class="onb-step active"></div><div class="onb-step"></div><div class="onb-step"></div><div class="onb-step"></div></div>
+      <div class="onb-card">
+        <div class="onb-label">Step 1 of 4 · Care Recipient</div>
+        <div class="onb-q">How old is the person you're caring for?</div>
+        <div class="onb-opt" data-group="age" data-val="75" onclick="pick(this)"><span class="onb-opt-em">👴</span>65 or older</div>
+        <div class="onb-opt" data-group="age" data-val="62" onclick="pick(this)"><span class="onb-opt-em">🧑‍🦳</span>60–64</div>
+        <div class="onb-opt" data-group="age" data-val="55" onclick="pick(this)"><span class="onb-opt-em">🧑</span>Under 60</div>
+      </div>
+      <div class="onb-card">
+        <div class="onb-q">What is their residency status?</div>
+        <div class="onb-opt" data-group="citizenship" data-val="sc" onclick="pick(this)"><span class="onb-opt-em">🇸🇬</span>Singapore Citizen</div>
+        <div class="onb-opt" data-group="citizenship" data-val="pr" onclick="pick(this)"><span class="onb-opt-em">🪪</span>Permanent Resident (PR)</div>
+        <div class="onb-opt" data-group="citizenship" data-val="ltvp" onclick="pick(this)"><span class="onb-opt-em">📋</span>Long-Term Visit Pass (LTVP)</div>
+        <div class="onb-opt" data-group="citizenship" data-val="other" onclick="pick(this)"><span class="onb-opt-em">🌏</span>Other / unsure</div>
+      </div>
+      <div class="onb-card">
+        <div class="onb-q">Where are they living?</div>
+        <div class="onb-opt" data-group="living" data-val="living_with_caregiver" onclick="pick(this)"><span class="onb-opt-em">🏠</span>At home (with me or separately)</div>
+        <div class="onb-opt" data-group="living" data-val="residential_care" onclick="pick(this)"><span class="onb-opt-em">🏥</span>In a residential care facility</div>
+      </div>
+      <div class="action-row"><button class="btn-secondary" onclick="goTo('s1')">Back</button><button class="btn-primary" id="s2-next" onclick="goTo('s3')">Continue →</button></div>
+      <div style="height:12px;"></div>
+    </div>
+
+    <!-- ════ S3 · Functional Assessment ════ -->
+    <div class="screen" id="s3">
+      <div class="app-hdr"><div class="back" onclick="goTo('s2')">Back</div><div class="screen-tag">Caregiver Setup</div></div>
+      <div class="onb-step-row" style="padding:14px 24px 0;"><div class="onb-step done"></div><div class="onb-step active"></div><div class="onb-step"></div><div class="onb-step"></div></div>
+      <div class="onb-card" style="margin-top:12px;">
+        <div class="onb-label">Step 2 of 4 · Care Needs</div>
+        <div class="onb-q">How much help do they need with daily activities?</div>
+        <div style="font-size:11px;color:var(--mid);margin-bottom:12px;line-height:1.5;">Daily activities (ADLs): bathing, dressing, eating, moving around, toileting.</div>
+        <div class="onb-opt" data-group="adl" data-val="three_or_more" onclick="pick(this)"><span class="onb-opt-em">🤝</span>Help with 3 or more activities</div>
+        <div class="onb-opt" data-group="adl" data-val="one_or_two" onclick="pick(this)"><span class="onb-opt-em">🙋</span>Help with 1–2 activities</div>
+        <div class="onb-opt" data-group="adl" data-val="independent" onclick="pick(this)"><span class="onb-opt-em">✅</span>Mostly independent</div>
+      </div>
+      <div class="onb-card">
+        <div class="onb-q">What is their mobility like?</div>
+        <div class="onb-opt" data-group="mobility" data-val="wheelchair" onclick="pick(this)"><span class="onb-opt-em">♿</span>Uses a wheelchair</div>
+        <div class="onb-opt" data-group="mobility" data-val="mobility_aid" onclick="pick(this)"><span class="onb-opt-em">🦯</span>Uses a walking aid</div>
+        <div class="onb-opt" data-group="mobility" data-val="ambulatory" onclick="pick(this)"><span class="onb-opt-em">🚶</span>Walks independently</div>
+        <div class="onb-opt" data-group="mobility" data-val="bed_bound" onclick="pick(this)"><span class="onb-opt-em">🛏️</span>Mostly bed-bound</div>
+      </div>
+      <div class="action-row"><button class="btn-secondary" onclick="goTo('s2')">Back</button><button class="btn-primary" onclick="goTo('s4')">Continue →</button></div>
+      <div style="height:12px;"></div>
+    </div>
+
+    <!-- ════ S4 · Caregiver Profile ════ -->
+    <div class="screen" id="s4">
+      <div class="app-hdr"><div class="back" onclick="goTo('s3')">Back</div><div class="screen-tag">Caregiver Setup</div></div>
+      <div class="onb-step-row" style="padding:14px 24px 0;"><div class="onb-step done"></div><div class="onb-step done"></div><div class="onb-step active"></div><div class="onb-step"></div></div>
+      <div class="onb-card" style="margin-top:12px;">
+        <div class="onb-label">Step 3 of 4 · About You</div>
+        <div class="onb-q">Your relationship to the care recipient</div>
+        <div class="onb-opt" data-group="relationship" data-val="child" onclick="pick(this)"><span class="onb-opt-em">👨‍👩‍👧</span>Child / child-in-law</div>
+        <div class="onb-opt" data-group="relationship" data-val="spouse" onclick="pick(this)"><span class="onb-opt-em">💑</span>Spouse / partner</div>
+        <div class="onb-opt" data-group="relationship" data-val="sibling" onclick="pick(this)"><span class="onb-opt-em">👫</span>Sibling</div>
+        <div class="onb-opt" data-group="relationship" data-val="other" onclick="pick(this)"><span class="onb-opt-em">🤝</span>Other</div>
+      </div>
+      <div class="onb-card">
+        <div class="onb-q">Household monthly income (all members)</div>
+        <div class="onb-opt" data-group="hhi" data-val="leq_1800" onclick="pick(this)"><span class="onb-opt-em">💰</span>S$1,800 or below</div>
+        <div class="onb-opt" data-group="hhi" data-val="1801_3300" onclick="pick(this)"><span class="onb-opt-em">💰</span>S$1,801 – S$3,300</div>
+        <div class="onb-opt" data-group="hhi" data-val="3301_6000" onclick="pick(this)"><span class="onb-opt-em">💰</span>S$3,301 – S$6,000</div>
+        <div class="onb-opt" data-group="hhi" data-val="above_6000" onclick="pick(this)"><span class="onb-opt-em">💰</span>Above S$6,000</div>
+        <div style="margin-top:8px;font-size:11px;color:var(--mid);line-height:1.5;">Income bracket determines your HCG tier and means-tested eligibility. We never share this.</div>
+      </div>
+      <div class="action-row"><button class="btn-secondary" onclick="goTo('s3')">Back</button><button class="btn-primary" onclick="finishOnboarding()">See my results →</button></div>
+      <div style="height:12px;"></div>
+    </div>
+
+    <!-- ════ S4b · Result ════ -->
+    <div class="screen" id="s4b">
+      <div class="app-hdr"><div class="back" onclick="goTo('s4')">Back</div><div class="screen-tag">Caregiver Setup</div></div>
+      <div class="onb-step-row" style="padding:14px 24px 0;"><div class="onb-step done"></div><div class="onb-step done"></div><div class="onb-step done"></div><div class="onb-step active"></div></div>
+      <div class="onb-card" style="margin-top:12px;">
+        <div class="onb-result">
+          <div class="onb-result-icon" id="res-icon">✅</div>
+          <div class="onb-result-title" id="res-title">3 schemes found</div>
+          <div class="onb-result-sub" id="res-sub">Based on your profile, you may qualify for the following. Eligibility estimates — verify with AIC before applying.</div>
+          <div class="config-pills" id="res-pills"></div>
+        </div>
+      </div>
+      <div class="onb-card">
+        <div class="onb-q" style="font-size:14px;margin-bottom:4px;">What happens next</div>
+        <div style="font-size:12px;color:var(--mid);line-height:1.6;">We'll build your dashboard with a live runway projection — how long your resources last, and how much these grants reduce your monthly cost.</div>
+      </div>
+      <div class="action-row" style="margin-top:12px;"><button class="btn-primary" onclick="goTo('s5')" style="padding:15px;">View My Dashboard →</button></div>
+      <div style="height:12px;"></div>
+    </div>
+
+    <!-- ════ S5 · Dashboard ════ -->
+    <div class="screen" id="s5">
+      <div class="hero-cg">
+        <div class="hero-ctx-pill">🧓 Caregiver Plan</div>
+        <div class="hero-greeting">Good morning, Qiquan</div>
+        <div class="hero-name" id="hero-name">Caring for a family member</div>
+        <div class="hero-stage" id="hero-stage">🏠 Home care</div>
+        <div class="dash-bar-wrap" style="margin-top:18px;">
+          <div class="dash-bar-top">
+            <span class="dash-bar-title">Reserves &amp; runway</span>
+            <span class="dash-bar-runway" id="dash-runway-mo">~14 months left</span>
+          </div>
+          <div class="dash-bar" id="dash-bar">
+            <div class="dash-bar-seg dash-seg-selfcash" id="dash-seg-selfcash" style="flex:0 0 40%;"></div>
+            <div class="dash-bar-seg dash-seg-grant" id="dash-seg-grant" style="flex:0 0 10%;"></div>
+            <div class="dash-bar-seg dash-seg-left" id="dash-seg-left" style="flex:0 0 50%;"></div>
+          </div>
+          <div class="dash-legend">
+            <div class="dash-leg">
+              <span class="dash-leg-key"><span class="dash-leg-sw selfcash" id="dash-sw-selfcash"></span>Your cash</span>
+              <span class="dash-leg-val" id="dash-val-selfcash">S$1,200</span>
+              <span class="dash-leg-sub">/ month</span>
+            </div>
+            <div class="dash-leg">
+              <span class="dash-leg-key"><span class="dash-leg-sw grant"></span>Grants cover</span>
+              <span class="dash-leg-val" id="dash-val-grant">S$400</span>
+              <span class="dash-leg-sub">/ month</span>
+            </div>
+            <div class="dash-leg right">
+              <span class="dash-leg-key"><span class="dash-leg-sw left"></span>Reserves left</span>
+              <span class="dash-leg-val" id="dash-val-left">S$98,000</span>
+              <span class="dash-leg-sub" id="dash-sub-left">~14 mo runway</span>
+            </div>
+          </div>
+          <div class="drill-link" onclick="goTo('s8')">View full runway →</div>
+        </div>
+      </div>
+      <div class="alert-banner" id="dash-alert" style="margin-top:12px;" onclick="goTo('s8')">
+        <span style="font-size:22px;">📊</span>
+        <div class="alert-text"><strong id="alert-title">Your runway looks healthy</strong><span id="alert-body">Tap to see your full projection and scenarios.</span></div>
+        <span style="font-size:14px;color:var(--amber);">›</span>
+      </div>
+      <div class="status-grid">
+        <div class="status-pill"><div class="pill-label">Runway</div><div class="pill-value green" id="sg-runway">~14 mo</div><div class="pill-sub">At current pace</div></div>
+        <div class="status-pill"><div class="pill-label">Net cost / mo</div><div class="pill-value amber" id="sg-netcost">S$2,400</div><div class="pill-sub">After grants</div></div>
+        <div class="status-pill"><div class="pill-label">Est. grants / mo</div><div class="pill-value teal" id="sg-grants">S$400</div><div class="pill-sub">If approved</div></div>
+        <div class="status-pill"><div class="pill-label">Schemes</div><div class="pill-value" style="color:var(--dark);" id="sg-schemes">3</div><div class="pill-sub" id="sg-schemes-sub">may qualify</div></div>
+      </div>
+      <div class="section-head">Schemes you may qualify for</div>
+      <div class="scheme-row" id="scheme-list"></div>
+      <div class="section-head" style="margin-top:4px;">Quick actions</div>
+      <div class="action-row" style="margin-bottom:12px;"><button class="btn-primary" onclick="goTo('s8')" style="font-size:13px;">📊 Adjust Runway</button><button class="btn-secondary" onclick="goTo('s2')" style="font-size:13px;">✏️ Edit Profile</button></div>
+      <div class="nav-bar">
+        <div class="nav-item active" onclick="goTo('s5')"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item" onclick="goTo('s8')"><div class="nav-icon">📊</div>Runway</div>
+        <div class="nav-item" onclick="goTo('s12')"><div class="nav-icon">📄</div>Legal</div>
+        <div class="nav-item" onclick="goTo('s2')"><div class="nav-icon">👤</div>Profile</div>
+      </div>
+    </div>
+
+    <!-- ════ S6 · HCG Detail ════ -->
+    <div class="screen" id="s6">
+      <div class="detail-hero">
+        <div class="app-hdr" style="background:transparent;border:none;padding:0 0 16px;"><div class="back" onclick="goTo('s5')" style="color:rgba(255,255,255,.8);">Back</div><div class="screen-tag" style="background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);">Scheme Detail</div></div>
+        <div class="detail-icon">🏡</div>
+        <div class="detail-title">Home Caregiving Grant</div>
+        <div class="detail-sub">Monthly support for home-based care of elderly or persons with disability</div>
+        <div class="detail-amount" id="hcg-amount">S$200 – S$400 / month</div>
+        <div class="detail-period">Paid quarterly via PayNow · Requires annual renewal</div>
+      </div>
+      <div class="section-head">Your eligibility</div>
+      <div class="card" id="hcg-criteria"></div>
+      <div class="section-head">Details</div>
+      <div class="card">
+        <div class="detail-row"><span class="detail-key">Grant amount (your tier)</span><span class="detail-val" id="hcg-tier" style="color:var(--green);">S$400/month</span></div>
+        <div class="detail-row"><span class="detail-key">Payment method</span><span class="detail-val">Quarterly PayNow</span></div>
+        <div class="detail-row"><span class="detail-key">Renewal</span><span class="detail-val">Annual (AIC re-assessment)</span></div>
+        <div class="detail-row"><span class="detail-key">Managing agency</span><span class="detail-val">AIC</span></div>
+      </div>
+      <div class="action-row" style="margin:8px 16px 12px;"><button class="btn-primary" onclick="goTo('s5')">Back to Dashboard</button></div>
+    </div>
+
+    <!-- ════ S8 · Runway (interactive) ════ -->
+    <div class="screen" id="s8">
+      <div class="app-hdr"><div class="back" onclick="goTo('s5')">Back</div><div class="screen-tag">Runway · Live</div></div>
+      <div style="background:var(--white);padding:14px 20px 10px;">
+        <div style="font-size:13px;color:var(--mid);margin-bottom:2px;display:flex;justify-content:space-between;align-items:center;">Financial runway at current pace <span class="live-pill">Live</span></div>
+        <div class="runway-ring-wrap"><div class="runway-ring" id="runway-ring"><div class="runway-val" id="runway-val">14<span class="runway-unit">months</span></div></div></div>
+        <div style="text-align:center;font-size:12px;color:var(--mid);" id="runway-date">Projected to <strong style="color:var(--dark);">August 2027</strong></div>
+        <div style="text-align:center;margin-top:8px;"><span class="chip" id="runway-chip">🟢 Healthy</span></div>
+      </div>
+
+      <!-- ── Runway Timeline bar (v0.3, AD-B-012): where we are now + what has passed ── -->
+      <div class="section-head">Where you are on this runway</div>
+      <div class="rw-tl-wrap">
+        <div class="rw-tl-marker-row">
+          <div class="rw-tl-marker" id="rw-tl-marker">
+            <span class="rw-tl-marker-label">▼ Today</span>
+            <span class="rw-tl-marker-stem"></span>
+          </div>
+        </div>
+        <div class="rw-tl-bar">
+          <div class="rw-tl-seg rw-tl-elapsed" id="rw-tl-elapsed" style="flex:0 0 22%;"></div>
+          <div class="rw-tl-seg rw-tl-remaining" id="rw-tl-remaining" style="flex:0 0 78%;"></div>
+          <div class="rw-tl-plan-line" id="rw-tl-plan-line" style="left:22%;"></div>
+        </div>
+        <div class="rw-tl-ends">
+          <span class="end-l" id="rw-tl-start">Plan started Feb 2026</span>
+          <span class="end-r" id="rw-tl-end">Runs to Aug 2027</span>
+        </div>
+        <div class="rw-tl-legend">
+          <span class="rw-tl-leg"><span class="rw-tl-swatch elapsed"></span><span id="rw-tl-leg-elapsed">4 mo elapsed</span></span>
+          <span class="rw-tl-leg"><span class="rw-tl-swatch remaining" id="rw-tl-leg-swatch"></span><span id="rw-tl-leg-remaining">14 mo remaining</span></span>
+        </div>
+      </div>
+      <!-- Pace check: actual spend vs planned spend by now -->
+      <div class="pace-status" id="pace-status">
+        <span class="pace-ic" id="pace-ic">✅</span>
+        <div class="pace-txt">
+          <div class="pace-verdict" id="pace-verdict">On track</div>
+          <div class="pace-detail" id="pace-detail">Spending matches the plan so far.</div>
+        </div>
+      </div>
+      <div class="rw-tl-elapsed-slider">
+        <div class="slider-top"><span class="slider-name" style="font-size:11px;color:var(--mid);font-weight:600;">Demo: months since plan started</span><span class="slider-val" id="sv-elapsed" style="font-size:12px;">4 mo</span></div>
+        <input type="range" id="in-elapsed" min="0" max="24" step="1" value="4" oninput="onElapsed()">
+        <div class="slider-hint">Illustrative only — in the app this is the real date your plan began.</div>
+      </div>
+      <div class="rw-tl-elapsed-slider" style="margin-top:14px;">
+        <div class="slider-top"><span class="slider-name" style="font-size:11px;color:var(--mid);font-weight:600;">Demo: actual spent so far</span><span class="slider-val" id="sv-spent" style="font-size:12px;">S$11,200</span></div>
+        <input type="range" id="in-spent" min="0" max="120000" step="500" value="11200" oninput="onSpent()">
+        <div class="slider-hint">What you've actually drawn from reserves to date — compared against the planned pace.</div>
+      </div>
+
+      <div class="scenario-tabs" id="scenario-tabs">
+        <div class="s-tab active" data-scn="base" onclick="setScenario(this)">Current</div>
+        <div class="s-tab" data-scn="cost20" onclick="setScenario(this)">+20% costs</div>
+        <div class="s-tab" data-scn="sibling" onclick="setScenario(this)">Sibling S$500</div>
+        <div class="s-tab" data-scn="grants" onclick="setScenario(this)">With grants</div>
+      </div>
+      <div class="section-head">Adjust your situation</div>
+      <div class="slider-card">
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-name">Liquid savings</span><span class="slider-val" id="sv-savings">S$48,000</span></div>
+          <input type="range" id="in-savings" min="0" max="200000" step="2000" value="48000" oninput="onSlider()">
+          <div class="slider-hint">Cash + bank deposits available for care</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-name">Monthly care cost</span><span class="slider-val" id="sv-cost">S$2,800</span></div>
+          <input type="range" id="in-cost" min="500" max="6000" step="100" value="2800" oninput="onSlider()">
+          <div class="slider-hint">Total monthly out-of-pocket care spend</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-name">Monthly income toward care</span><span class="slider-val" id="sv-income">S$1,200</span></div>
+          <input type="range" id="in-income" min="0" max="6000" step="100" value="1200" oninput="onSlider()">
+          <div class="slider-hint">Household income that can cover care costs</div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span class="slider-name">Sibling contribution</span><span class="slider-val" id="sv-sibling">S$0</span></div>
+          <input type="range" id="in-sibling" min="0" max="2000" step="100" value="0" oninput="onSlider()">
+          <div class="slider-hint">Monthly help from another family member</div>
+        </div>
+      </div>
+      <div class="section-head">Projection assumptions</div>
+      <div class="card">
+        <div class="projection-row"><span class="proj-key">Reserves remaining (after spend to date)</span><span class="proj-val" id="pr-reserves">S$98,000</span></div>
+        <div class="projection-row"><span class="proj-key">Monthly care cost</span><span class="proj-val" id="pr-cost">S$2,800</span></div>
+        <div class="projection-row"><span class="proj-key">Income + contributions</span><span class="proj-val" id="pr-income">– S$1,200</span></div>
+        <div class="projection-row"><span class="proj-key">Est. grant offset</span><span class="proj-val" id="pr-grants" style="color:var(--green);">– S$400</span></div>
+        <div class="projection-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px;"><span class="proj-key" style="font-weight:700;color:var(--dark);">Net monthly burn</span><span class="proj-val" id="pr-net" style="color:var(--amber);">S$1,200</span></div>
+      </div>
+      <div class="disclaimer-box"><div class="disclaimer-text">This is a projection based on what you've entered. It is not financial advice. Actual outcomes vary with income, care costs, and grant entitlements. CPF reserves shown as supplementary — check CPF withdrawal rules for your situation.</div></div>
+      <div class="nav-bar">
+        <div class="nav-item" onclick="goTo('s5')"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item active"><div class="nav-icon">📊</div>Runway</div>
+        <div class="nav-item" onclick="goTo('s12')"><div class="nav-icon">📄</div>Legal</div>
+        <div class="nav-item" onclick="goTo('s2')"><div class="nav-icon">👤</div>Profile</div>
+      </div>
+    </div>
+
+    <!-- ════ S12 · Disclaimer (CS-B-12) ════ -->
+    <div class="screen" id="s12">
+      <div class="app-hdr"><div class="back" onclick="goTo('s5')">Back</div><div class="screen-tag">Legal</div></div>
+      <div style="background:var(--white);padding:22px 20px 14px;text-align:center;">
+        <div style="font-size:38px;margin-bottom:8px;">📄</div>
+        <div style="font-size:19px;font-weight:900;color:var(--dark);margin-bottom:6px;">Important information</div>
+        <div style="font-size:12px;color:var(--mid);line-height:1.6;">How to read the estimates in this app.</div>
+      </div>
+      <div style="background:var(--amber-light);border-radius:12px;padding:11px 14px;margin:10px 16px;border:1px solid rgba(237,125,49,.25);">
+        <div style="font-size:11px;color:var(--amber);font-weight:700;">⚠ Placeholder copy — pending legal review (OI-B-08). Final wording to be confirmed before production.</div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;color:var(--dark);line-height:1.7;">
+          <strong>Estimates, not advice.</strong> Scheme eligibility and runway figures are estimates based on the information you enter and publicly available government data. They are not financial advice and do not guarantee any grant, payout, or outcome.<br><br>
+          <strong>Verify before you act.</strong> Always confirm eligibility and amounts with the relevant agency — AIC (aic.sg), CPF Board (cpf.gov.sg), or MOH (moh.gov.sg) — before making decisions.<br><br>
+          <strong>Your data stays on your device.</strong> Profile and financial details are stored locally. Only anonymised, aggregated figures are used to compute your runway — no names, NRIC, age, or health details leave your device.
+        </div>
+      </div>
+      <div class="action-row" style="margin:8px 16px 12px;"><button class="btn-primary" onclick="goTo('s5')">Back to Dashboard</button></div>
+    </div>
+
+  </div><!-- screen-wrap -->
+</div><!-- phone -->
+
+<!-- ══ Narration panel ══ -->
+<div class="narration" id="narration">
+  <div class="nar-kicker" id="nar-kicker">Investor walkthrough</div>
+  <div class="nar-step" id="nar-step">Screen 1 of 8</div>
+  <div class="nar-title" id="nar-title">One engine, many life chapters</div>
+  <div class="nar-body" id="nar-body"></div>
+  <div class="nar-points" id="nar-points"></div>
+  <div class="nar-tag"><strong>Live demo.</strong> Every figure on the phone is computed in real time from the profile and sliders — the same eligibility and runway rules the production app will run.</div>
+</div>
+
+<!-- ══ Sidebar nav ══ -->
+<div class="sidebar">
+  <div class="snav-section">Onboarding</div>
+  <button class="snav-btn" onclick="goTo('s1')">S1 · Context Hub</button>
+  <button class="snav-btn" onclick="goTo('s2')">S2 · Care Recipient</button>
+  <button class="snav-btn" onclick="goTo('s3')">S3 · Care Needs</button>
+  <button class="snav-btn" onclick="goTo('s4')">S4 · About You</button>
+  <button class="snav-btn" onclick="goTo('s4b')">S4b · Results</button>
+  <div class="snav-section">App</div>
+  <button class="snav-btn active" onclick="goTo('s5')">S5 · Dashboard</button>
+  <button class="snav-btn" onclick="goTo('s6')">S6 · HCG Detail</button>
+  <button class="snav-btn" onclick="goTo('s8')">S8 · Runway (live)</button>
+  <button class="snav-btn" onclick="goTo('s12')">S12 · Legal</button>
+  <button class="snav-btn snav-reset" onclick="resetDemo()">↺ Reset demo profile</button>
+</div>
+
+</div><!-- outer -->
+
+<div class="footer-note">
+  <strong>Configuration B — Caregiver Financial Companion · Interactive Demo v0.3 · June 2026</strong><br>
+  Module 1 (Resource Discovery) + Module 2 (Runway Projection) · Live eligibility + runway engine running in-browser · English only<br>
+  v0.3 adds the runway timeline: a "Today" marker and a muted "elapsed" segment showing what has passed (AD-B-012).<br>
+  Eligibility estimates only — not financial advice. Scheme rules based on publicly available AIC/CPF/MOH data as of June 2026. Figures illustrative.<br>
+  Shared privately. Same access code as CFP Demo v3.
+</div>
+</div><!-- app-root -->
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   DEMO ENGINE — ports of spec C-B-002 (eligibility) & C-004-B (runway)
+   All logic runs in-browser. Rules mirror FeatureSpec_ConfigB_Phase1 v0.2.
+   v0.3: adds runway-timeline indicator (today marker + elapsed fill) — AD-B-012.
+   ════════════════════════════════════════════════════════════ */
+
+var DEFAULT_STATE = {
+  age:75, citizenship:'sc', living:'living_with_caregiver',
+  adl:'three_or_more', mobility:'wheelchair',
+  relationship:'child', hhi:'1801_3300',
+  savings:48000, cpf:50000, cost:2800, income:1200, sibling:0,
+  elapsedMonths:4,   /* v0.3: simulated months since the plan was created (demo only) */
+  actualSpent:11200, /* v0.3: simulated actual reserves drawn to date (demo only) — pace check */
+  scenario:'base'
+};
+var state = Object.assign({}, DEFAULT_STATE);
+
+/* ---- C-B-002 Eligibility Engine ---- */
+function evaluateEligibility(s){
+  var schemes = [];
+  var residential = s.living === 'residential_care';
+  var scOrPr = (s.citizenship==='sc' || s.citizenship==='pr');
+
+  // HCG: SC/PR, age>=65, >=3 ADLs, not residential. Tier by HHI.
+  var hcgOk = scOrPr && s.age>=65 && s.adl==='three_or_more' && !residential;
+  var hcgAmount = (s.hhi==='leq_1800') ? 400 : 200; // S$400 if HHI<=1800 else S$200
+  schemes.push({id:'hcg', name:'Home Caregiving Grant (HCG)', icon:'🏡',
+    desc:'Monthly grant for home-based care · Renews annually',
+    qualifies:hcgOk, value:hcgAmount, valueLabel:'S$'+hcgAmount+'/mo',
+    why: hcgOk ? null : (residential?'Not available for family in residential care'
+      : !scOrPr?'Requires Singapore Citizen or PR'
+      : s.age<65?'Requires care recipient aged 65+'
+      : 'Requires help with 3 or more daily activities')});
+
+  // ElderFund: SC only, age>=60, dependent (>=1 ADL), not residential.
+  var efOk = s.citizenship==='sc' && s.age>=60 && (s.adl==='three_or_more'||s.adl==='one_or_two') && !residential;
+  schemes.push({id:'elderfund', name:'ElderFund', icon:'🤲',
+    desc:'Means-tested monthly support for lower-income households',
+    qualifies:efOk, value: efOk?250:0, valueLabel: efOk?'up to S$250/mo':'—',
+    why: efOk ? null : (s.citizenship!=='sc'?'Singapore Citizens only'
+      : residential?'Not available for family in residential care'
+      : s.age<60?'Requires care recipient aged 60+'
+      : 'Requires functional dependency')});
+
+  // CTG: relationship gate (immediate family / live-in). No income cap, no age gate.
+  var ctgOk = (s.relationship==='child'||s.relationship==='spouse'||s.relationship==='sibling');
+  schemes.push({id:'ctg', name:'Caregivers Training Grant (CTG)', icon:'📚',
+    desc:'Subsidised caregiver training · No income cap',
+    qualifies:ctgOk, value:0, valueLabel:'up to S$200/yr',
+    why: ctgOk ? null : 'Confirm your caregiver relationship to apply'});
+
+  // MediFund Silver: informational for SC, lower brackets. No automated verdict.
+  var mfShow = s.citizenship==='sc';
+  schemes.push({id:'medifund', name:'MediFund Silver', icon:'🏥',
+    desc:'Case-by-case help via medical social worker',
+    qualifies:false, informational:mfShow, value:0, valueLabel:'Info',
+    why: mfShow?null:'Means-tested for SC/PR residents'});
+
+  // CareShield Life: always informational.
+  schemes.push({id:'careshield', name:'CareShield Life', icon:'🛡️',
+    desc:'Monthly payouts when ≥3 ADLs impaired',
+    qualifies:false, informational:true, value:0, valueLabel:'Info', why:null});
+
+  return schemes;
+}
+
+/* ---- C-004-B Runway Projection ----
+   v0.3 (AD-B-015): GO-FORWARD model. Runway is projected from TODAY on the reserves that
+   REMAIN after money already spent — not from day one. Past spend is sunk.
+   remainingReserves = (savings + CPF) − actualSpent. Sliders change the go-forward plan;
+   they do not retroactively rewrite history. Engine stays a pure function of current state. */
+function computeRunway(s){
+  var totalReserves = s.savings + s.cpf;                 // full starting reserves
+  var remaining = Math.max(0, totalReserves - (s.actualSpent||0)); // what's left from today
+  var grantOffset = 0;
+  evaluateEligibility(s).forEach(function(sc){ if(sc.qualifies) grantOffset += sc.value; });
+
+  function months(cost, income, sibling, applyGrants){
+    var offset = applyGrants ? grantOffset : 0;
+    var net = cost - income - sibling - offset;
+    if (net <= 0) return 999; // costs fully covered by inflows
+    return remaining / net;   // project go-forward on remaining reserves
+  }
+  return {
+    grantOffset: grantOffset,
+    base:    months(s.cost, s.income, s.sibling, false),
+    cost20:  months(s.cost*1.2, s.income, s.sibling, false),
+    sibling: months(s.cost, s.income, s.sibling+500, false),
+    grants:  months(s.cost, s.income, s.sibling, true),
+    reserves: totalReserves,     // total starting reserves (for the dashboard bar domain)
+    remaining: remaining         // reserves left from today (drives the runway projection)
+  };
+}
+
+/* ---- OI-B-03 threshold semantics: green >12 strict, amber 6-12 inclusive, red <6 strict ---- */
+function runwayZone(m){
+  if (m > 12) return {key:'green', col:'var(--green)', chip:'🟢 Healthy — more than 12 months', chipCls:'chip-green'};
+  if (m >= 6) return {key:'amber', col:'var(--amber)', chip:'🟡 Caution — 6 to 12 months', chipCls:'chip-amber'};
+  return {key:'red', col:'var(--red)', chip:'🔴 Critical — under 6 months', chipCls:'chip-red'};
+}
+
+function fmt(n){ return 'S$'+Math.round(n).toLocaleString('en-SG'); }
+function moLabel(m){ return m>=999 ? 'covered' : ('~'+Math.round(m)+' mo'); }
+function addMonths(m){
+  if (m>=999) return 'indefinitely at current inflows';
+  var d=new Date(2026,5,1); d.setMonth(d.getMonth()+Math.round(m));
+  return d.toLocaleDateString('en-SG',{month:'long',year:'numeric'});
+}
+/* v0.3: month label N months before "today" (June 2026 anchor) for the plan-start endpoint */
+function subMonths(m){
+  var d=new Date(2026,5,1); d.setMonth(d.getMonth()-Math.round(m));
+  return d.toLocaleDateString('en-SG',{month:'short',year:'numeric'});
+}
+function moWord(m){ return Math.round(m)+' mo'; }
+
+/* ════════════════ NAVIGATION ════════════════ */
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var t=document.getElementById(id); if(t){t.classList.add('active');t.scrollTop=0;}
+  document.querySelectorAll('.snav-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('onclick')==="goTo('"+id+"')");
+  });
+  if(id==='s5') renderDashboard();
+  if(id==='s6') renderHcgDetail();
+  if(id==='s8') renderRunway();
+  updateNarration(id);
+}
+
+/* ════════════════ ONBOARDING ════════════════ */
+function pick(el){
+  var g=el.getAttribute('data-group'), v=el.getAttribute('data-val');
+  el.parentNode.querySelectorAll('.onb-opt[data-group="'+g+'"]').forEach(function(o){o.classList.remove('sel');});
+  el.classList.add('sel');
+  state[g]= (g==='age') ? parseInt(v,10) : v;
+}
+function applyDefaultSelections(){
+  // mark default-selected options on load for a ready-to-click feel
+  [['age','75'],['citizenship','sc'],['living','living_with_caregiver'],
+   ['adl','three_or_more'],['mobility','wheelchair'],
+   ['relationship','child'],['hhi','1801_3300']].forEach(function(p){
+    var el=document.querySelector('.onb-opt[data-group="'+p[0]+'"][data-val="'+p[1]+'"]');
+    if(el) el.classList.add('sel');
+  });
+}
+function finishOnboarding(){
+  var schemes=evaluateEligibility(state).filter(function(s){return s.qualifies;});
+  var icon=document.getElementById('res-icon'), title=document.getElementById('res-title'),
+      sub=document.getElementById('res-sub'), pills=document.getElementById('res-pills');
+  if(schemes.length===0){
+    icon.textContent='🔎'; title.textContent='No grants matched — but you have options';
+    sub.textContent='Based on what you told us, none of the current means-tested grants apply. You can still project your runway and explore AIC support.';
+    pills.innerHTML='';
+  } else {
+    icon.textContent='✅'; title.textContent=schemes.length+' scheme'+(schemes.length>1?'s':'')+' found for your situation';
+    sub.textContent='Based on your profile, you may qualify for the following. Eligibility estimates — verify with AIC before applying.';
+    pills.innerHTML=schemes.map(function(s){return '<div class="config-pill">'+s.name.split(' (')[0]+' · '+s.valueLabel+'</div>';}).join('');
+  }
+  goTo('s4b');
+}
+
+/* ════════════════ DASHBOARD ════════════════ */
+function renderDashboard(){
+  var rel={child:'parent',spouse:'spouse',sibling:'sibling',other:'family member'}[state.relationship]||'family member';
+  document.getElementById('hero-name').textContent='Caring for '+rel+', '+state.age;
+  var live={living_with_caregiver:'🏠 Home care',residential_care:'🏥 Residential care'}[state.living];
+  var cit={sc:'Singapore Citizen',pr:'PR',ltvp:'LTVP',other:'Other'}[state.citizenship];
+  document.getElementById('hero-stage').textContent=live+' · '+cit;
+
+  var r=computeRunway(state), z=runwayZone(r.base);
+
+  // ── Dashboard Reserves Bar (AD-B-013) ──
+  // Bar domain = total reserves. We show what one "unit" of runway looks like:
+  //   spent-this-period split into self-cash (net burn) vs grant offset, then reserves remaining.
+  // To keep the bar a meaningful summary, the spent block is scaled to represent the
+  // portion of reserves consumed per month, and the rest is "reserves left".
+  var grantMo = r.grantOffset;                                   // grants cover this much/mo
+  var selfMo  = Math.max(0, state.cost-state.income-state.sibling-grantMo); // your cash/mo
+  var grossMo = selfMo + grantMo;                                // total monthly care draw before income
+  // Spent-share of the bar = one month's gross draw as a fraction of reserves (min 6% so it's visible,
+  // capped so "reserves left" never disappears). Self vs grant split that spent block proportionally.
+  var spentShare = r.reserves>0 ? Math.min(0.6, Math.max(0.06, grossMo/r.reserves)) : 0.6;
+  // Show reserves REMAINING (go-forward), not total starting reserves (AD-B-015).
+  var selfPct  = grossMo>0 ? spentShare*100*(selfMo/grossMo) : spentShare*100;
+  var grantPct = grossMo>0 ? spentShare*100*(grantMo/grossMo) : 0;
+  var leftPct  = Math.max(0, 100 - selfPct - grantPct);          // segments sum to exactly 100
+  var zc = (z.key==='amber'?' amber':z.key==='red'?' red':'');
+  document.getElementById('dash-seg-selfcash').className='dash-bar-seg dash-seg-selfcash'+zc;
+  document.getElementById('dash-seg-selfcash').style.flex='0 0 '+selfPct+'%';
+  document.getElementById('dash-seg-grant').style.flex='0 0 '+grantPct+'%';
+  document.getElementById('dash-seg-left').style.flex='0 0 '+leftPct+'%';
+  document.getElementById('dash-sw-selfcash').className='dash-leg-sw selfcash'+zc;
+  document.getElementById('dash-runway-mo').textContent=(r.base>=999?'Covered at current inflows':('~'+Math.round(r.base)+' months left'));
+  document.getElementById('dash-val-selfcash').textContent=fmt(selfMo);
+  document.getElementById('dash-val-grant').textContent=grantMo>0?fmt(grantMo):'S$0';
+  document.getElementById('dash-val-left').textContent=fmt(r.remaining);
+  document.getElementById('dash-sub-left').textContent=(r.base>=999?'covered':('~'+Math.round(r.base)+' mo runway'));
+
+  var net=selfMo;
+  document.getElementById('sg-runway').textContent=moLabel(r.base);
+  document.getElementById('sg-runway').className='pill-value '+z.key;
+  document.getElementById('sg-netcost').textContent=fmt(net);
+  document.getElementById('sg-grants').textContent=r.grantOffset>0?fmt(r.grantOffset):'—';
+  var qual=evaluateEligibility(state).filter(function(s){return s.qualifies;});
+  document.getElementById('sg-schemes').textContent=qual.length;
+
+  // alert reflects zone
+  var al=document.getElementById('dash-alert'), at=document.getElementById('alert-title'), ab=document.getElementById('alert-body');
+  al.className='alert-banner '+(z.key==='green'?'green':z.key==='red'?'red':'');
+  if(z.key==='green'){at.textContent='Your runway looks healthy';ab.textContent='More than 12 months at current pace. Tap to explore scenarios.';}
+  else if(z.key==='amber'){at.textContent='Runway is in the caution range';ab.textContent='6–12 months at current pace. Tap to see what grants and changes could help.';}
+  else{at.textContent='Runway is critical';ab.textContent='Under 6 months. Tap to review grants and options now.';}
+
+  renderSchemeList();
+}
+function renderSchemeList(){
+  var list=document.getElementById('scheme-list'), schemes=evaluateEligibility(state);
+  var qualifying=schemes.filter(function(s){return s.qualifies;});
+  var info=schemes.filter(function(s){return !s.qualifies && s.informational;});
+  var html='';
+  if(qualifying.length===0){
+    html+='<div class="zero-state"><div class="zs-icon">🔎</div><div class="zs-text">Based on what you\'ve told us, none of the current means-tested grants may apply. You can still project your runway. For direct support, see the <strong>AIC caregiving directory (aic.sg)</strong>.</div></div>';
+  }
+  qualifying.forEach(function(s){
+    var tap = s.id==='hcg' ? " onclick=\"goTo('s6')\"" : "";
+    html+='<div class="scheme-card"'+tap+'><div class="scheme-icon">'+s.icon+'</div><div class="scheme-body"><div class="scheme-title">'+s.name+'</div><div class="scheme-desc">'+s.desc+'</div></div><div class="scheme-val green">'+s.valueLabel+'</div></div>';
+  });
+  info.forEach(function(s){
+    html+='<div class="scheme-card"><div class="scheme-icon">'+s.icon+'</div><div class="scheme-body"><div class="scheme-title">'+s.name+'</div><div class="scheme-desc">'+s.desc+'</div></div><div class="scheme-val grey">Info only</div></div>';
+  });
+  list.innerHTML=html;
+}
+function renderHcgDetail(){
+  var s=state, scOrPr=(s.citizenship==='sc'||s.citizenship==='pr'), residential=s.living==='residential_care';
+  var tier=(s.hhi==='leq_1800')?400:200;
+  document.getElementById('hcg-tier').textContent='S$'+tier+'/month';
+  function ck(ok,txt){return '<div class="criteria-item"><span class="criteria-check">'+(ok?'✅':'❌')+'</span><div class="criteria-text">'+txt+'</div></div>';}
+  document.getElementById('hcg-criteria').innerHTML=
+    ck(scOrPr,'Care recipient is a <strong>Singapore Citizen or PR</strong>')+
+    ck(s.age>=65,'Care recipient is <strong>aged 65 or above</strong> ('+s.age+')')+
+    ck(s.adl==='three_or_more','Needs help with <strong>3 or more</strong> daily activities')+
+    ck(!residential,'Living at home — <strong>not in residential care</strong>')+
+    ck(true,'Household income within means-test range');
+}
+
+/* ════════════════ RUNWAY (interactive) ════════════════ */
+function onSlider(){
+  state.savings=+document.getElementById('in-savings').value;
+  state.cost=+document.getElementById('in-cost').value;
+  state.income=+document.getElementById('in-income').value;
+  state.sibling=+document.getElementById('in-sibling').value;
+  document.getElementById('sv-savings').textContent=fmt(state.savings);
+  document.getElementById('sv-cost').textContent=fmt(state.cost);
+  document.getElementById('sv-income').textContent=fmt(state.income);
+  document.getElementById('sv-sibling').textContent=fmt(state.sibling);
+  renderRunway();
+}
+/* v0.3: elapsed-time slider (demo only) */
+function onElapsed(){
+  state.elapsedMonths=+document.getElementById('in-elapsed').value;
+  document.getElementById('sv-elapsed').textContent=moWord(state.elapsedMonths);
+  renderRunway();
+}
+/* v0.3: actual-spent slider (demo only) — drives the pace check */
+function onSpent(){
+  state.actualSpent=+document.getElementById('in-spent').value;
+  document.getElementById('sv-spent').textContent=fmt(state.actualSpent);
+  renderRunway();
+}
+function setScenario(el){
+  document.querySelectorAll('#scenario-tabs .s-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active'); state.scenario=el.getAttribute('data-scn'); renderRunway();
+}
+
+/* v0.3 — render the runway timeline bar: today marker + elapsed/remaining fill.
+   Timeline domain = plan-start → projected depletion = elapsed + remaining months.
+   - elapsed (muted, hatched) sits left of the "Today" marker = what has passed
+   - remaining (live zone colour) sits right of it = runway left
+   Accessibility (DesignTokens §7): never colour-alone — marker carries a "Today" label,
+   endpoints are dated, and the legend names elapsed/remaining in text. */
+function renderRunwayTimeline(remainingMonths, zone, plannedBurn){
+  var elapsed = state.elapsedMonths;
+  // Cap the displayed remaining for "covered" (∞) so the bar stays meaningful.
+  var remCapped = (remainingMonths>=999) ? 24 : remainingMonths;
+  var total = elapsed + remCapped;
+  // Guard divide-by-zero (fresh plan, zero runway): show full elapsed, marker at far right.
+  var elapsedPct = total>0 ? (elapsed/total*100) : 100;
+  elapsedPct = Math.max(0, Math.min(100, elapsedPct));
+  var remPct = 100 - elapsedPct;
+
+  var elSeg=document.getElementById('rw-tl-elapsed');
+  var remSeg=document.getElementById('rw-tl-remaining');
+  elSeg.style.flex='0 0 '+elapsedPct+'%';
+  remSeg.style.flex='0 0 '+remPct+'%';
+  remSeg.className='rw-tl-seg rw-tl-remaining'+(zone.key==='amber'?' amber':zone.key==='red'?' red':'');
+
+  // Marker sits at the elapsed/remaining boundary. Clamp label so it never clips the edges.
+  var marker=document.getElementById('rw-tl-marker');
+  marker.style.left=Math.max(6, Math.min(94, elapsedPct))+'%';
+
+  // Endpoints + legend (text labels — accessibility)
+  document.getElementById('rw-tl-start').textContent='Plan started '+subMonths(elapsed);
+  document.getElementById('rw-tl-end').textContent=(remainingMonths>=999)?'Covered at current inflows':('Runs to '+addMonths(remainingMonths));
+  document.getElementById('rw-tl-leg-elapsed').textContent=moWord(elapsed)+' elapsed';
+  document.getElementById('rw-tl-leg-remaining').textContent=(remainingMonths>=999)?'Indefinite remaining':(moWord(remCapped)+' remaining');
+  var legSw=document.getElementById('rw-tl-leg-swatch');
+  legSw.className='rw-tl-swatch remaining'+(zone.key==='amber'?' amber':zone.key==='red'?' red':'');
+
+  // ── Pace check (AD-B-014): actual spent vs planned spent by now ──
+  // Planned spend by now = planned monthly net burn × elapsed months.
+  // Compare actual; translate the gap into months of buffer gained/lost at the planned burn rate.
+  var plannedSpend = plannedBurn * elapsed;
+  var actual = state.actualSpent;
+  var gap = actual - plannedSpend;                 // +ve = overspent (behind), -ve = underspent (ahead)
+  var bufferMo = plannedBurn>0 ? (gap/plannedBurn) : 0; // months of runway gained(-)/lost(+)
+  var planLine=document.getElementById('rw-tl-plan-line');
+  var ps=document.getElementById('pace-status'), pic=document.getElementById('pace-ic'),
+      pv=document.getElementById('pace-verdict'), pd=document.getElementById('pace-detail');
+
+  // "Planned" line drawn INSIDE the bar: where consumption WOULD have reached on plan.
+  // Today marker sits at elapsedPct (actual position). The plan line offsets by the buffer:
+  // overspent (gap>0) → plan line LEFT of Today (you've consumed more than planned by now);
+  // underspent (gap<0) → plan line RIGHT of Today (you've consumed less). Clamp inside the bar.
+  var planMonths = elapsed - bufferMo;
+  var planPct = total>0 ? Math.max(3, Math.min(97, planMonths/total*100)) : elapsedPct;
+  planLine.style.left=planPct+'%';
+  // Flip the label tab to the inner side near the edges so it never clips out of the bar.
+  planLine.className='rw-tl-plan-line'+(planPct>80?' flip':'');
+
+  // Tolerance band: within ~half a month of plan = "on track"
+  var tol = plannedBurn*0.5;
+  if (Math.abs(gap) <= tol || plannedBurn===0){
+    ps.className='pace-status'; pic.textContent='✅';
+    pv.textContent='On track';
+    pd.textContent='Your spending matches the plan so far — about '+fmt(plannedSpend)+' expected by now.';
+  } else if (gap < 0){
+    ps.className='pace-status ahead'; pic.textContent='🟢';
+    pv.textContent='Ahead — building buffer';
+    pd.textContent='You\'ve spent '+fmt(Math.abs(gap))+' less than planned — roughly '+moWord(Math.abs(bufferMo))+' of extra runway at this pace.';
+  } else {
+    var hard = bufferMo >= 2;                        // 2+ months behind = stronger warning
+    ps.className='pace-status '+(hard?'behind-red':'behind'); pic.textContent=hard?'🔴':'🟡';
+    pv.textContent='Behind — burning faster than planned';
+    pd.textContent='You\'ve spent '+fmt(gap)+' more than planned — about '+moWord(bufferMo)+' of runway shorter than expected. Review costs or grants.';
+  }
+}
+
+function renderRunway(){
+  // sync slider positions with state
+  document.getElementById('in-savings').value=state.savings;
+  document.getElementById('in-cost').value=state.cost;
+  document.getElementById('in-income').value=state.income;
+  document.getElementById('in-sibling').value=state.sibling;
+  document.getElementById('in-elapsed').value=state.elapsedMonths;
+  document.getElementById('in-spent').value=state.actualSpent;
+  document.getElementById('sv-savings').textContent=fmt(state.savings);
+  document.getElementById('sv-cost').textContent=fmt(state.cost);
+  document.getElementById('sv-income').textContent=fmt(state.income);
+  document.getElementById('sv-sibling').textContent=fmt(state.sibling);
+  document.getElementById('sv-elapsed').textContent=moWord(state.elapsedMonths);
+  document.getElementById('sv-spent').textContent=fmt(state.actualSpent);
+
+  var r=computeRunway(state);
+  var m=r[state.scenario], z=runwayZone(m);
+  // ring
+  var ring=document.getElementById('runway-ring');
+  var pct=Math.max(4, Math.min(100, (m>=999?100:m/24*100)));
+  ring.style.background='conic-gradient('+z.col+' 0% '+pct+'%, var(--border) '+pct+'% 100%)';
+  document.getElementById('runway-val').innerHTML=(m>=999?'∞':Math.round(m))+'<span class="runway-unit">months</span>';
+  document.getElementById('runway-date').innerHTML='Projected to <strong style="color:var(--dark);">'+addMonths(m)+'</strong>';
+  var chip=document.getElementById('runway-chip'); chip.textContent=z.chip; chip.className='chip '+z.chipCls;
+
+  // assumptions reflect active scenario
+  var costShown=state.cost*(state.scenario==='cost20'?1.2:1);
+  var sibShown=state.sibling+(state.scenario==='sibling'?500:0);
+  var grantsShown=(state.scenario==='grants')?r.grantOffset:0;
+  var plannedBurn=Math.max(0, costShown-state.income-sibShown-grantsShown);
+
+  // v0.3 timeline indicator + pace check (needs plannedBurn)
+  renderRunwayTimeline(m, z, plannedBurn);
+  document.getElementById('pr-reserves').textContent=fmt(r.remaining);
+  document.getElementById('pr-cost').textContent=fmt(costShown)+(state.scenario==='cost20'?' (+20%)':'');
+  document.getElementById('pr-income').textContent='– '+fmt(state.income+sibShown);
+  document.getElementById('pr-grants').textContent= grantsShown>0?('– '+fmt(grantsShown)):'– S$0';
+  var net=Math.max(0, costShown-state.income-sibShown-grantsShown);
+  document.getElementById('pr-net').textContent=fmt(net)+'/mo';
+}
+
+/* ════════════════ RESET ════════════════ */
+function resetDemo(){
+  state=Object.assign({}, DEFAULT_STATE);
+  document.querySelectorAll('.onb-opt.sel').forEach(function(o){o.classList.remove('sel');});
+  applyDefaultSelections();
+  goTo('s1');
+}
+
+/* ════════════════ NARRATION ════════════════ */
+var NAR={
+  s1:{k:'Investor walkthrough',s:'Screen 1 of 8',t:'One engine, many life chapters',
+     b:'The same financial-planning engine powers multiple life contexts. Today we\'re entering the <strong>Caregiver</strong> context — for the ~210,000 Singaporeans actively caring for an ageing parent at home.',
+     p:['Multi-context platform, not a single-use app','Caregiving is the fastest-growing financial-stress segment','Each context unlocks its own grant set and projection model']},
+  s2:{k:'Module 1 · Resource Discovery',s:'Screen 2 of 8',t:'A 90-second profile',
+     b:'The caregiver answers a few plain questions about who they\'re caring for. <strong>Try changing any answer</strong> — citizenship, age, living arrangement — and watch the eligibility results update on the next screens.',
+     p:['No Singpass, no documents to start','Every answer feeds the live eligibility engine','Sensitive data never leaves the device']},
+  s3:{k:'Module 1 · Resource Discovery',s:'Screen 3 of 8',t:'Care needs drive eligibility',
+     b:'The level of daily-living help is the single biggest eligibility lever. <strong>3+ activities</strong> unlocks the Home Caregiving Grant; <strong>independent</strong> suppresses it. The engine encodes the real AIC rules.',
+     p:['ADL level gates HCG and ElderFund','Rules match published government criteria','Change it and the dashboard re-computes instantly']},
+  s4:{k:'Module 1 · Resource Discovery',s:'Screen 4 of 8',t:'Income sets the grant tier',
+     b:'Household income decides the <strong>HCG tier (S$200 vs S$400/month)</strong> and means-tested eligibility. This is mandatory — skipping it would give an inaccurate result.',
+     p:['Income bracket → HCG payout tier','Drives ElderFund means-testing','Tap "See my results" to run the engine']},
+  s4b:{k:'Module 1 · Output',s:'Screen 5 of 8',t:'Personalised, not a generic list',
+     b:'The engine returns the <strong>schemes this specific caregiver may qualify for</strong>, with estimated values — computed live from the profile, not a static brochure.',
+     p:['Most caregivers never discover these grants','Output is ranked and personalised','Carries straight into the runway projection']},
+  s5:{k:'The product',s:'Screen 6 of 8',t:'The dashboard ties it together',
+     b:'Discovery meets projection. The <strong>Reserves &amp; runway bar</strong> shows, at a glance, how much the caregiver pays <strong>from their own pocket</strong> versus <strong>what grants cover</strong> each month — and how many months of reserves remain.',
+     p:['Self-cash vs grant offset shown side by side','Bar colour follows the locked runway threshold rule','Edit the profile and everything recomputes']},
+  s6:{k:'Module 1 · Drill-down',s:'Screen 7 of 8',t:'Eligibility you can trust',
+     b:'Every scheme shows <strong>why</strong> the caregiver does or doesn\'t qualify, checked against their actual profile — plus the exact grant tier and how to apply.',
+     p:['Transparent, criterion-by-criterion','Tier reflects the entered income bracket','Links out to the official AIC process']},
+  s8:{k:'Module 2 · Runway Projection',s:'Screen 8 of 8',t:'The "how long can we last?" engine',
+     b:'This is the emotional core. The <strong>runway timeline</strong> shows a "Today" marker with what has already passed muted behind it, and the live runway ahead in colour. <strong>Drag the sliders</strong> — savings, cost, income, a sibling chipping in — and both the runway and the timeline recompute live.',
+     p:['"Today" marker + muted elapsed = where you stand now','Live what-if modelling — try the sliders now','Scenarios: +20% costs, sibling S$500, with grants']},
+  s12:{k:'Trust & compliance',s:'Appendix',t:'Built for a regulated market',
+     b:'Estimates are framed as estimates, never advice. Data stays on-device. Final legal copy is pending review — the compliance posture is designed in from day one.',
+     p:['MAS-safe "may qualify" / "estimate" language','On-device data residency (PDPA)','Legal copy gate before production ship']}
+};
+function updateNarration(id){
+  var n=NAR[id]; if(!n) return;
+  document.getElementById('nar-kicker').textContent=n.k;
+  document.getElementById('nar-step').textContent=n.s;
+  document.getElementById('nar-title').textContent=n.t;
+  document.getElementById('nar-body').innerHTML=n.b;
+  document.getElementById('nar-points').innerHTML=n.p.map(function(pt,i){return '<div class="nar-point"><span class="np-dot">'+(i+1)+'</span><span>'+pt+'</span></div>';}).join('');
+}
+
+/* ════════════════ INIT ════════════════ */
+applyDefaultSelections();
+renderDashboard();
+updateNarration('s1');
+</script>
+</body>
+</html>
