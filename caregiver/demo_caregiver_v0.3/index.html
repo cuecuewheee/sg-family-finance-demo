@@ -66,6 +66,7 @@
   --hub-text:rgba(255,255,255,0.55);
   --elapsed-fill:#C7CBD6;        /* muted/desaturated — "what has passed" (v0.3, AD-B-012) */
   --elapsed-fill-edge:#B4B9C7;   /* slightly darker leading edge of elapsed fill */
+  --grant-teal:#7FD4C4;          /* grant-offset segment, distinct from self-cash (v0.3, AD-B-013) */
   --now-marker:var(--dark);      /* "Today" marker stem — references --dark (17:1, high contrast on any zone) */
   --sh-card:0 2px 8px rgba(0,0,0,.07);
   --sh-raised:0 4px 18px rgba(0,0,0,.12);
@@ -192,7 +193,7 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
 .dash-seg-selfcash{background:var(--green);}        /* self-funded spend; zone colour set in JS */
 .dash-seg-selfcash.amber{background:var(--amber);}
 .dash-seg-selfcash.red{background:var(--red);}
-.dash-seg-grant{background:#7FD4C4;}                 /* grant offset — light teal, distinct from self-cash */
+.dash-seg-grant{background:var(--grant-teal);}       /* grant offset — distinct from self-cash */
 .dash-seg-left{background:rgba(255,255,255,.28);}    /* reserves remaining */
 /* Legend: self-cash / grants / left — each with swatch + S$ amount, directly under the bar (aligned). */
 .dash-legend{display:flex;justify-content:space-between;gap:8px;margin-top:9px;}
@@ -202,10 +203,10 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
 .dash-leg-sw.selfcash{background:var(--green);}
 .dash-leg-sw.selfcash.amber{background:var(--amber);}
 .dash-leg-sw.selfcash.red{background:var(--red);}
-.dash-leg-sw.grant{background:#7FD4C4;}
+.dash-leg-sw.grant{background:var(--grant-teal);}
 .dash-leg-sw.left{background:rgba(255,255,255,.4);}
 .dash-leg-val{font-size:13px;font-weight:800;color:#fff;}
-.dash-leg-sub{font-size:9px;color:rgba(255,255,255,.55);font-weight:600;}
+.dash-leg-sub{font-size:10px;color:rgba(255,255,255,.55);font-weight:600;}
 .dash-leg.right{align-items:flex-end;text-align:right;}
 .drill-link{text-align:right;margin-top:10px;font-size:12px;color:rgba(255,255,255,.75);font-weight:700;cursor:pointer;}
 
@@ -291,7 +292,7 @@ body{background:#0f1117;display:flex;flex-direction:column;align-items:center;mi
 .rw-tl-bar{position:relative;height:22px;border-radius:11px;overflow:hidden;display:flex;box-shadow:inset 0 1px 3px rgba(0,0,0,.1);background:var(--border);}
 /* "Planned" position drawn inside the bar as a dashed vertical line + small flag tab. */
 .rw-tl-plan-line{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed rgba(26,29,46,.55);transform:translateX(-1px);transition:left .4s ease;z-index:2;pointer-events:none;}
-.rw-tl-plan-line::after{content:'Planned';position:absolute;top:50%;left:4px;transform:translateY(-50%);font-size:8px;font-weight:800;color:var(--dark);background:rgba(255,255,255,.82);padding:1px 4px;border-radius:4px;letter-spacing:.2px;white-space:nowrap;}
+.rw-tl-plan-line::after{content:'Planned';position:absolute;top:50%;left:4px;transform:translateY(-50%);font-size:10px;font-weight:800;color:var(--dark);background:rgba(255,255,255,.88);padding:1px 5px;border-radius:4px;letter-spacing:.2px;white-space:nowrap;}
 .rw-tl-plan-line.flip::after{left:auto;right:4px;}
 .rw-tl-seg{height:100%;transition:flex-basis .4s ease;}
 .rw-tl-elapsed{background:repeating-linear-gradient(135deg,var(--elapsed-fill) 0 6px,var(--elapsed-fill-edge) 6px 12px);}
