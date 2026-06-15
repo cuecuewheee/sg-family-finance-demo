@@ -1,0 +1,43 @@
+<svg width="361" height="120" viewBox="0 0 361 120" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <!-- Financial Bar Component — 3 states stacked -->
+  <!-- ══ STATE 1: LIVE ══ -->
+  <g id="financial-bar-live" transform="translate(0,0)">
+    <rect x="0" y="0" width="361" height="36" rx="4" fill="#F5F6FA"/>
+    <text x="8" y="12" font-size="11" font-weight="700" fill="#3A9E6F">Spent</text>
+    <text x="150" y="12" font-size="11" font-weight="700" fill="#2E75B6" text-anchor="middle">Upcoming</text>
+    <text x="297" y="12" font-size="11" font-weight="700" fill="#ED7D31" text-anchor="middle">Future</text>
+    <!-- Bar -->
+    <rect x="0" y="16" width="361" height="22" rx="11" fill="#E8EAF0"/>
+    <rect x="0" y="16" width="361" height="22" rx="11" fill="none" style="filter:drop-shadow(inset 0 1px 3px rgba(0,0,0,0.1))"/>
+    <!-- Segments (example: 45% spent, 30% upcoming, 25% future) -->
+    <clipPath id="bar-clip">
+      <rect x="0" y="16" width="361" height="22" rx="11"/>
+    </clipPath>
+    <g clip-path="url(#bar-clip)">
+      <rect x="0" y="16" width="162" height="22" fill="#3A9E6F"/>
+      <rect x="162" y="16" width="108" height="22" fill="#2E75B6"/>
+      <rect x="270" y="16" width="91" height="22" fill="#ED7D31"/>
+    </g>
+    <!-- Amounts -->
+    <text x="8" y="52" font-size="12" font-weight="700" fill="#3A9E6F">S$4,500</text>
+    <text x="150" y="52" font-size="12" font-weight="700" fill="#2E75B6" text-anchor="middle">S$3,000</text>
+    <text x="297" y="52" font-size="12" font-weight="700" fill="#ED7D31" text-anchor="middle">S$2,500</text>
+    <text x="353" y="52" font-size="12" font-weight="700" fill="#2E75B6" text-anchor="end">View breakdown</text>
+    <!-- State label -->
+    <text x="0" y="68" font-size="9" font-weight="400" fill="#9CA3AF">STATE: Live (online, fresh projection)</text>
+  </g>
+
+  <!-- ══ STATE 2: CACHED ══ -->
+  <g id="financial-bar-cached" transform="translate(0,72)">
+    <rect x="0" y="0" width="361" height="22" rx="11" fill="#E8EAF0"/>
+    <clipPath id="bar-clip-cached">
+      <rect x="0" y="0" width="361" height="22" rx="11"/>
+    </clipPath>
+    <g clip-path="url(#bar-clip-cached)">
+      <rect x="0" y="0" width="162" height="22" fill="#3A9E6F" opacity="0.7"/>
+      <rect x="162" y="0" width="108" height="22" fill="#2E75B6" opacity="0.7"/>
+      <rect x="270" y="0" width="91" height="22" fill="#ED7D31" opacity="0.7"/>
+    </g>
+    <text x="0" y="34" font-size="9" font-weight="400" fill="#9CA3AF">Last updated 3 Jun 2026  |  STATE: Cached (offline, last known)</text>
+  </g>
+</svg>

@@ -1,0 +1,101 @@
+{
+  "documents": [
+    {
+      "_type": "kifas_subsidy_tier",
+      "income_range_ghi_min": 0,
+      "income_range_ghi_max": 3000,
+      "income_range_pci_min": 0,
+      "income_range_pci_max": 750,
+      "max_kifas": 163,
+      "min_copay": 1,
+      "effective_from": "2024-01-01",
+      "source_url": "https://go.gov.sg/ecda-kifas-table",
+      "_key": "kifas_tier_0_3000_ghi"
+    },
+    {
+      "_type": "kifas_subsidy_tier",
+      "income_range_ghi_min": 3001,
+      "income_range_ghi_max": 4500,
+      "income_range_pci_min": 751,
+      "income_range_pci_max": 1125,
+      "max_kifas": 152,
+      "min_copay": 12,
+      "effective_from": "2024-01-01",
+      "source_url": "https://go.gov.sg/ecda-kifas-table",
+      "_key": "kifas_tier_3001_4500_ghi"
+    },
+    {
+      "_type": "kifas_subsidy_tier",
+      "income_range_ghi_min": 4501,
+      "income_range_ghi_max": 6000,
+      "income_range_pci_min": 1126,
+      "income_range_pci_max": 1500,
+      "max_kifas": 109,
+      "min_copay": 55,
+      "effective_from": "2024-01-01",
+      "source_url": "https://go.gov.sg/ecda-kifas-table",
+      "_key": "kifas_tier_4501_6000_ghi"
+    },
+    {
+      "_type": "kifas_subsidy_tier",
+      "income_range_ghi_min": 6001,
+      "income_range_ghi_max": 7500,
+      "income_range_pci_min": 1501,
+      "income_range_pci_max": 1875,
+      "max_kifas": 89,
+      "min_copay": 75,
+      "effective_from": "2024-01-01",
+      "source_url": "https://go.gov.sg/ecda-kifas-table",
+      "_key": "kifas_tier_6001_7500_ghi"
+    },
+    {
+      "_type": "kifas_subsidy_tier",
+      "income_range_ghi_min": 7501,
+      "income_range_ghi_max": 9000,
+      "income_range_pci_min": 1876,
+      "income_range_pci_max": 2250,
+      "max_kifas": 69,
+      "min_copay": 95,
+      "effective_from": "2024-01-01",
+      "source_url": "https://go.gov.sg/ecda-kifas-table",
+      "_key": "kifas_tier_7501_9000_ghi"
+    },
+    {
+      "_type": "kifas_subsidy_tier",
+      "income_range_ghi_min": 9001,
+      "income_range_ghi_max": 10500,
+      "income_range_pci_min": 2251,
+      "income_range_pci_max": 2625,
+      "max_kifas": 49,
+      "min_copay": 115,
+      "effective_from": "2024-01-01",
+      "source_url": "https://go.gov.sg/ecda-kifas-table",
+      "_key": "kifas_tier_9001_10500_ghi"
+    },
+    {
+      "_type": "kifas_subsidy_tier",
+      "income_range_ghi_min": 10501,
+      "income_range_ghi_max": 12000,
+      "income_range_pci_min": 2626,
+      "income_range_pci_max": 3000,
+      "max_kifas": 19,
+      "min_copay": 145,
+      "effective_from": "2024-01-01",
+      "source_url": "https://go.gov.sg/ecda-kifas-table",
+      "_key": "kifas_tier_10501_12000_ghi"
+    },
+    {
+      "_type": "kifas_subsidy_tier",
+      "income_range_ghi_min": 12001,
+      "income_range_ghi_max": null,
+      "income_range_pci_min": 3001,
+      "income_range_pci_max": null,
+      "max_kifas": 0,
+      "min_copay": 0,
+      "effective_from": "2024-01-01",
+      "notes": "No subsidy / Not eligible",
+      "source_url": "https://go.gov.sg/ecda-kifas-table",
+      "_key": "kifas_tier_above_12000_ghi"
+    }
+  ]
+}

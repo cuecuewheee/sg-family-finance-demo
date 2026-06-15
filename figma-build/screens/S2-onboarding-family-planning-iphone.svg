@@ -1,0 +1,87 @@
+<svg width="393" height="852" viewBox="0 0 393 852" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <defs>
+    <linearGradient id="teal-hero" x1="0" y1="0" x2="393" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1A8A8A"/>
+      <stop offset="100%" stop-color="#0D5C5C"/>
+    </linearGradient>
+    <filter id="card-sh2" x="-5%" y="-10%" width="115%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.07)"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="393" height="852" fill="#F5F6FA"/>
+
+  <!-- Hero header -->
+  <rect x="0" y="0" width="393" height="200" fill="url(#teal-hero)"/>
+
+  <!-- Status bar -->
+  <text x="20" y="28" font-size="13" fill="rgba(255,255,255,0.6)">9:41</text>
+  <text x="373" y="28" font-size="13" fill="rgba(255,255,255,0.6)" text-anchor="end">●●●</text>
+
+  <!-- Back button -->
+  <text x="20" y="64" font-size="22">←</text>
+  <text x="46" y="64" font-size="15" font-weight="600" fill="#FFFFFF"> Back</text>
+
+  <!-- Step indicator -->
+  <rect x="20" y="76" width="60" height="4" rx="2" fill="rgba(255,255,255,0.9)"/>
+  <rect x="86" y="76" width="60" height="4" rx="2" fill="rgba(255,255,255,0.35)"/>
+  <rect x="152" y="76" width="60" height="4" rx="2" fill="rgba(255,255,255,0.35)"/>
+  <rect x="218" y="76" width="60" height="4" rx="2" fill="rgba(255,255,255,0.35)"/>
+
+  <!-- Onboarding title -->
+  <text x="20" y="124" font-size="22" font-weight="900" fill="#FFFFFF">Family Planning Setup</text>
+  <text x="20" y="146" font-size="13" fill="rgba(255,255,255,0.75)">Let's understand your household situation</text>
+
+  <!-- Step label -->
+  <text x="20" y="172" font-size="11" font-weight="700" fill="rgba(255,255,255,0.6)" letter-spacing="0.9">STEP 1 OF 4</text>
+
+  <!-- ══ QUESTION CARD ══ -->
+  <rect x="16" y="212" width="361" height="68" rx="16" fill="#FFFFFF" filter="url(#card-sh2)"/>
+  <text x="32" y="238" font-size="16" font-weight="700" fill="#1A1D2E">How many children do you have?</text>
+  <text x="32" y="256" font-size="13" fill="#6B7280">Include children under 21 living at home</text>
+
+  <!-- Options -->
+  <rect x="16" y="292" width="361" height="48" rx="12" fill="#FFFFFF" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="32" y="322" font-size="13" fill="#1A1D2E">1 child</text>
+  <text x="369" y="322" font-size="18" fill="#9CA3AF" text-anchor="end">○</text>
+
+  <rect x="16" y="348" width="361" height="48" rx="12" fill="#E5F5F5" stroke="#1A8A8A" stroke-width="1.5"/>
+  <text x="32" y="378" font-size="13" font-weight="700" fill="#1A1D2E">2 children</text>
+  <text x="369" y="378" font-size="18" fill="#1A8A8A" text-anchor="end">●</text>
+
+  <rect x="16" y="404" width="361" height="48" rx="12" fill="#FFFFFF" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="32" y="434" font-size="13" fill="#1A1D2E">3 or more children</text>
+  <text x="369" y="434" font-size="18" fill="#9CA3AF" text-anchor="end">○</text>
+
+  <rect x="16" y="460" width="361" height="48" rx="12" fill="#FFFFFF" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="32" y="490" font-size="13" fill="#1A1D2E">Expecting (not yet born)</text>
+  <text x="369" y="490" font-size="18" fill="#9CA3AF" text-anchor="end">○</text>
+
+  <!-- Info callout -->
+  <rect x="16" y="520" width="361" height="52" rx="12" fill="#E5F5F5"/>
+  <text x="32" y="540" font-size="12" font-weight="700" fill="#1A8A8A">💡 Why we ask</text>
+  <text x="32" y="556" font-size="12" fill="#1A1D2E">Scheme eligibility and projections depend on your child count and birth order.</text>
+
+  <!-- Action row -->
+  <rect x="16" y="588" width="170" height="44" rx="12" fill="#F5F6FA" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="101" y="614" font-size="14" font-weight="600" fill="#1A1D2E" text-anchor="middle">Skip</text>
+
+  <rect x="194" y="588" width="183" height="44" rx="12" fill="#1A8A8A"/>
+  <text x="285.5" y="614" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Next →</text>
+
+  <!-- Nav Bar -->
+  <rect x="0" y="769" width="393" height="83" fill="#FFFFFF"/>
+  <line x1="0" y1="769" x2="393" y2="769" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="49" y="799" font-size="22" text-anchor="middle">🏠</text>
+  <text x="49" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Hub</text>
+  <text x="131" y="799" font-size="22" text-anchor="middle">👶</text>
+  <text x="131" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Child</text>
+  <text x="197" y="799" font-size="22" text-anchor="middle">📋</text>
+  <text x="197" y="814" font-size="10" font-weight="700" fill="#1A8A8A" text-anchor="middle">Plan</text>
+  <text x="263" y="799" font-size="22" text-anchor="middle">🤝</text>
+  <text x="263" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Care</text>
+  <text x="345" y="799" font-size="22" text-anchor="middle">👤</text>
+  <text x="345" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Profile</text>
+  <rect x="150" y="841" width="93" height="5" rx="2.5" fill="#1A1D2E" opacity="0.2"/>
+</svg>

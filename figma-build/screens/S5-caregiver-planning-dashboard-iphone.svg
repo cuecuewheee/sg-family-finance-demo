@@ -1,0 +1,151 @@
+<svg width="393" height="852" viewBox="0 0 393 852" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <defs>
+    <!-- Purple hero gradient — Caregiver context (DesignTokens §1) -->
+    <linearGradient id="cg-hero-grad" x1="0" y1="0" x2="393" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7B5EA7"/>
+      <stop offset="100%" stop-color="#5A3D8A"/>
+    </linearGradient>
+    <!-- Care Readiness ring gradient -->
+    <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7B5EA7"/>
+      <stop offset="100%" stop-color="#2E75B6"/>
+    </linearGradient>
+    <filter id="card-sh" x="-5%" y="-10%" width="115%" height="135%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.07)"/>
+    </filter>
+    <filter id="raised-sh" x="-5%" y="-10%" width="115%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="9" flood-color="rgba(0,0,0,0.12)"/>
+    </filter>
+  </defs>
+
+  <!-- Screen background -->
+  <rect width="393" height="852" fill="#F5F6FA"/>
+
+  <!-- ══ HERO ══ -->
+  <rect x="0" y="0" width="393" height="190" fill="url(#cg-hero-grad)"/>
+
+  <!-- Status bar -->
+  <text x="20" y="24" font-size="13" font-weight="400" fill="rgba(255,255,255,0.7)">9:41</text>
+  <text x="373" y="24" font-size="13" font-weight="400" fill="rgba(255,255,255,0.7)" text-anchor="end">●●●</text>
+
+  <!-- Context pill -->
+  <rect x="20" y="52" width="162" height="22" rx="11" fill="rgba(255,255,255,0.18)"/>
+  <text x="101" y="66" font-size="10" font-weight="700" fill="rgba(255,255,255,0.9)" text-anchor="middle" letter-spacing="0.5">🤝 Caregiver Support</text>
+
+  <!-- Greeting + Stage -->
+  <text x="20" y="96" font-size="13" font-weight="400" fill="rgba(255,255,255,0.75)">Good morning, Qiquan 👋</text>
+  <text x="20" y="118" font-size="22" font-weight="900" fill="#FFFFFF">Caregiver Planning</text>
+
+  <!-- Stage pill -->
+  <rect x="20" y="130" width="152" height="24" rx="12" fill="rgba(255,255,255,0.2)"/>
+  <text x="96" y="146" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">🟢 2 Active Caregivers</text>
+
+  <!-- ══ CARE READINESS SCORE CARD ══ -->
+  <rect x="16" y="202" width="361" height="140" rx="16" fill="#FFFFFF" filter="url(#raised-sh)"/>
+  <text x="32" y="224" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.7">CARE READINESS SCORE</text>
+
+  <!-- Score ring (SVG arc approximation) -->
+  <!-- Background ring -->
+  <circle cx="100" cy="295" r="44" fill="none" stroke="#E8EAF0" stroke-width="10"/>
+  <!-- Score arc (72% = ~259° out of 360°) using a thick arc path -->
+  <!-- Approximate 72% arc: start top (cx,cy-r), sweep clockwise 259° -->
+  <!-- Since SVG arcs are complex, use two overlapping semicircles trick -->
+  <!-- Arc 1: top to right (0°–180°) — always filled for scores >50% -->
+  <circle cx="100" cy="295" r="44" fill="none" stroke="url(#ring-grad)" stroke-width="10"
+    stroke-dasharray="277 83" stroke-dashoffset="69" stroke-linecap="round"/>
+
+  <!-- Score label -->
+  <text x="100" y="291" font-size="24" font-weight="900" fill="#7B5EA7" text-anchor="middle">72</text>
+  <text x="100" y="308" font-size="10" font-weight="700" fill="#6B7280" text-anchor="middle">out of 100</text>
+
+  <!-- Score breakdown (right of ring) -->
+  <text x="168" y="252" font-size="14" font-weight="700" fill="#1A1D2E">Good coverage</text>
+  <text x="168" y="270" font-size="12" fill="#6B7280">3 of 5 care pillars active.</text>
+  <text x="168" y="286" font-size="12" fill="#6B7280">Gap: health POA not signed.</text>
+
+  <!-- Pillar mini-bars -->
+  <text x="168" y="308" font-size="10" fill="#6B7280">Daily care</text>
+  <rect x="230" y="299" width="90" height="8" rx="4" fill="#E8EAF0"/>
+  <rect x="230" y="299" width="81" height="8" rx="4" fill="#7B5EA7"/>
+
+  <text x="168" y="322" font-size="10" fill="#6B7280">Medical</text>
+  <rect x="230" y="313" width="90" height="8" rx="4" fill="#E8EAF0"/>
+  <rect x="230" y="313" width="54" height="8" rx="4" fill="#ED7D31"/>
+
+  <text x="168" y="336" font-size="10" fill="#6B7280">Legal/POA</text>
+  <rect x="230" y="327" width="90" height="8" rx="4" fill="#E8EAF0"/>
+  <rect x="230" y="327" width="27" height="8" rx="4" fill="#D94F4F"/>
+
+  <!-- ══ ACTIVE CAREGIVERS SECTION ══ -->
+  <text x="20" y="362" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.9">ACTIVE CAREGIVERS</text>
+
+  <!-- Caregiver 1 -->
+  <rect x="16" y="370" width="361" height="68" rx="16" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <!-- Purple accent bar -->
+  <rect x="16" y="370" width="6" height="68" rx="3" fill="#7B5EA7"/>
+  <!-- Avatar -->
+  <circle cx="54" cy="404" r="20" fill="#F0EAF8"/>
+  <text x="54" y="410" font-size="20" text-anchor="middle">👵</text>
+  <text x="84" y="394" font-size="14" font-weight="700" fill="#1A1D2E">Grandma Tan</text>
+  <text x="84" y="410" font-size="12" fill="#6B7280">Primary daytime · Mon–Fri, 8am–6pm</text>
+  <text x="84" y="426" font-size="11" fill="#9CA3AF">MediShield Life: ✅ · CHAS: ✅ · Health POA: ❌</text>
+  <!-- Status chip -->
+  <rect x="285" y="386" width="82" height="20" rx="10" fill="#F0EAF8"/>
+  <text x="326" y="400" font-size="10" font-weight="700" fill="#7B5EA7" text-anchor="middle">Active</text>
+
+  <!-- Caregiver 2 -->
+  <rect x="16" y="446" width="361" height="68" rx="16" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <rect x="16" y="446" width="6" height="68" rx="3" fill="#7B5EA7"/>
+  <circle cx="54" cy="480" r="20" fill="#F0EAF8"/>
+  <text x="54" y="486" font-size="20" text-anchor="middle">🧓</text>
+  <text x="84" y="470" font-size="14" font-weight="700" fill="#1A1D2E">Grandpa Tan</text>
+  <text x="84" y="486" font-size="12" fill="#6B7280">Backup · Weekend support</text>
+  <text x="84" y="502" font-size="11" fill="#9CA3AF">MediShield Life: ✅ · CHAS: ✅ · Health POA: ❌</text>
+  <rect x="285" y="462" width="82" height="20" rx="10" fill="#F0EAF8"/>
+  <text x="326" y="476" font-size="10" font-weight="700" fill="#7B5EA7" text-anchor="middle">Active</text>
+
+  <!-- ══ ACTION NEEDED CARD ══ -->
+  <rect x="16" y="524" width="361" height="64" rx="14" fill="#FEF3EA" stroke="rgba(237,125,49,0.4)" stroke-width="1"/>
+  <text x="34" y="544" font-size="20">⚠️</text>
+  <text x="62" y="540" font-size="13" font-weight="700" fill="#1A1D2E">Health POA not completed for 2 caregivers</text>
+  <text x="62" y="557" font-size="12" fill="#1A1D2E">Care readiness gap: legal authority for medical decisions</text>
+  <text x="62" y="573" font-size="12" font-weight="700" fill="#2E75B6">Learn how to set up POA →</text>
+
+  <!-- ══ STATUS PILLS 2×2 ══ -->
+  <rect x="16" y="600" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="30" y="619" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">CARE SCORE</text>
+  <text x="30" y="640" font-size="16" font-weight="900" fill="#7B5EA7">72 / 100</text>
+  <text x="30" y="656" font-size="10" fill="#6B7280">Good · 3 pillars active</text>
+
+  <rect x="205" y="600" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="219" y="619" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">CAREGIVERS</text>
+  <text x="219" y="640" font-size="16" font-weight="900" fill="#7B5EA7">2 Active</text>
+  <text x="219" y="656" font-size="10" fill="#6B7280">0 backup · 0 professional</text>
+
+  <rect x="16" y="672" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="30" y="691" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">MEDISHIELD LIFE</text>
+  <text x="30" y="712" font-size="16" font-weight="900" fill="#3A9E6F">Both Active</text>
+  <text x="30" y="728" font-size="10" fill="#6B7280">Annual prem ~$800 combined</text>
+
+  <rect x="205" y="672" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="219" y="691" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">CHAS STATUS</text>
+  <text x="219" y="712" font-size="16" font-weight="900" fill="#3A9E6F">Active</text>
+  <text x="219" y="728" font-size="10" fill="#6B7280">Blue card · Both caregivers</text>
+
+  <!-- ══ NAV BAR ══ -->
+  <rect x="0" y="769" width="393" height="83" fill="#FFFFFF"/>
+  <line x1="0" y1="769" x2="393" y2="769" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="49" y="799" font-size="22" text-anchor="middle">🏠</text>
+  <text x="49" y="814" font-size="10" font-weight="700" fill="#2E75B6" text-anchor="middle">Home</text>
+  <text x="131" y="799" font-size="22" text-anchor="middle">💰</text>
+  <text x="131" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Costs</text>
+  <text x="197" y="799" font-size="22" text-anchor="middle">🗺</text>
+  <text x="197" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Journey</text>
+  <text x="263" y="799" font-size="22" text-anchor="middle">🎁</text>
+  <text x="263" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Grants</text>
+  <text x="345" y="799" font-size="22" text-anchor="middle">⊞</text>
+  <text x="345" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Contexts</text>
+
+  <!-- Home indicator -->
+  <rect x="150" y="841" width="93" height="5" rx="2.5" fill="#1A1D2E" opacity="0.2"/>
+</svg>

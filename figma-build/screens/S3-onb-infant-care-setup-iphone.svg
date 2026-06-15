@@ -1,0 +1,97 @@
+<svg width="393" height="852" viewBox="0 0 393 852" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <defs>
+    <!-- Green hero gradient for Stage 3 setup -->
+    <linearGradient id="ic-setup-grad" x1="0" y1="0" x2="393" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3A9E6F"/>
+      <stop offset="100%" stop-color="#2A7A55"/>
+    </linearGradient>
+    <filter id="card-sh" x="-5%" y="-10%" width="115%" height="135%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.07)"/>
+    </filter>
+  </defs>
+
+  <!-- Screen background -->
+  <rect width="393" height="852" fill="#F5F6FA"/>
+
+  <!-- ══ APP HEADER ══ -->
+  <rect x="0" y="0" width="393" height="59" fill="#FFFFFF"/>
+  <line x1="0" y1="59" x2="393" y2="59" stroke="#E8EAF0" stroke-width="1"/>
+  <!-- Back chevron + label -->
+  <text x="20" y="38" font-size="20" fill="#2E75B6">‹</text>
+  <text x="34" y="38" font-size="14" font-weight="600" fill="#2E75B6">Back</text>
+  <!-- Screen tag pill -->
+  <rect x="283" y="22" width="94" height="22" rx="11" fill="#E8F6EF"/>
+  <text x="330" y="37" font-size="10" font-weight="700" fill="#3A9E6F" text-anchor="middle" letter-spacing="0.7">STAGE 3 SETUP</text>
+
+  <!-- ══ HERO (green) ══ -->
+  <rect x="0" y="59" width="393" height="120" fill="url(#ic-setup-grad)"/>
+  <text x="24" y="106" font-size="44">🍼</text>
+  <text x="82" y="95" font-size="20" font-weight="900" fill="#FFFFFF">Infant Care Setup</text>
+  <text x="82" y="113" font-size="12" fill="rgba(255,255,255,0.75)">5 quick questions — subsidy estimate,</text>
+  <text x="82" y="129" font-size="12" fill="rgba(255,255,255,0.75)">CDA headroom, and monthly cost.</text>
+
+  <!-- ══ STEP BAR (5 steps — Issue 01 fix: opacity .6 for active) ══ -->
+  <!-- Step 1: done (green) -->
+  <rect x="20" y="195" width="60" height="4" rx="2" fill="#3A9E6F"/>
+  <!-- Step 2: active (rgba(.6)) -->
+  <rect x="88" y="195" width="60" height="4" rx="2" fill="rgba(58,158,111,0.6)"/>
+  <!-- Steps 3–5: pending -->
+  <rect x="156" y="195" width="60" height="4" rx="2" fill="#E8EAF0"/>
+  <rect x="224" y="195" width="60" height="4" rx="2" fill="#E8EAF0"/>
+  <rect x="292" y="195" width="81" height="4" rx="2" fill="#E8EAF0"/>
+
+  <!-- ══ QUESTION CARD — Step 1 of 5 ══ -->
+  <rect x="16" y="213" width="361" height="306" rx="18" fill="#FFFFFF" filter="url(#card-sh)"/>
+
+  <!-- Step label -->
+  <text x="32" y="240" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.7">STEP 1 OF 5</text>
+
+  <!-- Question -->
+  <text x="32" y="266" font-size="16" font-weight="700" fill="#1A1D2E">What's your infant care arrangement?</text>
+
+  <!-- Option rows (Issue 01 fix: green selected state for green-theme) -->
+  <!-- Option 1: selected state (green theme) -->
+  <rect x="32" y="280" width="329" height="50" rx="12" fill="#E8F6EF" stroke="#3A9E6F" stroke-width="1.5"/>
+  <text x="52" y="308" font-size="20">🏫</text>
+  <text x="82" y="308" font-size="13" font-weight="600" fill="#3A9E6F">Anchor/Partner operator centre</text>
+
+  <!-- Option 2 -->
+  <rect x="32" y="338" width="329" height="50" rx="12" fill="#FFFFFF" stroke="#E8EAF0" stroke-width="1.5"/>
+  <text x="52" y="366" font-size="20">🏢</text>
+  <text x="82" y="366" font-size="13" fill="#1A1D2E">Private centre</text>
+
+  <!-- Option 3 -->
+  <rect x="32" y="396" width="329" height="50" rx="12" fill="#FFFFFF" stroke="#E8EAF0" stroke-width="1.5"/>
+  <text x="52" y="424" font-size="20">👪</text>
+  <text x="82" y="424" font-size="13" fill="#1A1D2E">Family member (grandparent/helper)</text>
+
+  <!-- Option 4 -->
+  <rect x="32" y="454" width="329" height="50" rx="12" fill="#FFFFFF" stroke="#E8EAF0" stroke-width="1.5"/>
+  <text x="52" y="482" font-size="20">🔍</text>
+  <text x="82" y="482" font-size="13" fill="#1A1D2E">Not enrolled yet — planning ahead</text>
+
+  <!-- Action buttons -->
+  <!-- Secondary: Skip -->
+  <rect x="32" y="516" width="150" height="44" rx="12" fill="#F5F6FA" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="107" y="543" font-size="14" font-weight="600" fill="#1A1D2E" text-anchor="middle">Skip</text>
+  <!-- Primary: Confirm (green) -->
+  <rect x="192" y="516" width="169" height="44" rx="12" fill="#3A9E6F"/>
+  <text x="276" y="543" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Confirm →</text>
+
+  <!-- ══ NAV BAR ══ -->
+  <rect x="0" y="769" width="393" height="83" fill="#FFFFFF"/>
+  <line x1="0" y1="769" x2="393" y2="769" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="49" y="799" font-size="22" text-anchor="middle">🏠</text>
+  <text x="49" y="814" font-size="10" font-weight="700" fill="#2E75B6" text-anchor="middle">Home</text>
+  <text x="131" y="799" font-size="22" text-anchor="middle">💰</text>
+  <text x="131" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Costs</text>
+  <text x="197" y="799" font-size="22" text-anchor="middle">🗺</text>
+  <text x="197" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Journey</text>
+  <text x="263" y="799" font-size="22" text-anchor="middle">🎁</text>
+  <text x="263" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Grants</text>
+  <text x="345" y="799" font-size="22" text-anchor="middle">⊞</text>
+  <text x="345" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Contexts</text>
+
+  <!-- Home indicator -->
+  <rect x="150" y="841" width="93" height="5" rx="2.5" fill="#1A1D2E" opacity="0.2"/>
+</svg>

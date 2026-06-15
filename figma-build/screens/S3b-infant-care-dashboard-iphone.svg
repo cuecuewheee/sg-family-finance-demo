@@ -1,0 +1,162 @@
+<svg width="393" height="852" viewBox="0 0 393 852" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <defs>
+    <!-- --green hero gradient (Stage 3 Child Raising — Infant Care) -->
+    <linearGradient id="ic-hero-grad" x1="0" y1="0" x2="393" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3A9E6F"/>
+      <stop offset="100%" stop-color="#1D6B47"/>
+    </linearGradient>
+    <!-- Standard card shadow: --sh-card -->
+    <filter id="card-sh" x="-5%" y="-10%" width="115%" height="135%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.07)"/>
+    </filter>
+    <!-- Raised card shadow: --sh-raised -->
+    <filter id="raised-sh" x="-5%" y="-10%" width="115%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="9" flood-color="rgba(0,0,0,0.12)"/>
+    </filter>
+  </defs>
+
+  <!-- Screen background: --grey-bg -->
+  <rect width="393" height="852" fill="#F5F6FA"/>
+
+  <!-- ══ HERO HEADER (green gradient) ══ -->
+  <rect x="0" y="0" width="393" height="190" fill="url(#ic-hero-grad)"/>
+
+  <!-- Status bar -->
+  <text x="20" y="24" font-size="13" font-weight="400" fill="rgba(255,255,255,0.7)">9:41</text>
+  <text x="373" y="24" font-size="13" font-weight="400" fill="rgba(255,255,255,0.7)" text-anchor="end">●●●</text>
+
+  <!-- Context pill -->
+  <rect x="20" y="52" width="168" height="22" rx="11" fill="rgba(255,255,255,0.18)"/>
+  <text x="104" y="66" font-size="10" font-weight="700" fill="rgba(255,255,255,0.9)" text-anchor="middle" letter-spacing="0.5">👶 Child Raising Planning</text>
+
+  <!-- Greeting -->
+  <text x="20" y="96" font-size="13" font-weight="400" fill="rgba(255,255,255,0.75)">Good morning, Qiquan 👋</text>
+  <text x="20" y="118" font-size="22" font-weight="900" fill="#FFFFFF">Month 4 · Infant Care Stage</text>
+
+  <!-- Stage status pill -->
+  <rect x="20" y="130" width="96" height="24" rx="12" fill="rgba(255,255,255,0.2)"/>
+  <text x="68" y="146" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">🟢 On Track</text>
+
+  <!-- ══ FINANCIAL OVERVIEW CARD ══ -->
+  <rect x="16" y="202" width="361" height="132" rx="16" fill="#FFFFFF" filter="url(#card-sh)"/>
+
+  <!-- Card label -->
+  <text x="32" y="224" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6" text-transform="uppercase">FINANCIAL OVERVIEW — INFANT CARE STAGE</text>
+
+  <!-- Bar labels -->
+  <text x="32" y="244" font-size="11" font-weight="700" fill="#3A9E6F">Spent</text>
+  <text x="196" y="244" font-size="11" font-weight="700" fill="#2E75B6" text-anchor="middle">Upcoming · 3 mths</text>
+  <text x="361" y="244" font-size="11" font-weight="700" fill="#ED7D31" text-anchor="end">To Stage 4</text>
+
+  <!-- Financial Bar: 18% spent, 20% upcoming, 62% future -->
+  <!-- Bar track -->
+  <rect x="32" y="250" width="329" height="22" rx="11" fill="#E8EAF0"/>
+  <!-- Spent segment (green, 18% = 59px) -->
+  <rect x="32" y="250" width="59" height="22" rx="11" fill="#3A9E6F"/>
+  <rect x="80" y="250" width="11" height="22" fill="#3A9E6F"/>
+  <!-- Upcoming segment (blue, 20% = 66px) -->
+  <rect x="91" y="250" width="66" height="22" fill="#2E75B6"/>
+  <!-- Future segment (amber, 62% = 204px) -->
+  <rect x="157" y="250" width="204" height="22" fill="#ED7D31"/>
+  <rect x="339" y="250" width="22" height="22" rx="11" fill="#ED7D31"/>
+  <rect x="339" y="250" width="11" height="22" fill="#ED7D31"/>
+  <!-- Inner shadow overlay -->
+  <rect x="32" y="250" width="329" height="22" rx="11" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+
+  <!-- Bar amounts -->
+  <text x="32" y="286" font-size="12" font-weight="700" fill="#3A9E6F">$1,840</text>
+  <text x="196" y="286" font-size="12" font-weight="700" fill="#2E75B6" text-anchor="middle">$2,040</text>
+  <text x="361" y="286" font-size="12" font-weight="700" fill="#ED7D31" text-anchor="end">~$7,200</text>
+
+  <!-- Timeline markers -->
+  <text x="32" y="308" font-size="10" fill="#9CA3AF">│ Mth 3</text>
+  <text x="134" y="308" font-size="10" font-weight="700" fill="#3A9E6F" text-anchor="middle">│ Mth 4 ●</text>
+  <text x="246" y="308" font-size="10" fill="#9CA3AF" text-anchor="middle">│ Mth 9</text>
+  <text x="361" y="308" font-size="10" fill="#9CA3AF" text-anchor="end">│ Mth 18</text>
+
+  <!-- Net cost callout (Issue 03 fix: --dark text, --green icon) -->
+  <rect x="32" y="316" width="329" height="26" rx="6" fill="#E8F6EF"/>
+  <text x="42" y="333" font-size="11" font-weight="600" fill="#3A9E6F">💡</text>
+  <text x="58" y="333" font-size="11" font-weight="600" fill="#1A1D2E">Net out-of-pocket: ~$680/month after ECDA subsidy ($600 + $360 ACS)</text>
+
+  <!-- View breakdown link -->
+  <text x="361" y="350" font-size="12" font-weight="700" fill="#2E75B6" text-anchor="end">View breakdown →</text>
+
+  <!-- ══ ALERT BANNERS ══ -->
+  <!-- 18-month step-down warning -->
+  <rect x="16" y="360" width="361" height="56" rx="14" fill="#FEF3EA" stroke="rgba(237,125,49,0.3)" stroke-width="1"/>
+  <text x="34" y="392" font-size="20">⚠️</text>
+  <text x="62" y="380" font-size="13" font-weight="700" fill="#ED7D31">Planning ahead: Month 18 subsidy step-down</text>
+  <text x="62" y="397" font-size="12" fill="#1A1D2E">Basic Subsidy drops S$600→S$300. Net cost rises ~S$260/month.</text>
+  <text x="370" y="390" font-size="16" fill="#ED7D31" text-anchor="end">›</text>
+
+  <!-- CDA top-up opportunity -->
+  <rect x="16" y="424" width="361" height="56" rx="14" fill="#E8F6EF" stroke="rgba(58,158,111,0.3)" stroke-width="1"/>
+  <text x="34" y="456" font-size="20">💰</text>
+  <text x="62" y="444" font-size="13" font-weight="700" fill="#3A9E6F">CDA top-up opportunity</text>
+  <text x="62" y="461" font-size="12" fill="#1A1D2E">$2,500 co-matching headroom. Top up now for $1-for-$1 match.</text>
+
+  <!-- ══ STATUS PILLS GRID (2×2) ══ -->
+  <!-- Row 1 -->
+  <rect x="16" y="490" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="30" y="509" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">ECDA SUBSIDY</text>
+  <text x="30" y="530" font-size="16" font-weight="900" fill="#3A9E6F">$960/mth</text>
+  <text x="30" y="546" font-size="10" fill="#6B7280">Basic $600 + ACS $360</text>
+
+  <rect x="205" y="490" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="219" y="509" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">CDA CO-MATCH</text>
+  <text x="219" y="530" font-size="16" font-weight="900" fill="#ED7D31">$500 / $3,000</text>
+  <text x="219" y="546" font-size="10" fill="#6B7280">$2,500 headroom left</text>
+
+  <!-- Row 2 -->
+  <rect x="16" y="562" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="30" y="581" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">MEDISHIELD LIFE</text>
+  <text x="30" y="602" font-size="16" font-weight="900" fill="#3A9E6F">Active</text>
+  <text x="30" y="618" font-size="10" fill="#6B7280">~$200/yr premium</text>
+
+  <rect x="205" y="562" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="219" y="581" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">NEXT VACCINE</text>
+  <text x="219" y="602" font-size="16" font-weight="900" fill="#1A1D2E">6 months</text>
+  <text x="219" y="618" font-size="10" fill="#6B7280">PCV · free at polyclinic</text>
+
+  <!-- ══ ACTIVE SCHEMES SECTION ══ -->
+  <text x="20" y="652" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.9">ACTIVE SCHEMES</text>
+
+  <!-- Scheme row 1: ECDA Basic -->
+  <rect x="16" y="660" width="361" height="48" rx="14" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="688" font-size="22">🏫</text>
+  <text x="62" y="678" font-size="13" font-weight="700" fill="#1A1D2E">ECDA Basic Childcare Subsidy</text>
+  <text x="62" y="694" font-size="11" fill="#6B7280">Working parent, SC child · Infant Care rate</text>
+  <text x="369" y="688" font-size="13" font-weight="700" fill="#3A9E6F" text-anchor="end">$600/mth</text>
+
+  <!-- Scheme row 2: ACS -->
+  <rect x="16" y="716" width="361" height="48" rx="14" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="744" font-size="22">➕</text>
+  <text x="62" y="734" font-size="13" font-weight="700" fill="#1A1D2E">Additional Childcare Subsidy (ACS)</text>
+  <text x="62" y="750" font-size="11" fill="#6B7280">HHI $6,000–$9,000 bracket</text>
+  <text x="369" y="744" font-size="13" font-weight="700" fill="#3A9E6F" text-anchor="end">$360/mth</text>
+
+  <!-- Scheme row 3: CDA -->
+  <rect x="16" y="764" width="361" height="48" rx="14" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="792" font-size="22">💰</text>
+  <text x="62" y="782" font-size="13" font-weight="700" fill="#1A1D2E">CDA Co-Matching (1st child)</text>
+  <text x="62" y="798" font-size="11" fill="#6B7280">Dollar-for-dollar up to $3,000 cap</text>
+  <text x="369" y="792" font-size="13" font-weight="700" fill="#ED7D31" text-anchor="end">$2,500 left</text>
+
+  <!-- ══ NAV BAR ══ -->
+  <rect x="0" y="769" width="393" height="83" fill="#FFFFFF"/>
+  <line x1="0" y1="769" x2="393" y2="769" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="49" y="799" font-size="22" text-anchor="middle">🏠</text>
+  <text x="49" y="814" font-size="10" font-weight="700" fill="#2E75B6" text-anchor="middle">Home</text>
+  <text x="131" y="799" font-size="22" text-anchor="middle">💰</text>
+  <text x="131" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Costs</text>
+  <text x="197" y="799" font-size="22" text-anchor="middle">🗺</text>
+  <text x="197" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Journey</text>
+  <text x="263" y="799" font-size="22" text-anchor="middle">🎁</text>
+  <text x="263" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Grants</text>
+  <text x="345" y="799" font-size="22" text-anchor="middle">⊞</text>
+  <text x="345" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Contexts</text>
+
+  <!-- Home indicator -->
+  <rect x="150" y="841" width="93" height="5" rx="2.5" fill="#1A1D2E" opacity="0.2"/>
+</svg>

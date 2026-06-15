@@ -1,0 +1,59 @@
+{
+  "documents": [
+    {
+      "_type": "cda_config",
+      "birth_order": 1,
+      "cda_matching_cap": 4000,
+      "cda_first_step_grant": 5000,
+      "baby_bonus_cash_gift": 11000,
+      "total_baby_bonus_package": 20000,
+      "effective_date": "2026-06-10",
+      "source_url": "https://www.babybonus.msf.gov.sg/",
+      "_key": "cda_config_1st_child"
+    },
+    {
+      "_type": "cda_config",
+      "birth_order": 2,
+      "cda_matching_cap": 7000,
+      "cda_first_step_grant": 5000,
+      "baby_bonus_cash_gift": 11000,
+      "total_baby_bonus_package": 23000,
+      "effective_date": "2026-06-10",
+      "source_url": "https://www.babybonus.msf.gov.sg/",
+      "_key": "cda_config_2nd_child"
+    },
+    {
+      "_type": "cda_config",
+      "birth_order": 3,
+      "cda_matching_cap": 9000,
+      "cda_first_step_grant": 10000,
+      "baby_bonus_cash_gift": 13000,
+      "total_baby_bonus_package": 32000,
+      "effective_date": "2026-06-10",
+      "source_url": "https://www.babybonus.msf.gov.sg/",
+      "_key": "cda_config_3rd_4th_child"
+    },
+    {
+      "_type": "cda_config",
+      "birth_order": 4,
+      "cda_matching_cap": 9000,
+      "cda_first_step_grant": 10000,
+      "baby_bonus_cash_gift": 13000,
+      "total_baby_bonus_package": 32000,
+      "effective_date": "2026-06-10",
+      "source_url": "https://www.babybonus.msf.gov.sg/",
+      "_key": "cda_config_3rd_4th_child"
+    },
+    {
+      "_type": "cda_config",
+      "birth_order": 5,
+      "cda_matching_cap": 15000,
+      "cda_first_step_grant": 10000,
+      "baby_bonus_cash_gift": 13000,
+      "total_baby_bonus_package": 38000,
+      "effective_date": "2026-06-10",
+      "source_url": "https://www.babybonus.msf.gov.sg/",
+      "_key": "cda_config_5plus_child"
+    }
+  ]
+}

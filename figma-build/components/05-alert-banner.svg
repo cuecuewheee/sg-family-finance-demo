@@ -1,0 +1,25 @@
+<svg width="361" height="120" viewBox="0 0 361 120" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+
+  <!-- AMBER alert banner -->
+  <g id="alert-amber">
+    <rect x="0" y="0" width="361" height="52" rx="14" fill="#FEF3EA" stroke="rgba(237,125,49,0.3)" stroke-width="1"/>
+    <!-- Icon -->
+    <text x="14" y="30" font-size="20">⚠️</text>
+    <!-- Text block -->
+    <text x="44" y="20" font-size="13" font-weight="700" fill="#1A1D2E">PSEA balance approaching limit</text>
+    <text x="44" y="36" font-size="12" font-weight="400" fill="#1A1D2E">Review your enrichment spending before age 16.</text>
+    <!-- Chevron -->
+    <text x="344" y="30" font-size="14" fill="#ED7D31" text-anchor="middle">›</text>
+    <text x="0" y="64" font-size="9" fill="#9CA3AF">AMBER — #FEF3EA bg, rgba(237,125,49,0.3) border, 14px radius</text>
+  </g>
+
+  <!-- RED / critical alert banner -->
+  <g id="alert-red" transform="translate(0,68)">
+    <rect x="0" y="0" width="361" height="52" rx="14" fill="#FDEAEA" stroke="rgba(217,79,79,0.3)" stroke-width="1"/>
+    <text x="14" y="30" font-size="20">🚨</text>
+    <text x="44" y="20" font-size="13" font-weight="700" fill="#1A1D2E">CDA top-up deadline: 31 Dec</text>
+    <text x="44" y="36" font-size="12" font-weight="400" fill="#1A1D2E">Co-matching window closes in 23 days.</text>
+    <text x="344" y="30" font-size="14" fill="#D94F4F" text-anchor="middle">›</text>
+  </g>
+
+</svg>

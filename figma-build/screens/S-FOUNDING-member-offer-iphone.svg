@@ -1,0 +1,105 @@
+<svg width="393" height="852" viewBox="0 0 393 852" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <defs>
+    <!-- Deep founding gradient: purple to dark blue -->
+    <linearGradient id="found-grad" x1="0" y1="0" x2="393" y2="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2B1A4F"/>
+      <stop offset="50%" stop-color="#1A2E5A"/>
+      <stop offset="100%" stop-color="#0F1117"/>
+    </linearGradient>
+    <!-- Badge gradient (matching DesignTokens Founding Member Badge spec) -->
+    <linearGradient id="badge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7B5EA7"/>
+      <stop offset="100%" stop-color="#1A4F8C"/>
+    </linearGradient>
+    <filter id="card-sh" x="-5%" y="-10%" width="115%" height="135%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.15)"/>
+    </filter>
+    <filter id="badge-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="rgba(123,94,167,0.4)"/>
+    </filter>
+  </defs>
+
+  <!-- Screen background -->
+  <rect width="393" height="852" fill="#080B13"/>
+
+  <!-- ══ HERO ══ -->
+  <rect x="0" y="0" width="393" height="380" fill="url(#found-grad)"/>
+
+  <!-- Status bar -->
+  <text x="20" y="24" font-size="13" font-weight="400" fill="rgba(255,255,255,0.5)">9:41</text>
+  <text x="373" y="24" font-size="13" font-weight="400" fill="rgba(255,255,255,0.5)" text-anchor="end">●●●</text>
+
+  <!-- Star field (decorative dots) -->
+  <circle cx="60" cy="55" r="1.5" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="140" cy="40" r="1" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="280" cy="65" r="1.5" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="350" cy="45" r="1" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="330" cy="130" r="1" fill="rgba(255,255,255,0.15)"/>
+  <circle cx="75" cy="155" r="1.5" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="200" cy="44" r="2" fill="rgba(255,255,255,0.15)"/>
+
+  <!-- Founding Member Badge (large, centered — per DesignTokens §4.4) -->
+  <rect x="116" y="64" width="161" height="34" rx="17" fill="url(#badge-grad)" filter="url(#badge-glow)"/>
+  <text x="196" y="86" font-size="12" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">✦ FOUNDING MEMBER</text>
+
+  <!-- Crown / trophy emoji -->
+  <text x="196" y="148" font-size="56" text-anchor="middle">👑</text>
+
+  <!-- Title -->
+  <text x="196" y="192" font-size="28" font-weight="900" fill="#FFFFFF" text-anchor="middle">You're part of</text>
+  <text x="196" y="220" font-size="28" font-weight="900" fill="#FFFFFF" text-anchor="middle">the first wave.</text>
+
+  <!-- Subtitle -->
+  <text x="196" y="250" font-size="14" fill="rgba(255,255,255,0.65)" text-anchor="middle">Only 1,000 Founding Member spots available.</text>
+  <text x="196" y="270" font-size="14" fill="rgba(255,255,255,0.65)" text-anchor="middle">Your contribution shapes the product.</text>
+
+  <!-- Spots counter -->
+  <rect x="116" y="284" width="161" height="48" rx="12" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <text x="196" y="305" font-size="11" font-weight="700" fill="rgba(255,255,255,0.5)" text-anchor="middle" letter-spacing="0.8">SPOTS REMAINING</text>
+  <text x="196" y="324" font-size="22" font-weight="900" fill="#FFFFFF" text-anchor="middle">387</text>
+
+  <!-- ══ BENEFITS CARDS ══ -->
+  <text x="20" y="356" font-size="11" font-weight="700" fill="rgba(255,255,255,0.4)" letter-spacing="1.2">WHAT YOU GET</text>
+
+  <!-- Benefit 1 -->
+  <rect x="16" y="364" width="361" height="52" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(123,94,167,0.3)" stroke-width="1"/>
+  <text x="40" y="393" font-size="22">♾️</text>
+  <text x="74" y="384" font-size="13" font-weight="700" fill="#FFFFFF">Premium free, forever</text>
+  <text x="74" y="401" font-size="12" fill="rgba(255,255,255,0.55)">Risk Reference Engine + scenario builder, no monthly fee</text>
+
+  <!-- Benefit 2 -->
+  <rect x="16" y="424" width="361" height="52" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(123,94,167,0.3)" stroke-width="1"/>
+  <text x="40" y="453" font-size="22">🗳️</text>
+  <text x="74" y="444" font-size="13" font-weight="700" fill="#FFFFFF">Shape the roadmap</text>
+  <text x="74" y="461" font-size="12" fill="rgba(255,255,255,0.55)">Vote on new features before public release</text>
+
+  <!-- Benefit 3 -->
+  <rect x="16" y="484" width="361" height="52" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(123,94,167,0.3)" stroke-width="1"/>
+  <text x="40" y="513" font-size="22">🎖️</text>
+  <text x="74" y="504" font-size="13" font-weight="700" fill="#FFFFFF">Permanent badge</text>
+  <text x="74" y="521" font-size="12" fill="rgba(255,255,255,0.55)">✦ Founding Member badge — visible even on lapse</text>
+
+  <!-- Benefit 4 -->
+  <rect x="16" y="544" width="361" height="52" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(123,94,167,0.3)" stroke-width="1"/>
+  <text x="40" y="573" font-size="22">📬</text>
+  <text x="74" y="564" font-size="13" font-weight="700" fill="#FFFFFF">Early access updates</text>
+  <text x="74" y="581" font-size="12" fill="rgba(255,255,255,0.55)">New stage rollouts and data updates before general availability</text>
+
+  <!-- ══ PRICING SECTION ══ -->
+  <rect x="16" y="608" width="361" height="64" rx="16" fill="rgba(123,94,167,0.15)" stroke="rgba(123,94,167,0.4)" stroke-width="1"/>
+  <text x="196" y="630" font-size="11" font-weight="700" fill="rgba(255,255,255,0.5)" text-anchor="middle" letter-spacing="0.8">ONE-TIME FOUNDING CONTRIBUTION</text>
+  <text x="196" y="656" font-size="28" font-weight="900" fill="#FFFFFF" text-anchor="middle">S$28</text>
+  <text x="320" y="664" font-size="12" fill="rgba(255,255,255,0.4)" text-anchor="end">then S$3.99/month after Wave 1 closes</text>
+
+  <!-- ══ CTA BUTTONS ══ -->
+  <!-- Primary: Claim Spot -->
+  <rect x="16" y="686" width="361" height="52" rx="14" fill="url(#badge-grad)"/>
+  <text x="196" y="716" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">✦ Claim my Founding Member spot</text>
+
+  <!-- Secondary: Learn more -->
+  <rect x="16" y="748" width="361" height="44" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <text x="196" y="775" font-size="14" fill="rgba(255,255,255,0.6)" text-anchor="middle">Read what Founding Members get →</text>
+
+  <!-- Home indicator -->
+  <rect x="150" y="832" width="93" height="5" rx="2.5" fill="rgba(255,255,255,0.2)"/>
+</svg>

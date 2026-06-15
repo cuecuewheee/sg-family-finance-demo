@@ -1,0 +1,157 @@
+<svg width="393" height="852" viewBox="0 0 393 852" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <defs>
+    <!-- Blue hero gradient — Child Raising context (DesignTokens §1) -->
+    <linearGradient id="cr-hero-grad" x1="0" y1="0" x2="393" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2E75B6"/>
+      <stop offset="100%" stop-color="#1A4F8C"/>
+    </linearGradient>
+    <filter id="card-sh" x="-5%" y="-10%" width="115%" height="135%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.07)"/>
+    </filter>
+    <filter id="raised-sh" x="-5%" y="-10%" width="115%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="9" flood-color="rgba(0,0,0,0.12)"/>
+    </filter>
+  </defs>
+
+  <!-- Screen background: --grey-bg -->
+  <rect width="393" height="852" fill="#F5F6FA"/>
+
+  <!-- ══ HERO HEADER ══ -->
+  <rect x="0" y="0" width="393" height="190" fill="url(#cr-hero-grad)"/>
+
+  <!-- Status bar -->
+  <text x="20" y="24" font-size="13" font-weight="400" fill="rgba(255,255,255,0.7)">9:41</text>
+  <text x="373" y="24" font-size="13" font-weight="400" fill="rgba(255,255,255,0.7)" text-anchor="end">●●●</text>
+
+  <!-- Context pill -->
+  <rect x="20" y="52" width="178" height="22" rx="11" fill="rgba(255,255,255,0.18)"/>
+  <text x="109" y="66" font-size="10" font-weight="700" fill="rgba(255,255,255,0.9)" text-anchor="middle" letter-spacing="0.5">👶 Child Raising Planning</text>
+
+  <!-- Greeting + Stage -->
+  <text x="20" y="96" font-size="13" font-weight="400" fill="rgba(255,255,255,0.75)">Good morning, Qiquan 👋</text>
+  <text x="20" y="118" font-size="22" font-weight="900" fill="#FFFFFF">Month 18 · Toddler Stage</text>
+
+  <!-- ⚠️ Step-down warning pill in hero (amber on blue) -->
+  <rect x="20" y="130" width="184" height="24" rx="12" fill="rgba(237,125,49,0.25)" stroke="rgba(237,125,49,0.5)" stroke-width="1"/>
+  <text x="112" y="146" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">⚠️ Subsidy step-down in 0 days</text>
+
+  <!-- ══ FINANCIAL OVERVIEW CARD ══ -->
+  <rect x="16" y="202" width="361" height="142" rx="16" fill="#FFFFFF" filter="url(#card-sh)"/>
+
+  <text x="32" y="224" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">FINANCIAL OVERVIEW — TODDLER STAGE</text>
+
+  <!-- Bar labels -->
+  <text x="32" y="244" font-size="11" font-weight="700" fill="#3A9E6F">Spent</text>
+  <text x="196" y="244" font-size="11" font-weight="700" fill="#2E75B6" text-anchor="middle">Upcoming · 3 mths</text>
+  <text x="361" y="244" font-size="11" font-weight="700" fill="#ED7D31" text-anchor="end">To Stage 4</text>
+
+  <!-- Financial Bar: 55% spent, 15% upcoming, 30% future -->
+  <rect x="32" y="250" width="329" height="22" rx="11" fill="#E8EAF0"/>
+  <!-- Spent (green, 55% = 181px) -->
+  <rect x="32" y="250" width="181" height="22" rx="11" fill="#3A9E6F"/>
+  <rect x="190" y="250" width="23" height="22" fill="#3A9E6F"/>
+  <!-- Upcoming (blue, 15% = 49px) -->
+  <rect x="213" y="250" width="49" height="22" fill="#2E75B6"/>
+  <!-- Future (amber, 30% = 99px) -->
+  <rect x="262" y="250" width="99" height="22" fill="#ED7D31"/>
+  <rect x="350" y="250" width="11" height="22" rx="11" fill="#ED7D31"/>
+  <rect x="350" y="250" width="11" height="22" rx="0" fill="#ED7D31"/>
+  <!-- Inner shadow overlay -->
+  <rect x="32" y="250" width="329" height="22" rx="11" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+
+  <!-- Bar amounts -->
+  <text x="32" y="286" font-size="12" font-weight="700" fill="#3A9E6F">$10,200</text>
+  <text x="196" y="286" font-size="12" font-weight="700" fill="#2E75B6" text-anchor="middle">$2,010</text>
+  <text x="361" y="286" font-size="12" font-weight="700" fill="#ED7D31" text-anchor="end">~$3,960</text>
+
+  <!-- Timeline markers -->
+  <text x="32" y="308" font-size="10" fill="#9CA3AF">│ Mth 3</text>
+  <text x="218" y="308" font-size="10" font-weight="700" fill="#2E75B6" text-anchor="middle">│ Mth 18 ●</text>
+  <text x="361" y="308" font-size="10" fill="#9CA3AF" text-anchor="end">│ Mth 24</text>
+
+  <!-- Issue 03 fix: callout — amber icon only, body text in --dark -->
+  <rect x="32" y="316" width="329" height="26" rx="6" fill="#FEF3EA"/>
+  <text x="42" y="333" font-size="11" font-weight="600" fill="#ED7D31">⚠️</text>
+  <text x="62" y="333" font-size="11" font-weight="600" fill="#1A1D2E">Net out-of-pocket rises ~S$260/month: Basic Subsidy drops S$600→S$300 today.</text>
+
+  <!-- ══ CRITICAL ALERT: SUBSIDY STEP-DOWN ══ -->
+  <rect x="16" y="356" width="361" height="76" rx="14" fill="#FEF3EA" stroke="rgba(237,125,49,0.5)" stroke-width="1.5"/>
+  <text x="34" y="378" font-size="20">⚠️</text>
+  <text x="62" y="372" font-size="13" font-weight="700" fill="#ED7D31">Month 18 subsidy step-down — action needed</text>
+  <text x="62" y="389" font-size="12" fill="#1A1D2E">Basic Subsidy: S$600 → S$300. If your centre fee is S$1,280/month,</text>
+  <text x="62" y="405" font-size="12" fill="#1A1D2E">net cost rises from S$680 to S$940. Review budget now.</text>
+  <text x="62" y="421" font-size="12" font-weight="700" fill="#2E75B6">Review budget impact →</text>
+
+  <!-- ══ 18-MONTH IMMUNISATION CARD ══ -->
+  <rect x="16" y="442" width="361" height="100" rx="16" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="464" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.7">18-MONTH VACCINATION SCHEDULE</text>
+
+  <!-- Vaccine row 1: MMR -->
+  <rect x="32" y="470" width="329" height="36" rx="10" fill="#EBF3FA" stroke="#2E75B6" stroke-width="1"/>
+  <text x="52" y="491" font-size="20">💉</text>
+  <text x="82" y="484" font-size="13" font-weight="700" fill="#2E75B6">MMR (2nd dose) + Varicella</text>
+  <text x="82" y="499" font-size="11" fill="#6B7280">Free at polyclinic · Due this month</text>
+  <text x="369" y="491" font-size="12" font-weight="700" fill="#2E75B6" text-anchor="end">Book →</text>
+
+  <!-- Vaccine row 2: PCV -->
+  <rect x="32" y="512" width="329" height="22" rx="8" fill="#F5F6FA" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="52" y="527" font-size="14">✅</text>
+  <text x="76" y="527" font-size="12" fill="#6B7280">Hep A (1st) + PCV (3rd) — completed at 12 months</text>
+
+  <!-- ══ STATUS PILLS GRID 2×2 ══ -->
+  <!-- Row 1 -->
+  <rect x="16" y="554" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="30" y="573" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">ECDA SUBSIDY</text>
+  <text x="30" y="594" font-size="16" font-weight="900" fill="#ED7D31">$300/mth</text>
+  <text x="30" y="610" font-size="10" fill="#6B7280">Was $600 · Step-down today</text>
+
+  <rect x="205" y="554" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="219" y="573" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">BABY BONUS</text>
+  <text x="219" y="594" font-size="16" font-weight="900" fill="#3A9E6F">$3,000</text>
+  <text x="219" y="610" font-size="10" fill="#6B7280">Cash balance remaining</text>
+
+  <!-- Row 2 -->
+  <rect x="16" y="626" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="30" y="645" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">CDA BALANCE</text>
+  <text x="30" y="666" font-size="16" font-weight="900" fill="#2E75B6">$2,500</text>
+  <text x="30" y="682" font-size="10" fill="#6B7280">Co-match cap reached</text>
+
+  <rect x="205" y="626" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="219" y="645" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">NEXT VACCINE</text>
+  <text x="219" y="666" font-size="16" font-weight="900" fill="#D94F4F">Today</text>
+  <text x="219" y="682" font-size="10" fill="#6B7280">MMR 2nd dose · Due now</text>
+
+  <!-- ══ ACTIVE SCHEMES SECTION ══ -->
+  <text x="20" y="715" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.9">ACTIVE SCHEMES</text>
+
+  <!-- Scheme row 1 -->
+  <rect x="16" y="723" width="361" height="40" rx="14" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="747" font-size="18">🏫</text>
+  <text x="60" y="738" font-size="13" font-weight="700" fill="#1A1D2E">ECDA Basic Childcare Subsidy</text>
+  <text x="60" y="754" font-size="11" fill="#6B7280">Post-step-down rate · Anchor centre</text>
+  <text x="369" y="747" font-size="13" font-weight="700" fill="#ED7D31" text-anchor="end">$300/mth</text>
+
+  <!-- Scheme row 2 -->
+  <rect x="16" y="769" width="361" height="40" rx="14" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="793" font-size="18">💰</text>
+  <text x="60" y="784" font-size="13" font-weight="700" fill="#1A1D2E">Baby Bonus Cash Gift</text>
+  <text x="60" y="800" font-size="11" fill="#6B7280">Disbursed to bank · 2nd child tranche</text>
+  <text x="369" y="793" font-size="13" font-weight="700" fill="#3A9E6F" text-anchor="end">Active</text>
+
+  <!-- ══ NAV BAR ══ -->
+  <rect x="0" y="769" width="393" height="83" fill="#FFFFFF"/>
+  <line x1="0" y1="769" x2="393" y2="769" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="49" y="799" font-size="22" text-anchor="middle">🏠</text>
+  <text x="49" y="814" font-size="10" font-weight="700" fill="#2E75B6" text-anchor="middle">Home</text>
+  <text x="131" y="799" font-size="22" text-anchor="middle">💰</text>
+  <text x="131" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Costs</text>
+  <text x="197" y="799" font-size="22" text-anchor="middle">🗺</text>
+  <text x="197" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Journey</text>
+  <text x="263" y="799" font-size="22" text-anchor="middle">🎁</text>
+  <text x="263" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Grants</text>
+  <text x="345" y="799" font-size="22" text-anchor="middle">⊞</text>
+  <text x="345" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Contexts</text>
+
+  <!-- Home indicator -->
+  <rect x="150" y="841" width="93" height="5" rx="2.5" fill="#1A1D2E" opacity="0.2"/>
+</svg>

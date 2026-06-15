@@ -1,0 +1,168 @@
+<svg width="393" height="852" viewBox="0 0 393 852" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <defs>
+    <!-- Teal hero gradient — Family Planning context (DesignTokens §1) -->
+    <linearGradient id="fp-hero-grad" x1="0" y1="0" x2="393" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1A8A8A"/>
+      <stop offset="100%" stop-color="#0D5C5C"/>
+    </linearGradient>
+    <filter id="card-sh" x="-5%" y="-10%" width="115%" height="135%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.07)"/>
+    </filter>
+    <filter id="raised-sh" x="-5%" y="-10%" width="115%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="9" flood-color="rgba(0,0,0,0.12)"/>
+    </filter>
+  </defs>
+
+  <!-- Screen background -->
+  <rect width="393" height="852" fill="#F5F6FA"/>
+
+  <!-- ══ HERO ══ -->
+  <rect x="0" y="0" width="393" height="190" fill="url(#fp-hero-grad)"/>
+
+  <!-- Status bar -->
+  <text x="20" y="24" font-size="13" font-weight="400" fill="rgba(255,255,255,0.7)">9:41</text>
+  <text x="373" y="24" font-size="13" font-weight="400" fill="rgba(255,255,255,0.7)" text-anchor="end">●●●</text>
+
+  <!-- Context pill -->
+  <rect x="20" y="52" width="162" height="22" rx="11" fill="rgba(255,255,255,0.18)"/>
+  <text x="101" y="66" font-size="10" font-weight="700" fill="rgba(255,255,255,0.9)" text-anchor="middle" letter-spacing="0.5">📋 Family Planning</text>
+
+  <!-- Greeting + Stage -->
+  <text x="20" y="96" font-size="13" font-weight="400" fill="rgba(255,255,255,0.75)">Good morning, Qiquan 👋</text>
+  <text x="20" y="118" font-size="22" font-weight="900" fill="#FFFFFF">Family Planning Stage</text>
+
+  <!-- Stage status pill -->
+  <rect x="20" y="130" width="170" height="24" rx="12" fill="rgba(255,255,255,0.2)"/>
+  <text x="105" y="146" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">🏡 HDB Purchase Window Open</text>
+
+  <!-- ══ FINANCIAL OVERVIEW CARD ══ -->
+  <rect x="16" y="202" width="361" height="132" rx="16" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="224" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">FINANCIAL OVERVIEW — FAMILY PLANNING</text>
+
+  <!-- Bar labels -->
+  <text x="32" y="244" font-size="11" font-weight="700" fill="#3A9E6F">Committed</text>
+  <text x="196" y="244" font-size="11" font-weight="700" fill="#2E75B6" text-anchor="middle">In Progress</text>
+  <text x="361" y="244" font-size="11" font-weight="700" fill="#ED7D31" text-anchor="end">Remaining</text>
+
+  <!-- Financial Bar: 30% committed, 25% in-progress, 45% remaining -->
+  <rect x="32" y="250" width="329" height="22" rx="11" fill="#E8EAF0"/>
+  <!-- Committed (green, 30% = 99px) -->
+  <rect x="32" y="250" width="99" height="22" rx="11" fill="#3A9E6F"/>
+  <rect x="108" y="250" width="23" height="22" fill="#3A9E6F"/>
+  <!-- In Progress (blue, 25% = 82px) -->
+  <rect x="131" y="250" width="82" height="22" fill="#2E75B6"/>
+  <!-- Remaining (amber, 45% = 148px) -->
+  <rect x="213" y="250" width="148" height="22" fill="#ED7D31"/>
+  <rect x="350" y="250" width="11" height="22" rx="11" fill="#ED7D31"/>
+  <!-- Inner shadow -->
+  <rect x="32" y="250" width="329" height="22" rx="11" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+
+  <!-- Amounts -->
+  <text x="32" y="286" font-size="12" font-weight="700" fill="#3A9E6F">$85,000</text>
+  <text x="196" y="286" font-size="12" font-weight="700" fill="#2E75B6" text-anchor="middle">$70,000</text>
+  <text x="361" y="286" font-size="12" font-weight="700" fill="#ED7D31" text-anchor="end">~$125,000</text>
+
+  <!-- Timeline markers -->
+  <text x="32" y="308" font-size="10" fill="#9CA3AF">│ Now</text>
+  <text x="175" y="308" font-size="10" font-weight="700" fill="#1A8A8A" text-anchor="middle">│ HDB Q4 2026 ●</text>
+  <text x="361" y="308" font-size="10" fill="#9CA3AF" text-anchor="end">│ Keys 2028</text>
+
+  <!-- Callout — teal/dark text (Issue 03 fix applied) -->
+  <rect x="32" y="316" width="329" height="26" rx="6" fill="#E5F5F5"/>
+  <text x="42" y="333" font-size="11" font-weight="600" fill="#1A8A8A">💡</text>
+  <text x="58" y="333" font-size="11" font-weight="600" fill="#1A1D2E">CPF OA: S$85k committed · S$70k HLE in progress · Grant eligibility: EHG S$80k</text>
+
+  <!-- ══ HDB GRANT ELIGIBILITY CARD ══ -->
+  <rect x="16" y="356" width="361" height="76" rx="16" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="378" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.7">HDB GRANT ELIGIBILITY</text>
+
+  <!-- Grant row 1: EHG -->
+  <rect x="32" y="384" width="329" height="22" rx="8" fill="#E5F5F5" stroke="#1A8A8A" stroke-width="1"/>
+  <text x="44" y="399" font-size="12" font-weight="700" fill="#1A8A8A">✅ Enhanced Housing Grant (EHG)</text>
+  <text x="361" y="399" font-size="12" font-weight="700" fill="#1A8A8A" text-anchor="end">S$80,000</text>
+
+  <!-- Grant row 2: PHG -->
+  <rect x="32" y="411" width="329" height="22" rx="8" fill="#F5F6FA" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="44" y="426" font-size="12" fill="#6B7280">⏳ Proximity Housing Grant (PHG)</text>
+  <text x="361" y="426" font-size="12" fill="#6B7280" text-anchor="end">Pending HLE</text>
+
+  <!-- ══ PURCHASE TIMELINE ══ -->
+  <rect x="16" y="444" width="361" height="88" rx="16" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="466" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.7">HDB PURCHASE WINDOW</text>
+
+  <!-- Step 1: done -->
+  <circle cx="42" cy="484" r="8" fill="#1A8A8A"/>
+  <text x="42" y="488" font-size="9" font-weight="900" fill="#FFFFFF" text-anchor="middle">✓</text>
+  <text x="56" y="488" font-size="12" fill="#1A1D2E">HLE applied — status: In Review</text>
+
+  <!-- Connector line -->
+  <line x1="42" y1="492" x2="42" y2="502" stroke="#E8EAF0" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- Step 2: active -->
+  <circle cx="42" cy="510" r="8" fill="#ED7D31"/>
+  <text x="42" y="514" font-size="9" font-weight="900" fill="#FFFFFF" text-anchor="middle">2</text>
+  <text x="56" y="514" font-size="12" font-weight="700" fill="#ED7D31">Select flat type · BTO Q4 2026 window</text>
+
+  <!-- Connector line -->
+  <line x1="42" y1="518" x2="42" y2="528" stroke="#E8EAF0" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- Step 3: pending -->
+  <circle cx="42" cy="536" r="8" fill="#E8EAF0"/>
+  <text x="42" y="540" font-size="9" fill="#9CA3AF" text-anchor="middle">3</text>
+  <text x="56" y="540" font-size="12" fill="#9CA3AF">Pay option fee (est. 2027) → Keys est. 2028</text>
+
+  <!-- ══ STATUS PILLS 2×2 ══ -->
+  <rect x="16" y="544" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="30" y="563" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">CPF OA BALANCE</text>
+  <text x="30" y="584" font-size="16" font-weight="900" fill="#1A8A8A">$85,000</text>
+  <text x="30" y="600" font-size="10" fill="#6B7280">Available for housing</text>
+
+  <rect x="205" y="544" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="219" y="563" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">MONTHLY CPF</text>
+  <text x="219" y="584" font-size="16" font-weight="900" fill="#1A8A8A">$2,750</text>
+  <text x="219" y="600" font-size="10" fill="#6B7280">OA contribution/month</text>
+
+  <rect x="16" y="616" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="30" y="635" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">HLE STATUS</text>
+  <text x="30" y="656" font-size="16" font-weight="900" fill="#ED7D31">In Review</text>
+  <text x="30" y="672" font-size="10" fill="#6B7280">Applied 2 weeks ago</text>
+
+  <rect x="205" y="616" width="172" height="64" rx="12" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="219" y="635" font-size="10" font-weight="700" fill="#9CA3AF" letter-spacing="0.6">GRANT TOTAL</text>
+  <text x="219" y="656" font-size="16" font-weight="900" fill="#1A8A8A">$80,000</text>
+  <text x="219" y="672" font-size="10" fill="#6B7280">EHG confirmed</text>
+
+  <!-- ══ ACTIVE SCHEMES SECTION ══ -->
+  <text x="20" y="706" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.9">ACTIVE SCHEMES</text>
+
+  <!-- Scheme row 1: EHG -->
+  <rect x="16" y="714" width="361" height="40" rx="14" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="738" font-size="18">🏡</text>
+  <text x="60" y="729" font-size="13" font-weight="700" fill="#1A1D2E">Enhanced Housing Grant (EHG)</text>
+  <text x="60" y="745" font-size="11" fill="#6B7280">Income-based · First-timer · SC couple</text>
+  <text x="369" y="738" font-size="13" font-weight="700" fill="#1A8A8A" text-anchor="end">$80,000</text>
+
+  <!-- Scheme row 2: CPF Housing -->
+  <rect x="16" y="760" width="361" height="40" rx="14" fill="#FFFFFF" filter="url(#card-sh)"/>
+  <text x="32" y="784" font-size="18">💼</text>
+  <text x="60" y="775" font-size="13" font-weight="700" fill="#1A1D2E">CPF Housing Withdrawal</text>
+  <text x="60" y="791" font-size="11" fill="#6B7280">OA funds for down payment + instalments</text>
+  <text x="369" y="784" font-size="13" font-weight="700" fill="#1A8A8A" text-anchor="end">Active</text>
+
+  <!-- ══ NAV BAR ══ -->
+  <rect x="0" y="769" width="393" height="83" fill="#FFFFFF"/>
+  <line x1="0" y1="769" x2="393" y2="769" stroke="#E8EAF0" stroke-width="1"/>
+  <text x="49" y="799" font-size="22" text-anchor="middle">🏠</text>
+  <text x="49" y="814" font-size="10" font-weight="700" fill="#2E75B6" text-anchor="middle">Home</text>
+  <text x="131" y="799" font-size="22" text-anchor="middle">💰</text>
+  <text x="131" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Costs</text>
+  <text x="197" y="799" font-size="22" text-anchor="middle">🗺</text>
+  <text x="197" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Journey</text>
+  <text x="263" y="799" font-size="22" text-anchor="middle">🎁</text>
+  <text x="263" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Grants</text>
+  <text x="345" y="799" font-size="22" text-anchor="middle">⊞</text>
+  <text x="345" y="814" font-size="10" font-weight="700" fill="#9CA3AF" text-anchor="middle">Contexts</text>
+
+  <!-- Home indicator -->
+  <rect x="150" y="841" width="93" height="5" rx="2.5" fill="#1A1D2E" opacity="0.2"/>
+</svg>

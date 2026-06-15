@@ -1,0 +1,33 @@
+<svg width="361" height="148" viewBox="0 0 361 148" xmlns="http://www.w3.org/2000/svg" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <defs>
+    <filter id="card-shadow" x="-5%" y="-5%" width="115%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.07)"/>
+    </filter>
+  </defs>
+
+  <!-- Card container -->
+  <rect x="0" y="0" width="361" height="140" rx="16" fill="#FFFFFF" filter="url(#card-shadow)"/>
+
+  <!-- Header row -->
+  <text x="16" y="36" font-size="20">🍼</text>
+  <text x="44" y="32" font-size="13" font-weight="700" fill="#1A1D2E">Baby Bonus Cash Gift</text>
+  <text x="44" y="46" font-size="11" font-weight="400" fill="#6B7280">Government scheme · MSF</text>
+
+  <!-- Status chip — "Action needed" -->
+  <rect x="272" y="18" width="73" height="22" rx="11" fill="#FEF3EA"/>
+  <text x="308.5" y="33" font-size="11" font-weight="700" fill="#ED7D31" text-anchor="middle">Action needed</text>
+
+  <!-- Amount row -->
+  <text x="16" y="74" font-size="22" font-weight="900" fill="#1A1D2E">S$11,000</text>
+  <text x="130" y="74" font-size="13" font-weight="400" fill="#6B7280">over 18 months</text>
+
+  <!-- Conditions -->
+  <text x="16" y="94" font-size="12" font-weight="400" fill="#6B7280">SC child born on or after 14 Feb 2023.</text>
+  <text x="16" y="110" font-size="12" font-weight="400" fill="#6B7280">1st/2nd child: S$11,000 · 3rd+ child: S$13,000</text>
+
+  <!-- Source attribution -->
+  <text x="16" y="128" font-size="10" font-weight="400" fill="#9CA3AF" font-style="italic">Source: msf.gov.sg · Verified Jun 2026</text>
+
+  <!-- CTA -->
+  <rect x="16" y="0" width="329" height="140" rx="16" fill="none"/>
+</svg>
